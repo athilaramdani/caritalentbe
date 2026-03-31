@@ -1,0 +1,36 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "CariTalent API Specification",
+        "description": "Dokumentasi API untuk platform Direktori & Booking Talent Ekonomi Kreatif (CariTalent)",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api/v1",
+            "description": "Local API Server"
+        }
+    ],
+    "paths": {
+        "/api/placeholder": {
+            "get": {
+                "summary": "Test Placeholder API",
+                "operationId": "18548238005dace3408afddf38101c50",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

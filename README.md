@@ -32,20 +32,26 @@ Pengembangan sistem backend API *CariTalent* dikerjakan oleh tiga orang pengemba
 - Notifikasi terintegrasi setiap perubahan sesi transaksi
 - Dukungan Swagger Interactive API Docs.
 
-## Setup & Instalasi Lokal
+## Setup & Instalasi Lokal (Sat-Set Mode ⚡)
 
-1. Salin repositori ini.
-2. Buka terminal di direktori utama, lalu jalankan instalasi *vendor*:
-   ```bash
-   composer install
-   ```
-3. Sesuaikan konfigurasi `.env`.
-4. Lakukan Migrasi dan *Seeding*:
-   ```bash
-   php artisan migrate --seed
-   ```
-5. Akses dokumentasi interaktif API (*Swagger*):
-   ```bash
-   php artisan serve
-   ```
-   Buka URL: `http://localhost:8000/api/documentation`
+Untuk memudahkan tim, projek ini sudah dilengkapi dengan script otomatis untuk Windows:
+
+1.  **Persyaratan**: Pastikan Anda sudah menginstall **XAMPP**.
+2.  **Langkah Awal (Hanya sekali)**:
+    Klik Kanan **`initialize.bat`** lalu pilih **"Run as Administrator"**. 
+    *Script ini akan otomatis: Mengaktifkan driver PHP, Menginstall PostgreSQL 16 (jika belum ada), Membuat database `caritalent_db`, Menjalankan `composer install`, dan Migrasi tabel.*
+3.  **Jalankan Projek (Setiap hari)**:
+    Klik Kanan **`running.bat`** lalu pilih **"Run as Administrator"**.
+    *Script ini akan otomatis menyalakan service PostgreSQL dan menjalankan server Laravel PHP.*
+
+### Akses Dokumentasi & API
+Setelah server berjalan, Anda bisa mengakses:
+- **Server Local**: `http://127.0.0.1:8000`
+- **Swagger UI (Docs API)**: `http://127.0.0.1:8000/api/documentation`
+
+---
+
+## Tips untuk Tim
+- **Password Database**: Default password PostgreSQL diatur ke `postgres` sesuai file `.env`.
+- **Merge Conflict**: Jika ada konflik di `routes/api.php`, harap hubungi Ketua BE (Athila).
+- **Update Database**: Jika teman Anda melakukan perubahan *database*, cukup jalankan `php artisan migrate`.

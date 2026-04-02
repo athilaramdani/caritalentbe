@@ -60,15 +60,27 @@ net start !PG_SERVICE! >nul 2>&1
 :: 4. Buat Database
 echo [3/5] Membuat database 'caritalent_db'...
 set PGPASSWORD=postgres
-:: Cari psql di lokasi standar kalau tidak ada di PATH
-set PSQL_PATH=psql
-if not exist "C:\Program Files\PostgreSQL\16\bin\psql.exe" goto :psql_check
-set PSQL_PATH="C:\Program Files\PostgreSQL\16\bin\psql.exe"
+
+:: Cari psql secara dinamis (mendukung semua versi PostgreSQL)
+set "PSQL_CMD=psql"
+for /d %%v in ("C:\Program Files\PostgreSQL\*") do (
+    if exist "%%~v\bin\psql.exe" (
+        set "PSQL_CMD=%%~v\bin\psql.exe"
+    )
+)
 
 :psql_check
-!PSQL_PATH! -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'caritalent_db'" | findstr /C:"1" >nul 2>&1
-if %errorlevel% neq 0 (
-    !PSQL_PATH! -U postgres -c "CREATE DATABASE caritalent_db;"
+"%PSQL_CMD%" --version >nul 2>&1
+if errorlevel 1 (
+    echo [ERROR] psql tidak ditemukan atau tidak dapat dijalankan.
+    echo         Silakan periksa instalasi PostgreSQL Anda.
+    pause
+    exit /b 1
+)
+
+"%PSQL_CMD%" -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'caritalent_db'" | findstr /C:"1" >nul 2>&1
+if errorlevel 1 (
+    "%PSQL_CMD%" -U postgres -c "CREATE DATABASE caritalent_db;"
     echo [SUCCESS] Database 'caritalent_db' berhasil dibuat.
 ) else (
     echo [INFO] Database 'caritalent_db' sudah ada.

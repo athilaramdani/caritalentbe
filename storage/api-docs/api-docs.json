@@ -12,6 +12,363 @@
         }
     ],
     "paths": {
+        "/applications": {
+            "post": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Apply ke Event (Talent)",
+                "operationId": "c8746709b6a737b932ae65fd891652ad",
+                "responses": {
+                    "201": {
+                        "description": "Lamaran berhasil dikirim"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/events/{event_id}/applications": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Get Applications by Event (EO)",
+                "operationId": "c83812bbd9879037bac762812c46fc2a",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/applications/my": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Get My Applications (Talent)",
+                "operationId": "ecfecbd620b3b868414fde8e96f83d3e",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/applications/{id}/status": {
+            "put": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Accept / Reject Application (EO)",
+                "operationId": "9076be571c7443f1245225ded16b6a83",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lamaran status diperbarui"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/applications/{id}": {
+            "delete": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Cancel Application (Talent)",
+                "operationId": "b9e499ea5afd15c2c6419dfd2434ed75",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lamaran berhasil dibatalkan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/events": {
+            "get": {
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Get All Events",
+                "operationId": "66c820e79ec6535e179375c186db9395",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "budget_min",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "budget_max",
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Create Event",
+                "operationId": "698833baaa136da25b55969bda5104d7",
+                "responses": {
+                    "201": {
+                        "description": "Event berhasil dibuat"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/events/{id}": {
+            "get": {
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Get Event by ID",
+                "operationId": "f2f0a5a610e5bd6a572f3b9bd5dd52c3",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Update Event",
+                "operationId": "4e52f27bc565fbbc73a09411c475b011",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Event berhasil diperbarui"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Cancel Event",
+                "operationId": "d9e4e6c812ee62b2c751d1d2d3d44b80",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Event berhasil dibatalkan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/events/my": {
+            "get": {
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Get My Events (EO)",
+                "operationId": "dd357f61d3d26aeeb964bc796831de3c",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/invitations": {
+            "post": {
+                "tags": [
+                    "Invitation"
+                ],
+                "summary": "Send Invitation (EO)",
+                "operationId": "d4f4b242ff0a125b7a7f62ce3fbdb5ee",
+                "responses": {
+                    "201": {
+                        "description": "Undangan berhasil dikirim"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/invitations/my": {
+            "get": {
+                "tags": [
+                    "Invitation"
+                ],
+                "summary": "Get My Invitations (Talent)",
+                "operationId": "e22e61c34c6cf2cfb08ae61d8fe4470e",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/invitations/{id}/respond": {
+            "put": {
+                "tags": [
+                    "Invitation"
+                ],
+                "summary": "Accept / Reject Invitation (Talent)",
+                "operationId": "161c0ec970689d90cf27748590f0c98e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Undangan diterima/ditolak"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/placeholder": {
             "get": {
                 "summary": "Test Placeholder API",
@@ -32,5 +389,19 @@
                 "scheme": "bearer"
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Application",
+            "description": "Application"
+        },
+        {
+            "name": "Event",
+            "description": "Event"
+        },
+        {
+            "name": "Invitation",
+            "description": "Invitation"
+        }
+    ]
 }

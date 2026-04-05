@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\TalentController;
+use App\Http\Controllers\GenreController;
 
 // Dummy login route to intercept unauthenticated redirects from Sanctum
 Route::get('/login', function () {
@@ -12,6 +16,32 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::prefix('v1')->group(function () {
+    // --- ROUTES ATHILA ---
+    Route::post('/auth/register', [AuthController::class, 'register']);
+    Route::post('/auth/login', [AuthController::class, 'login']);
+    
+    // Talents & Genres public
+    Route::get('/talents', [TalentController::class, 'index']);
+    Route::get('/talents/{id}', [TalentController::class, 'show']);
+    Route::get('/genres', [GenreController::class, 'index']);
+    
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::get('/auth/me', [AuthController::class, 'me']);
+
+        // Users
+        Route::put('/users/profile', [UserController::class, 'updateProfile']);
+        Route::put('/users/password', [UserController::class, 'updatePassword']);
+
+        // Talents private
+        Route::post('/talents', [TalentController::class, 'store']);
+        Route::put('/talents/{id}', [TalentController::class, 'update']);
+        Route::delete('/talents/{id}', [TalentController::class, 'destroy']);
+        Route::post('/talents/{id}/media', [TalentController::class, 'uploadMedia']);
+        Route::delete('/talents/{talent_id}/media/{media_id}', [TalentController::class, 'deleteMedia']);
+    });
+    // --- END ROUTES ATHILA ---
+
     // Public routes
     Route::get('/events', [EventController::class, 'index']);
 

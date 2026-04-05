@@ -2,47 +2,40 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\InvitationController;
 
-// === ROUTES ATHILA (Admin & Matchmaking) ===
-Route::prefix('admin')->group(function () {
-    // Route::get('/users', [App\Http\Controllers\Admin\AdminUserController::class, 'index']);
-});
-// Route::get('/events/{event_id}/recommendations', [App\Http\Controllers\MatchmakingController::class, 'index']);
+// Dummy login route to intercept unauthenticated redirects from Sanctum
+Route::get('/login', function () {
+    return response()->json(['message' => 'Unauthenticated.'], 401);
+})->name('login');
 
-// === ROUTES IRGI (Auth, User, Talent, Genre, Application) ===
-Route::prefix('auth')->group(function () {
-    // Auth routes
-});
-Route::prefix('users')->group(function () {
-    // User profile routes
-});
-Route::prefix('talents')->group(function () {
-    // Talent routes
-});
-Route::prefix('genres')->group(function () {
-    // Genre routes
-});
-Route::prefix('applications')->group(function () {
-    // Application routes
-});
+Route::prefix('v1')->group(function () {
+    // Public routes
+    Route::get('/events', [EventController::class, 'index']);
 
-// === ROUTES ARFIAN (Event, Invitation, Booking, Review, Notification) ===
-Route::prefix('events')->group(function () {
-    // Event routes
-});
-Route::prefix('invitations')->group(function () {
-    // Invitation routes
-});
-Route::prefix('bookings')->group(function () {
-    // Booking routes
-});
-Route::prefix('reviews')->group(function () {
-    // Review routes
-});
-Route::prefix('notifications')->group(function () {
-    // Notification routes
-});
+    // Protected routes - MUST be declared BEFORE /events/{event} to avoid route conflict
+    Route::middleware('auth:sanctum')->group(function () {
+        // Events - /events/my MUST come before /events/{event}
+        Route::get('/events/my', [EventController::class, 'myEvents']);
+        Route::post('/events', [EventController::class, 'store']);
+        Route::put('/events/{event}', [EventController::class, 'update']);
+        Route::delete('/events/{event}', [EventController::class, 'destroy']);
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+        // Applications
+        Route::get('/applications/my', [ApplicationController::class, 'myApplications']);
+        Route::post('/applications', [ApplicationController::class, 'store']);
+        Route::get('/events/{event_id}/applications', [ApplicationController::class, 'indexByEvent']);
+        Route::put('/applications/{id}/status', [ApplicationController::class, 'updateStatus']);
+        Route::delete('/applications/{id}', [ApplicationController::class, 'destroy']);
+
+        // Invitations
+        Route::post('/invitations', [InvitationController::class, 'store']);
+        Route::get('/invitations/my', [InvitationController::class, 'myInvitations']);
+        Route::put('/invitations/{id}/respond', [InvitationController::class, 'respond']);
+    });
+
+    // Public detail route MUST come AFTER protected /events/my group
+    Route::get('/events/{event}', [EventController::class, 'show']);
+});

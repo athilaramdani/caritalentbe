@@ -9,7 +9,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TalentController;
 use App\Http\Controllers\GenreController;
-
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\MatchmakingController;
 // Dummy login route to intercept unauthenticated redirects from Sanctum
 Route::get('/login', function () {
     return response()->json(['message' => 'Unauthenticated.'], 401);
@@ -24,6 +28,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/talents', [TalentController::class, 'index']);
     Route::get('/talents/{id}', [TalentController::class, 'show']);
     Route::get('/genres', [GenreController::class, 'index']);
+    
+    // Public Review (ARFIAN)
+    Route::get('/talents/{id}/reviews', [ReviewController::class, 'getTalentReviews']);
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
@@ -64,6 +71,31 @@ Route::prefix('v1')->group(function () {
         Route::post('/invitations', [InvitationController::class, 'store']);
         Route::get('/invitations/my', [InvitationController::class, 'myInvitations']);
         Route::put('/invitations/{id}/respond', [InvitationController::class, 'respond']);
+
+        // --- ROUTES ARFIAN ---
+        // Matchmaking
+        Route::get('/events/{id}/recommendations', [MatchmakingController::class, 'getRecommendations']);
+        
+        // Bookings
+        Route::get('/bookings/my', [BookingController::class, 'getMyBookings']);
+        Route::get('/bookings/{id}', [BookingController::class, 'show']);
+        Route::put('/bookings/{id}/complete', [BookingController::class, 'complete']);
+        Route::put('/bookings/{id}/cancel', [BookingController::class, 'cancel']);
+
+        // Reviews
+        Route::post('/reviews', [ReviewController::class, 'store']);
+
+        // Notifications
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+        Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
+        // Admin
+        Route::get('/admin/users', [AdminController::class, 'getUsers']);
+        Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
+        Route::put('/admin/talents/{id}/verify', [AdminController::class, 'verifyTalent']);
+        Route::put('/admin/events/{id}/moderate', [AdminController::class, 'moderateEvent']);
+        // --- END ROUTES ARFIAN ---
     });
 
     // Public detail route MUST come AFTER protected /events/my group

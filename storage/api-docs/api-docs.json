@@ -214,10 +214,73 @@
                     "Application"
                 ],
                 "summary": "Apply ke Event (Talent)",
+                "description": "Talent mendaftar / melamar ke sebuah event. Sistem otomatis men-set source=apply dan status=pending. Satu talent hanya bisa melamar sekali ke event yang sama. Akses: Talent.",
                 "operationId": "c8746709b6a737b932ae65fd891652ad",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "event_id",
+                                    "proposed_price"
+                                ],
+                                "properties": {
+                                    "event_id": {
+                                        "description": "ID event yang ingin dilamar",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "message": {
+                                        "description": "Pesan pengantar lamaran (opsional)",
+                                        "type": "string",
+                                        "example": "Kami band pop punk dari Bandung dengan pengalaman 5 tahun, siap tampil di acara ini."
+                                    },
+                                    "proposed_price": {
+                                        "description": "Harga yang ditawarkan talent",
+                                        "type": "number",
+                                        "example": 1500000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
-                        "description": "Lamaran berhasil dikirim"
+                        "description": "Lamaran berhasil dikirim",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Lamaran berhasil dikirim",
+                                    "data": {
+                                        "id": 10,
+                                        "event_id": 1,
+                                        "talent_id": 3,
+                                        "source": "apply",
+                                        "message": "Kami band pop punk dari Bandung dengan pengalaman 5 tahun, siap tampil di acara ini.",
+                                        "proposed_price": 1500000,
+                                        "status": "pending",
+                                        "created_at": "2026-03-08T11:00:00Z"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Sudah pernah melamar ke event ini",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Kamu sudah pernah melamar ke event ini"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -233,20 +296,81 @@
                     "Application"
                 ],
                 "summary": "Get Applications by Event (EO)",
+                "description": "EO melihat semua pelamar pada event miliknya. Bisa difilter berdasarkan status dan source. Akses: EO (pemilik event).",
                 "operationId": "c83812bbd9879037bac762812c46fc2a",
                 "parameters": [
                     {
                         "name": "event_id",
                         "in": "path",
+                        "description": "ID event",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter berdasarkan status lamaran",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pending",
+                                "accepted",
+                                "rejected"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "description": "Filter berdasarkan sumber lamaran",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "apply",
+                                "invitation"
+                            ]
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Daftar pelamar berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "OK",
+                                    "data": {
+                                        "applications": [
+                                            {
+                                                "id": 10,
+                                                "talent": {
+                                                    "id": 3,
+                                                    "stage_name": "The Broken Strings",
+                                                    "genre": [
+                                                        "Pop Punk"
+                                                    ],
+                                                    "city": "Bandung",
+                                                    "verified": true,
+                                                    "average_rating": 4.5
+                                                },
+                                                "source": "apply",
+                                                "message": "Kami band pop punk dari Bandung...",
+                                                "proposed_price": 1500000,
+                                                "status": "pending",
+                                                "created_at": "2026-03-08T11:00:00Z"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -262,10 +386,40 @@
                     "Application"
                 ],
                 "summary": "Get My Applications (Talent)",
+                "description": "Talent melihat semua lamaran yang pernah ia kirimkan ke berbagai event. Akses: Talent.",
                 "operationId": "ecfecbd620b3b868414fde8e96f83d3e",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Daftar lamaran talent berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "OK",
+                                    "data": {
+                                        "applications": [
+                                            {
+                                                "id": 10,
+                                                "event": {
+                                                    "id": 1,
+                                                    "title": "Punk Night Vol. 3",
+                                                    "event_date": "2026-04-15",
+                                                    "venue_name": "Kafe Kota Bandung",
+                                                    "city": "Bandung",
+                                                    "latitude": -6.9175,
+                                                    "longitude": 107.6191
+                                                },
+                                                "source": "apply",
+                                                "proposed_price": 1500000,
+                                                "status": "pending",
+                                                "created_at": "2026-03-08T11:00:00Z"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -281,20 +435,85 @@
                     "Application"
                 ],
                 "summary": "Accept / Reject Application (EO)",
+                "description": "EO menerima atau menolak lamaran talent. Jika diterima (accepted), sistem otomatis membuat record Booking baru. Field agreed_price wajib diisi jika status = accepted. Akses: EO (pemilik event).",
                 "operationId": "9076be571c7443f1245225ded16b6a83",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID lamaran (application)",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 10
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "description": "Status keputusan EO",
+                                        "type": "string",
+                                        "example": "accepted",
+                                        "enum": [
+                                            "accepted",
+                                            "rejected"
+                                        ]
+                                    },
+                                    "agreed_price": {
+                                        "description": "Harga yang disepakati (wajib diisi jika status=accepted)",
+                                        "type": "number",
+                                        "example": 1500000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Lamaran status diperbarui"
+                        "description": "Lamaran diterima dan booking dibuat / Lamaran ditolak",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Lamaran diterima dan booking telah dibuat",
+                                    "data": {
+                                        "application": {
+                                            "id": 10,
+                                            "status": "accepted"
+                                        },
+                                        "booking": {
+                                            "id": 5,
+                                            "application_id": 10,
+                                            "agreed_price": 1500000,
+                                            "status": "confirmed"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Lamaran tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Lamaran tidak ditemukan"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -310,20 +529,56 @@
                     "Application"
                 ],
                 "summary": "Cancel Application (Talent)",
+                "description": "Talent membatalkan lamarannya. Hanya bisa dilakukan selama status masih pending. Akses: Talent (pemilik lamaran).",
                 "operationId": "b9e499ea5afd15c2c6419dfd2434ed75",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID lamaran (application)",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 10
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Lamaran berhasil dibatalkan"
+                        "description": "Lamaran berhasil dibatalkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Lamaran berhasil dibatalkan"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Lamaran tidak bisa dibatalkan (status bukan pending)",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Hanya lamaran pending yang bisa dibatalkan"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Lamaran tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Lamaran tidak ditemukan"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -630,47 +885,149 @@
                     "Event"
                 ],
                 "summary": "Get All Events",
+                "description": "Mendapatkan daftar semua event dengan filter opsional. Akses: Public.",
                 "operationId": "66c820e79ec6535e179375c186db9395",
                 "parameters": [
                     {
                         "name": "status",
                         "in": "query",
+                        "description": "Filter status event",
+                        "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "enum": [
+                                "draft",
+                                "open",
+                                "closed",
+                                "completed",
+                                "cancelled"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "genre",
+                        "in": "query",
+                        "description": "Filter genre yang dibutuhkan",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Pop Punk"
                         }
                     },
                     {
                         "name": "city",
                         "in": "query",
+                        "description": "Filter kota venue",
+                        "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "Bandung"
                         }
                     },
                     {
                         "name": "budget_min",
                         "in": "query",
+                        "description": "Filter budget minimum",
+                        "required": false,
                         "schema": {
-                            "type": "number"
+                            "type": "integer",
+                            "example": 1000000
                         }
                     },
                     {
                         "name": "budget_max",
                         "in": "query",
+                        "description": "Filter budget maksimum",
+                        "required": false,
                         "schema": {
-                            "type": "number"
+                            "type": "integer",
+                            "example": 5000000
+                        }
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "description": "Filter tanggal mulai (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-04-01"
+                        }
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "description": "Filter tanggal akhir (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-04-30"
                         }
                     },
                     {
                         "name": "search",
                         "in": "query",
+                        "description": "Cari berdasarkan judul event",
+                        "required": false,
                         "schema": {
-                            "type": "string"
+                            "type": "string",
+                            "example": "Punk Night"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Nomor halaman",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Daftar event berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "OK",
+                                    "data": {
+                                        "events": [
+                                            {
+                                                "id": 1,
+                                                "organizer_id": 2,
+                                                "organizer_name": "Kafe Kota",
+                                                "title": "Punk Night Vol. 3",
+                                                "description": "Malam punk rock terbaik di Bandung.",
+                                                "genre_needed": [
+                                                    "Pop Punk",
+                                                    "Hardcore"
+                                                ],
+                                                "budget": 3000000,
+                                                "event_date": "2026-04-15",
+                                                "venue_name": "Kafe Kota Bandung",
+                                                "latitude": -6.9175,
+                                                "longitude": 107.6191,
+                                                "city": "Bandung",
+                                                "status": "open",
+                                                "created_at": "2026-03-01T09:00:00Z"
+                                            }
+                                        ],
+                                        "pagination": {
+                                            "current_page": 1,
+                                            "per_page": 15,
+                                            "total": 23,
+                                            "last_page": 2
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -679,10 +1036,116 @@
                     "Event"
                 ],
                 "summary": "Create Event",
+                "description": "Membuat event baru. Akses: EO (Event Organizer).",
                 "operationId": "698833baaa136da25b55969bda5104d7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "budget",
+                                    "event_date",
+                                    "venue_name",
+                                    "city"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Punk Night Vol. 3"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Malam punk rock terbaik di Bandung."
+                                    },
+                                    "genre_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            5
+                                        ]
+                                    },
+                                    "budget": {
+                                        "type": "number",
+                                        "example": 3000000
+                                    },
+                                    "event_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-04-15"
+                                    },
+                                    "venue_name": {
+                                        "type": "string",
+                                        "example": "Kafe Kota Bandung"
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -6.9175
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 107.6191
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "Bandung"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "draft",
+                                        "enum": [
+                                            "draft",
+                                            "open"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
-                        "description": "Event berhasil dibuat"
+                        "description": "Event berhasil dibuat",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Event berhasil dibuat",
+                                    "data": {
+                                        "id": 1,
+                                        "title": "Punk Night Vol. 3",
+                                        "status": "draft",
+                                        "created_at": "2026-03-08T10:00:00Z"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Validasi gagal",
+                                    "errors": {
+                                        "title": [
+                                            "The title field is required."
+                                        ]
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -698,20 +1161,64 @@
                     "Event"
                 ],
                 "summary": "Get Event by ID",
+                "description": "Mendapatkan detail event berdasarkan ID. Akses: Public.",
                 "operationId": "f2f0a5a610e5bd6a572f3b9bd5dd52c3",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID event",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Detail event berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "OK",
+                                    "data": {
+                                        "id": 1,
+                                        "organizer_id": 2,
+                                        "organizer_name": "Kafe Kota",
+                                        "title": "Punk Night Vol. 3",
+                                        "description": "Malam punk rock terbaik di Bandung.",
+                                        "genre_needed": [
+                                            "Pop Punk",
+                                            "Hardcore"
+                                        ],
+                                        "budget": 3000000,
+                                        "event_date": "2026-04-15",
+                                        "venue_name": "Kafe Kota Bandung",
+                                        "latitude": -6.9175,
+                                        "longitude": 107.6191,
+                                        "city": "Bandung",
+                                        "status": "open",
+                                        "total_applicants": 5,
+                                        "created_at": "2026-03-01T09:00:00Z"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Event tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Event tidak ditemukan"
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -720,20 +1227,91 @@
                     "Event"
                 ],
                 "summary": "Update Event",
+                "description": "Memperbarui data event. Akses: EO (pemilik event).",
                 "operationId": "4e52f27bc565fbbc73a09411c475b011",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID event",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Punk Night Vol. 3 - Special Edition"
+                                    },
+                                    "budget": {
+                                        "type": "number",
+                                        "example": 4000000
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "open",
+                                        "enum": [
+                                            "draft",
+                                            "open",
+                                            "closed",
+                                            "completed",
+                                            "cancelled"
+                                        ]
+                                    },
+                                    "genre_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2,
+                                            4
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Event berhasil diperbarui"
+                        "description": "Event berhasil diperbarui",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Event berhasil diperbarui",
+                                    "data": {
+                                        "id": 1,
+                                        "title": "Punk Night Vol. 3 - Special Edition",
+                                        "status": "open"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Event tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Event tidak ditemukan"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -747,20 +1325,44 @@
                     "Event"
                 ],
                 "summary": "Cancel Event",
+                "description": "Membatalkan event (soft cancel — status berubah menjadi 'cancelled', tidak dihapus permanen). Akses: EO (pemilik), Admin.",
                 "operationId": "d9e4e6c812ee62b2c751d1d2d3d44b80",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID event",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 1
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Event berhasil dibatalkan"
+                        "description": "Event berhasil dibatalkan",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Event berhasil dibatalkan"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Event tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Event tidak ditemukan"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -776,10 +1378,49 @@
                     "Event"
                 ],
                 "summary": "Get My Events (EO)",
+                "description": "Mendapatkan daftar event milik EO yang sedang login. Akses: EO.",
                 "operationId": "dd357f61d3d26aeeb964bc796831de3c",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Daftar event milik EO",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "OK",
+                                    "data": {
+                                        "events": [
+                                            {
+                                                "id": 1,
+                                                "title": "Punk Night Vol. 3",
+                                                "status": "open",
+                                                "event_date": "2026-04-15",
+                                                "city": "Bandung",
+                                                "budget": 3000000
+                                            }
+                                        ],
+                                        "pagination": {
+                                            "current_page": 1,
+                                            "per_page": 15,
+                                            "total": 3,
+                                            "last_page": 1
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "message": "Unauthenticated."
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -808,11 +1449,73 @@
                 "tags": [
                     "Invitation"
                 ],
-                "summary": "Send Invitation (EO)",
+                "summary": "Send Invitation (EO mengundang Talent)",
+                "description": "EO mengundang talent secara langsung ke event. Sistem otomatis membuat record di tabel applications dengan source=invitation dan status=pending. Akses: EO.",
                 "operationId": "d4f4b242ff0a125b7a7f62ce3fbdb5ee",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "event_id",
+                                    "talent_id",
+                                    "offered_price"
+                                ],
+                                "properties": {
+                                    "event_id": {
+                                        "description": "ID event yang ingin diisi talent ini",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "talent_id": {
+                                        "description": "ID user talent yang diundang",
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "offered_price": {
+                                        "description": "Harga yang ditawarkan EO kepada talent",
+                                        "type": "number",
+                                        "example": 2000000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "201": {
-                        "description": "Undangan berhasil dikirim"
+                        "description": "Undangan berhasil dikirim",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Undangan berhasil dikirim",
+                                    "data": {
+                                        "id": 15,
+                                        "event_id": 1,
+                                        "talent_id": 3,
+                                        "offered_price": 2000000,
+                                        "status": "pending",
+                                        "created_at": "2026-03-08T12:00:00Z"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Talent sudah memiliki lamaran aktif untuk event ini",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Talent ini sudah memiliki lamaran aktif untuk event tersebut"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -827,11 +1530,53 @@
                 "tags": [
                     "Invitation"
                 ],
-                "summary": "Get My Invitations (Talent)",
+                "summary": "Get My Invitations (Talent melihat undangan masuk)",
+                "description": "Talent melihat semua undangan yang diterimanya dari EO. Akses: Talent.",
                 "operationId": "e22e61c34c6cf2cfb08ae61d8fe4470e",
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Daftar undangan talent berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "OK",
+                                    "data": {
+                                        "invitations": [
+                                            {
+                                                "id": 15,
+                                                "event": {
+                                                    "id": 1,
+                                                    "title": "Punk Night Vol. 3",
+                                                    "event_date": "2026-04-15",
+                                                    "venue_name": "Kafe Kota Bandung",
+                                                    "city": "Bandung",
+                                                    "budget": 3000000,
+                                                    "latitude": -6.9175,
+                                                    "longitude": 107.6191
+                                                },
+                                                "organizer_name": "Kafe Kota",
+                                                "offered_price": 2000000,
+                                                "status": "pending",
+                                                "created_at": "2026-03-08T12:00:00Z"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "message": "Unauthenticated."
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -847,20 +1592,80 @@
                     "Invitation"
                 ],
                 "summary": "Accept / Reject Invitation (Talent)",
+                "description": "Talent menerima atau menolak undangan dari EO. Jika diterima (accepted), sistem otomatis membuat record Booking baru dengan agreed_price = offered_price. Status hanya boleh: accepted atau rejected. Akses: Talent (penerima undangan).",
                 "operationId": "161c0ec970689d90cf27748590f0c98e",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID undangan (invitation/application)",
                         "required": true,
                         "schema": {
-                            "type": "integer"
+                            "type": "integer",
+                            "example": 15
                         }
                     }
                 ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "description": "Keputusan talent terhadap undangan",
+                                        "type": "string",
+                                        "example": "accepted",
+                                        "enum": [
+                                            "accepted",
+                                            "rejected"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
                 "responses": {
                     "200": {
-                        "description": "Undangan diterima/ditolak"
+                        "description": "Undangan diterima (booking dibuat) atau ditolak",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": true,
+                                    "message": "Undangan diterima dan booking telah dibuat",
+                                    "data": {
+                                        "invitation": {
+                                            "id": 15,
+                                            "status": "accepted"
+                                        },
+                                        "booking": {
+                                            "id": 6,
+                                            "application_id": 15,
+                                            "agreed_price": 2000000,
+                                            "status": "confirmed"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Undangan tidak ditemukan",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Undangan tidak ditemukan"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [

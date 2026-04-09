@@ -52,10 +52,10 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return $this->successResponse('Registrasi berhasil', [
+        return $this->successResponse([
             'user' => $user,
             'token' => $token
-        ], 201);
+        ], 'Registrasi berhasil', 201);
     }
 
     #[OA\Post(path: "/auth/login", summary: "Login user", tags: ["Authentication"])]
@@ -90,10 +90,10 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return $this->successResponse('Login berhasil', [
+        return $this->successResponse([
             'user' => $user,
             'token' => $token
-        ]);
+        ], 'Login berhasil');
     }
 
     #[OA\Post(path: "/auth/logout", summary: "Logout user", security: [["bearerAuth" => []]], tags: ["Authentication"])]
@@ -109,6 +109,6 @@ class AuthController extends Controller
     #[OA\Response(response: 200, description: "Success")]
     public function me(Request $request)
     {
-        return $this->successResponse('OK', $request->user());
+        return $this->successResponse($request->user(), 'OK');
     }
 }

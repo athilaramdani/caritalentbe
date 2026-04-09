@@ -2,102 +2,78 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\InvitationController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\TalentController;
-use App\Http\Controllers\GenreController;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\MatchmakingController;
+
 // Dummy login route to intercept unauthenticated redirects from Sanctum
 Route::get('/login', function () {
-    return response()->json(['message' => 'Unauthenticated.'], 401);
+    return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
 })->name('login');
 
 Route::prefix('v1')->group(function () {
-    // --- ROUTES ATHILA ---
+
+    // =====================================================
+    // AUTH ROUTES (public — tidak perlu login)
+    // =====================================================
     Route::post('/auth/register', [AuthController::class, 'register']);
     Route::post('/auth/login', [AuthController::class, 'login']);
-    
-    // Talents & Genres public
-    Route::get('/talents', [TalentController::class, 'index']);
-    Route::get('/talents/{id}', [TalentController::class, 'show']);
-    Route::get('/genres', [GenreController::class, 'index']);
-    
-    // Public Review (ARFIAN)
-    Route::get('/talents/{id}/reviews', [ReviewController::class, 'getTalentReviews']);
-    
+
+    // Auth routes yang butuh login
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/me', [AuthController::class, 'me']);
-
-        // Users
-        Route::put('/users/profile', [UserController::class, 'updateProfile']);
-        Route::put('/users/password', [UserController::class, 'updatePassword']);
-
-        // Talents private
-        Route::post('/talents', [TalentController::class, 'store']);
-        Route::put('/talents/{id}', [TalentController::class, 'update']);
-        Route::delete('/talents/{id}', [TalentController::class, 'destroy']);
-        Route::post('/talents/{id}/media', [TalentController::class, 'uploadMedia']);
-        Route::delete('/talents/{talent_id}/media/{media_id}', [TalentController::class, 'deleteMedia']);
     });
-    // --- END ROUTES ATHILA ---
 
-    // Public routes
+    // =====================================================
+    // PUBLIC ROUTES (tidak perlu login)
+    // =====================================================
     Route::get('/events', [EventController::class, 'index']);
 
-    // Protected routes - MUST be declared BEFORE /events/{event} to avoid route conflict
+    // =====================================================
+    // AUTHENTICATED ROUTES (perlu login)
+    // =====================================================
     Route::middleware('auth:sanctum')->group(function () {
-        // Events - /events/my MUST come before /events/{event}
-        Route::get('/events/my', [EventController::class, 'myEvents']);
-        Route::post('/events', [EventController::class, 'store']);
-        Route::put('/events/{event}', [EventController::class, 'update']);
-        Route::delete('/events/{event}', [EventController::class, 'destroy']);
 
-        // Applications
-        Route::get('/applications/my', [ApplicationController::class, 'myApplications']);
-        Route::post('/applications', [ApplicationController::class, 'store']);
-        Route::get('/events/{event_id}/applications', [ApplicationController::class, 'indexByEvent']);
-        Route::put('/applications/{id}/status', [ApplicationController::class, 'updateStatus']);
-        Route::delete('/applications/{id}', [ApplicationController::class, 'destroy']);
+        // ----- EVENT MANAGEMENT (EO only) -----
+        // Pembuatan & Manajemen Event → hanya EO
+        // PENTING: /events/my harus SEBELUM /events/{event}
+        Route::get('/events/my', [EventController::class, 'myEvents'])
+            ->middleware('role:eo');
+        Route::post('/events', [EventController::class, 'store'])
+            ->middleware('role:eo');
+        Route::put('/events/{event}', [EventController::class, 'update'])
+            ->middleware('role:eo');
+        Route::delete('/events/{event}', [EventController::class, 'destroy'])
+            ->middleware('role:eo,admin');
 
-        // Invitations
-        Route::post('/invitations', [InvitationController::class, 'store']);
-        Route::get('/invitations/my', [InvitationController::class, 'myInvitations']);
-        Route::put('/invitations/{id}/respond', [InvitationController::class, 'respond']);
+        // ----- APPLICATION (Talent only) -----
+        // Melamar & Menerima Undangan → hanya Talent
+        Route::get('/applications/my', [ApplicationController::class, 'myApplications'])
+            ->middleware('role:talent');
+        Route::post('/applications', [ApplicationController::class, 'store'])
+            ->middleware('role:talent');
+        Route::delete('/applications/{id}', [ApplicationController::class, 'destroy'])
+            ->middleware('role:talent');
 
-        // --- ROUTES ARFIAN ---
-        // Matchmaking
-        Route::get('/events/{id}/recommendations', [MatchmakingController::class, 'getRecommendations']);
-        
-        // Bookings
-        Route::get('/bookings/my', [BookingController::class, 'getMyBookings']);
-        Route::get('/bookings/{id}', [BookingController::class, 'show']);
-        Route::put('/bookings/{id}/complete', [BookingController::class, 'complete']);
-        Route::put('/bookings/{id}/cancel', [BookingController::class, 'cancel']);
+        // EO mengatur pelamar di event-nya
+        Route::get('/events/{event_id}/applications', [ApplicationController::class, 'indexByEvent'])
+            ->middleware('role:eo');
+        Route::put('/applications/{id}/status', [ApplicationController::class, 'updateStatus'])
+            ->middleware('role:eo');
 
-        // Reviews
-        Route::post('/reviews', [ReviewController::class, 'store']);
-
-        // Notifications
-        Route::get('/notifications', [NotificationController::class, 'index']);
-        Route::put('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
-        Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
-
-        // Admin
-        Route::get('/admin/users', [AdminController::class, 'getUsers']);
-        Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
-        Route::put('/admin/talents/{id}/verify', [AdminController::class, 'verifyTalent']);
-        Route::put('/admin/events/{id}/moderate', [AdminController::class, 'moderateEvent']);
-        // --- END ROUTES ARFIAN ---
+        // ----- INVITATION -----
+        // EO nembak Talent
+        Route::post('/invitations', [InvitationController::class, 'store'])
+            ->middleware('role:eo');
+        // Talent lihat & balas undangan
+        Route::get('/invitations/my', [InvitationController::class, 'myInvitations'])
+            ->middleware('role:talent');
+        Route::put('/invitations/{id}/respond', [InvitationController::class, 'respond'])
+            ->middleware('role:talent');
     });
 
-    // Public detail route MUST come AFTER protected /events/my group
+    // Public detail route HARUS setelah grup protected /events/my
     Route::get('/events/{event}', [EventController::class, 'show']);
 });

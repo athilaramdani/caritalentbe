@@ -71,7 +71,7 @@ class TalentController extends Controller
         $talent = Talent::with(['genres', 'media'])->find($id);
 
         if (!$talent) {
-            return $this->errorResponse('Talent tidak ditemukan', null, 404);
+            return $this->errorResponse('Talent tidak ditemukan', 404);
         }
 
         return $this->successResponse('OK', $talent);
@@ -94,7 +94,7 @@ class TalentController extends Controller
     public function store(Request $request)
     {
         if ($request->user()->role !== 'talent') {
-            return $this->errorResponse('Hanya talent yang bisa membuat profil', null, 403);
+            return $this->errorResponse('Hanya talent yang bisa membuat profil', 403);
         }
 
         $validator = Validator::make($request->all(), [
@@ -109,13 +109,13 @@ class TalentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->errorResponse('Validasi gagal', $validator->errors(), 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         // Talent should only have one profile per user
         $existingTalent = Talent::where('user_id', $request->user()->id)->first();
         if ($existingTalent) {
-            return $this->errorResponse('Profil talent sudah ada', null, 422);
+            return $this->errorResponse('Profil talent sudah ada', 422);
         }
 
         $talent = Talent::create([
@@ -155,12 +155,12 @@ class TalentController extends Controller
         $talent = Talent::find($id);
 
         if (!$talent) {
-            return $this->errorResponse('Talent tidak ditemukan', null, 404);
+            return $this->errorResponse('Talent tidak ditemukan', 404);
         }
 
         // Only owner or admin can update
         if ($request->user()->id !== $talent->user_id && $request->user()->role !== 'admin') {
-            return $this->errorResponse('Akses ditolak', null, 403);
+            return $this->errorResponse('Akses ditolak', 403);
         }
 
         $validator = Validator::make($request->all(), [
@@ -175,7 +175,7 @@ class TalentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->errorResponse('Validasi gagal', $validator->errors(), 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         $talent->update($request->only([
@@ -199,11 +199,11 @@ class TalentController extends Controller
         $talent = Talent::find($id);
 
         if (!$talent) {
-            return $this->errorResponse('Talent tidak ditemukan', null, 404);
+            return $this->errorResponse('Talent tidak ditemukan', 404);
         }
 
         if ($request->user()->role !== 'admin') {
-            return $this->errorResponse('Akses ditolak. Hanya admin yang dapat menghapus data ini.', null, 403);
+            return $this->errorResponse('Akses ditolak. Hanya admin yang dapat menghapus data ini.', 403);
         }
 
         $talent->delete();
@@ -228,11 +228,11 @@ class TalentController extends Controller
         $talent = Talent::find($id);
 
         if (!$talent) {
-            return $this->errorResponse('Talent tidak ditemukan', null, 404);
+            return $this->errorResponse('Talent tidak ditemukan', 404);
         }
 
         if ($request->user()->id !== $talent->user_id) {
-            return $this->errorResponse('Akses ditolak', null, 403);
+            return $this->errorResponse('Akses ditolak', 403);
         }
 
         $validator = Validator::make($request->all(), [
@@ -241,7 +241,7 @@ class TalentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->errorResponse('Validasi gagal', $validator->errors(), 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         // Mocking file upload for now, ideally use Storage::put
@@ -269,17 +269,17 @@ class TalentController extends Controller
         $talent = Talent::find($talent_id);
 
         if (!$talent) {
-            return $this->errorResponse('Talent tidak ditemukan', null, 404);
+            return $this->errorResponse('Talent tidak ditemukan', 404);
         }
 
         if ($request->user()->id !== $talent->user_id && $request->user()->role !== 'admin') {
-            return $this->errorResponse('Akses ditolak', null, 403);
+            return $this->errorResponse('Akses ditolak', 403);
         }
 
         $media = Media::where('talent_id', $talent_id)->find($media_id);
 
         if (!$media) {
-            return $this->errorResponse('Media tidak ditemukan', null, 404);
+            return $this->errorResponse('Media tidak ditemukan', 404);
         }
         
         // Logic to delete actual file could be placed here

@@ -30,16 +30,27 @@ class AuthController extends Controller
     #[OA\Response(response: 422, description: "Validasi gagal")]
     public function register(Request $request)
     {
+        $messages = [
+            'required' => 'Kolom :attribute wajib diisi.',
+            'string' => 'Kolom :attribute harus berupa teks.',
+            'email' => 'Format email tidak valid.',
+            'unique' => ':attribute sudah terdaftar, silakan gunakan yang lain.',
+            'min' => ':attribute minimal harus :min karakter.',
+            'confirmed' => 'Konfirmasi password tidak cocok.',
+            'max' => ':attribute maksimal :max karakter.',
+            'in' => 'Pilihan :attribute tidak valid.',
+        ];
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:6|confirmed',
             'phone' => 'required|string|max:20',
             'role' => ['required', Rule::in(['talent', 'eo'])],
-        ]);
+        ], $messages);
 
         if ($validator->fails()) {
-            return $this->errorResponse('Validasi gagal', $validator->errors(), 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         $user = User::create([
@@ -70,13 +81,18 @@ class AuthController extends Controller
     #[OA\Response(response: 401, description: "Email atau password salah")]
     public function login(Request $request)
     {
+        $messages = [
+            'required' => 'Kolom :attribute wajib diisi.',
+            'email' => 'Format email tidak valid.',
+        ];
+
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
-        ]);
+        ], $messages);
 
         if ($validator->fails()) {
-            return $this->errorResponse('Validasi gagal', $validator->errors(), 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         $user = User::where('email', $request->email)->first();

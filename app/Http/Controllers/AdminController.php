@@ -8,10 +8,12 @@ use App\Models\Talent;
 use App\Models\Event;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ApiResponse;
 use OpenApi\Attributes as OA;
 
 class AdminController extends Controller
 {
+    use ApiResponse;
     #[OA\Get(path: "/admin/users", summary: "Get All Users", security: [["bearerAuth" => []]], tags: ["Admin"])]
     #[OA\Parameter(name: "role", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["eo", "talent"]))]
     #[OA\Parameter(name: "search", in: "query", required: false, schema: new OA\Schema(type: "string"))]
@@ -110,11 +112,7 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         $talent = Talent::where('user_id', $id)->first();
@@ -164,11 +162,7 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         $event = Event::find($id);

@@ -9,10 +9,12 @@ use App\Models\Talent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ApiResponse;
 use OpenApi\Attributes as OA;
 
 class ReviewController extends Controller
 {
+    use ApiResponse;
     #[OA\Post(path: "/reviews", summary: "Create Review (EO)", security: [["bearerAuth" => []]], tags: ["Review"])]
     #[OA\RequestBody(
         required: true,
@@ -30,18 +32,23 @@ class ReviewController extends Controller
     #[OA\Response(response: 422, description: "Unprocessable Entity")]
     public function store(Request $request)
     {
+        $messages = [
+            'required' => 'Kolom :attribute wajib diisi.',
+            'integer' => 'Kolom :attribute harus berupa angka.',
+            'min' => ':attribute minimal bernilai :min.',
+            'max' => ':attribute maksimal bernilai :max.',
+            'exists' => ':attribute tidak ditemukan.',
+            'string' => 'Kolom :attribute harus berupa teks.',
+        ];
+
         $validator = Validator::make($request->all(), [
             'booking_id' => 'required|exists:bookings,id',
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string'
-        ]);
+        ], $messages);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         if (Auth::user()->role !== 'eo') {

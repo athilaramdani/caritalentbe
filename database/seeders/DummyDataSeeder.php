@@ -978,6 +978,16 @@ DB::table('notifications')->insert([
 
 DB::statement("SET session_replication_role = 'origin';");
 
+// Fix PostgreSQL sequences for tables where we hardcoded IDs
+$tables = ['users', 'genres', 'talents', 'media', 'events', 'applications', 'bookings', 'reviews', 'notifications'];
+foreach ($tables as $table) {
+    try {
+        DB::statement("SELECT setval('{$table}_id_seq', (SELECT COALESCE(MAX(id), 1) FROM {$table}))");
+    } catch (\Exception $e) {
+        // Abaikan jika sequence tidak ada
+    }
+}
+
 echo "=== SEEDER SELESAI ===\n";
     }
 }

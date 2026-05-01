@@ -24,13 +24,19 @@ class UserController extends Controller
     {
         $user = $request->user();
         
+        $messages = [
+            'required' => 'Kolom :attribute wajib diisi jika ingin diubah.',
+            'string' => 'Kolom :attribute harus berupa teks.',
+            'max' => ':attribute maksimal :max karakter.',
+        ];
+
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
             'phone' => 'sometimes|required|string|max:20',
-        ]);
+        ], $messages);
 
         if ($validator->fails()) {
-            return $this->errorResponse('Validasi gagal', $validator->errors(), 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         if ($request->has('name')) $user->name = $request->name;
@@ -56,17 +62,24 @@ class UserController extends Controller
     {
         $user = $request->user();
         
+        $messages = [
+            'required' => 'Kolom :attribute wajib diisi.',
+            'min' => ':attribute minimal harus :min karakter.',
+            'confirmed' => 'Konfirmasi password baru tidak cocok.',
+            'string' => 'Kolom :attribute harus berupa teks.',
+        ];
+
         $validator = Validator::make($request->all(), [
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed',
-        ]);
+            'new_password' => 'required|string|min:6|confirmed',
+        ], $messages);
 
         if ($validator->fails()) {
-            return $this->errorResponse('Validasi gagal', $validator->errors(), 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         if (!Hash::check($request->current_password, $user->password)) {
-            return $this->errorResponse('Password lama tidak sesuai', null, 422);
+            return $this->errorResponse('Password lama tidak sesuai', 422);
         }
 
         $user->password = Hash::make($request->new_password);

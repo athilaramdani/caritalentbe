@@ -15,7 +15,7 @@ class CheckRole
         if (!auth()->check()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthenticated.'
+                'message' => 'Sesi telah habis, silakan login kembali.'
             ], 401);
         }
 

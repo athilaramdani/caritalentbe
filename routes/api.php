@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\UserController;
 
 // Dummy login route to intercept unauthenticated redirects from Sanctum
 Route::get('/login', function () {
@@ -35,6 +36,10 @@ Route::prefix('v1')->group(function () {
     // AUTHENTICATED ROUTES (perlu login)
     // =====================================================
     Route::middleware('auth:sanctum')->group(function () {
+
+        // ----- USER & PROFILE -----
+        Route::put('/users/profile', [UserController::class, 'updateProfile']);
+        Route::put('/users/password', [UserController::class, 'updatePassword']);
 
         // ----- EVENT MANAGEMENT (EO only) -----
         // Pembuatan & Manajemen Event → hanya EO

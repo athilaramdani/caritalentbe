@@ -156,8 +156,22 @@ class ReviewController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function getTalentReviews($talent_id)
     {
-        $talentProfile = Talent::where('user_id', $talent_id)->first();
-        $user = \App\Models\User::find($talent_id);
+        // Prioritize assuming $talent_id is the user_id directly
+        $user = \App\Models\User::where('id', $talent_id)->where('role', 'talent')->first();
+        
+        if ($user) {
+            $userId = $user->id;
+            $talentProfile = Talent::where('user_id', $userId)->first();
+        } else {
+            // Fallback: assume $talent_id is the ID of the Talent profile
+            $talentProfile = Talent::find($talent_id);
+            if ($talentProfile) {
+                $userId = $talentProfile->user_id;
+                $user = \App\Models\User::find($userId);
+            } else {
+                $user = null;
+            }
+        }
 
         if (!$user || $user->role !== 'talent') {
             return response()->json([
@@ -167,8 +181,8 @@ class ReviewController extends Controller
         }
 
         $reviews = Review::with('booking.application.event.organizer')
-            ->whereHas('booking.application', function($q) use ($talent_id) {
-                $q->where('talent_id', $talent_id);
+            ->whereHas('booking.application', function($q) use ($userId) {
+                $q->where('talent_id', $userId);
             })
             ->latest()
             ->paginate(15);

@@ -3,7 +3,7 @@
     "info": {
         "title": "CariTalent API Specification",
         "description": "Dokumentasi API untuk platform Direktori & Booking Talent Ekonomi Kreatif (CariTalent)",
-        "version": "1.0"
+        "version": "1.1"
     },
     "servers": [
         {
@@ -635,6 +635,11 @@
                                     "role": {
                                         "type": "string",
                                         "example": "talent"
+                                    },
+                                    "stage_name": {
+                                        "description": "Opsional, hanya digunakan jika role talent",
+                                        "type": "string",
+                                        "example": "The Broken Strings"
                                     }
                                 },
                                 "type": "object"
@@ -1893,6 +1898,28 @@
                 }
             }
         },
+        "/reviews/my": {
+            "get": {
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Get my reviews",
+                "operationId": "86027356d26900673b89146472b6c527",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "404": {
+                        "description": "Talent tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/placeholder": {
             "get": {
                 "summary": "Test Placeholder API",
@@ -2093,6 +2120,28 @@
                 "responses": {
                     "200": {
                         "description": "Profil talent berhasil dihapus"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/talents/my": {
+            "get": {
+                "tags": [
+                    "Talent Profile"
+                ],
+                "summary": "Get my talent profile",
+                "operationId": "3159e51961a8277eccbd928b1795a59f",
+                "responses": {
+                    "200": {
+                        "description": "Returns current user's talent profile"
+                    },
+                    "404": {
+                        "description": "Profil talent tidak ditemukan"
                     }
                 },
                 "security": [

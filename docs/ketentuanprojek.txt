@@ -1,0 +1,27 @@
+NAH REPO INI DIKHUSUSKAN UNTUK PROJECT 1 BAGIAN BACKENDNYA AJA
+
+anggotanya :
+Athila Ramdani Saputra | Ketua BE
+Muhammad Irgiansyah | BE
+Arfian Ghifari | BE
+
+KETERANGAN LENGKAP TUGAS BESAR KULIAH :
+
+Project 1 Web App Description
+Web Application
+    Backend: Any techstack, bonus for Laravel or Java Web, dan specAPI terlihat menggunakan swagger
+    Frontend: Any techstack (Bootstrap / Vue / React etc)
+    DBMS: Any techstack
+Scoring factor
+    Design & Interface
+    Session (Authentication & Login)
+    Create-Read-Update-Delete Data via Database
+    Web service ready
+    Rule-based / intelligent feature
+
+Project 2 Mobile App Description
+    > Mobile Application (Flutter)
+    Scoring factor
+    Design & Interface
+    Standard (CRUD) Features via Networking (web service that you made in web app)
+    - Bonus: using Notification, using Maps/Geolocation

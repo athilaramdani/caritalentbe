@@ -173,10 +173,17 @@ class InvitationController extends Controller
         $data = ['invitation' => ['id' => $invitation->id, 'status' => $invitation->status]];
 
         if ($request->status === 'accepted') {
-            $data['booking'] = [
+            $booking = \App\Models\Booking::create([
                 'application_id' => $invitation->id,
                 'agreed_price' => $invitation->offered_price,
                 'status' => 'confirmed'
+            ]);
+
+            $data['booking'] = [
+                'id' => $booking->id,
+                'application_id' => $booking->application_id,
+                'agreed_price' => $booking->agreed_price,
+                'status' => $booking->status
             ];
             $message = 'Undangan diterima dan booking telah dibuat';
         } else {

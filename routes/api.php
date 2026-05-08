@@ -32,7 +32,6 @@ Route::prefix('v1')->group(function () {
     // PUBLIC ROUTES (tidak perlu login)
     // =====================================================
     Route::get('/events', [EventController::class, 'index']);
-    Route::get('/events/{event}', [EventController::class, 'show']);
     Route::get('/talents', [TalentController::class, 'index']);
     Route::get('/talents/{id}', [TalentController::class, 'show']);
     Route::get('/genres', [GenreController::class, 'index']);
@@ -103,4 +102,7 @@ Route::prefix('v1')->group(function () {
             Route::put('/events/{id}/moderate', [AdminController::class, 'moderateEvent']);
         });
     });
+
+    // Public detail route HARUS paling bawah agar tidak menimpa /events/my
+    Route::get('/events/{event}', [EventController::class, 'show']);
 });

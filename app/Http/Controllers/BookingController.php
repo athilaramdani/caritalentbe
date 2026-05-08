@@ -190,7 +190,10 @@ class BookingController extends Controller
         }
 
         $user = Auth::user();
-        if ($user->role !== 'admin' && ($user->role !== 'eo' || $booking->application->event->organizer_id != $user->id)) {
+        $isOrganizer = $user->role === 'eo' && $booking->application->event->organizer_id == $user->id;
+        $isTalent = $user->role === 'talent' && $booking->application->talent_id == $user->id;
+
+        if ($user->role !== 'admin' && !$isOrganizer && !$isTalent) {
             return response()->json([
                 'success' => false,
                 'message' => 'Akses ditolak'

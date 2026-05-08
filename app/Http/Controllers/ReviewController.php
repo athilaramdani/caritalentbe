@@ -216,4 +216,56 @@ class ReviewController extends Controller
             ]
         ], 200);
     }
+
+    #[OA\Get(path: "/reviews/my", summary: "Get my reviews", security: [["bearerAuth" => []]], tags: ["Review"])]
+    #[OA\Response(response: 200, description: "OK")]
+    #[OA\Response(response: 404, description: "Talent tidak ditemukan")]
+    public function myReviews(Request $request)
+    {
+        $user = $request->user();
+        $talentProfile = Talent::where('user_id', $user->id)->first();
+
+        if (!$talentProfile) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Profil talent tidak ditemukan'
+            ], 404);
+        }
+
+        $reviews = Review::with('booking.application.event.organizer')
+            ->whereHas('booking.application', function($q) use ($user) {
+                $q->where('talent_id', $user->id);
+            })
+            ->latest()
+            ->paginate(15);
+
+        $mappedReviews = $reviews->map(function($review) {
+            return [
+                'id' => $review->id,
+                'organizer_name' => $review->booking?->application?->event?->organizer?->name ?? null,
+                'event_title' => $review->booking?->application?->event?->title ?? null,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'created_at' => $review->created_at
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OK',
+            'data' => [
+                'talent_id' => $user->id,
+                'stage_name' => $talentProfile->stage_name,
+                'average_rating' => $talentProfile->average_rating,
+                'total_reviews' => $talentProfile->total_reviews,
+                'reviews' => $mappedReviews,
+                'pagination' => [
+                    'current_page' => $reviews->currentPage(),
+                    'per_page' => $reviews->perPage(),
+                    'total' => $reviews->total(),
+                    'last_page' => $reviews->lastPage()
+                ]
+            ]
+        ], 200);
+    }
 }

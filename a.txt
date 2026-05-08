@@ -34,7 +34,6 @@ Route::prefix('v1')->group(function () {
     Route::get('/events', [EventController::class, 'index']);
     Route::get('/events/{event}', [EventController::class, 'show']);
     Route::get('/talents', [TalentController::class, 'index']);
-    Route::get('/talents/my', [TalentController::class, 'myTalent'])->middleware(['auth:sanctum', 'role:talent']);
     Route::get('/talents/{id}', [TalentController::class, 'show']);
     Route::get('/genres', [GenreController::class, 'index']);
     Route::get('/talents/{talent_id}/reviews', [ReviewController::class, 'getTalentReviews']);
@@ -72,9 +71,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/invitations/my', [InvitationController::class, 'myInvitations'])->middleware('role:talent');
         Route::put('/invitations/{id}/respond', [InvitationController::class, 'respond'])->middleware('role:talent');
 
-        // ----- REVIEW -----
+        // ----- REVIEW (EO only) -----
         Route::post('/reviews', [ReviewController::class, 'store'])->middleware('role:eo');
-        Route::get('/reviews/my', [ReviewController::class, 'myReviews'])->middleware('role:talent');
 
         // ----- TALENT PROFILE (Talent only) -----
         Route::post('/talents', [TalentController::class, 'store'])->middleware('role:talent');

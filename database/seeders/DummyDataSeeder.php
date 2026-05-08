@@ -182,7 +182,7 @@ DB::table('talents')->insert([
 
     // Talent 1: Irgiansyah - Band Pop Punk (VERIFIED, banyak review)
     [
-        'id'             => 1,
+        'id'             => 4,
         'user_id'        => 4,
         'stage_name'     => 'The Rotten Bandung',
         'price_min'      => 500000,
@@ -199,7 +199,7 @@ DB::table('talents')->insert([
 
     // Talent 2: Arfian - DJ (VERIFIED)
     [
-        'id'             => 2,
+        'id'             => 5,
         'user_id'        => 5,
         'stage_name'     => 'DJ Arfz Bdg',
         'price_min'      => 800000,
@@ -216,7 +216,7 @@ DB::table('talents')->insert([
 
     // Talent 3: Rizky - Solo Singer (VERIFIED)
     [
-        'id'             => 3,
+        'id'             => 6,
         'user_id'        => 6,
         'stage_name'     => 'Rizky Maulana Acoustic',
         'price_min'      => 300000,
@@ -233,7 +233,7 @@ DB::table('talents')->insert([
 
     // Talent 4: Siti - Jazz Singer (VERIFIED)
     [
-        'id'             => 4,
+        'id'             => 7,
         'user_id'        => 7,
         'stage_name'     => 'Siti ND Jazz',
         'price_min'      => 600000,
@@ -250,7 +250,7 @@ DB::table('talents')->insert([
 
     // Talent 5: Dendi - Band Heavy Metal (UNVERIFIED - baru daftar, belum ada review)
     [
-        'id'             => 5,
+        'id'             => 9,
         'user_id'        => 9,
         'stage_name'     => 'Altar Sunda',
         'price_min'      => 700000,
@@ -267,7 +267,7 @@ DB::table('talents')->insert([
 
     // Talent 6: Fauzan - Band Indie Pop (UNVERIFIED - baru daftar)
     [
-        'id'             => 6,
+        'id'             => 10,
         'user_id'        => 10,
         'stage_name'     => 'Langit Sore',
         'price_min'      => 400000,
@@ -284,7 +284,7 @@ DB::table('talents')->insert([
 
     // Talent 7: Nandita - Seniman Visual / Street Performer (VERIFIED, 1 review)
     [
-        'id'             => 7,
+        'id'             => 12,
         'user_id'        => 12,
         'stage_name'     => 'Nandita Visual Art',
         'price_min'      => 250000,
@@ -306,29 +306,29 @@ DB::table('talents')->insert([
 DB::table('genre_talent')->truncate();
 DB::table('genre_talent')->insert([
     // The Rotten Bandung: Pop Punk, Alternative Rock, Hardcore
-    ['talent_id' => 1, 'genre_id' => 1],
-    ['talent_id' => 1, 'genre_id' => 9],
-    ['talent_id' => 1, 'genre_id' => 5],
+    ['talent_id' => 4, 'genre_id' => 1],
+    ['talent_id' => 4, 'genre_id' => 9],
+    ['talent_id' => 4, 'genre_id' => 5],
     // DJ Arfz Bdg: DJ
-    ['talent_id' => 2, 'genre_id' => 3],
+    ['talent_id' => 5, 'genre_id' => 3],
     // Rizky Maulana: Solo Singer, Acoustic, Indie Pop
-    ['talent_id' => 3, 'genre_id' => 4],
-    ['talent_id' => 3, 'genre_id' => 12],
-    ['talent_id' => 3, 'genre_id' => 10],
-    // Siti ND Jazz: Jazz, R&B, Solo Singer
-    ['talent_id' => 4, 'genre_id' => 6],
-    ['talent_id' => 4, 'genre_id' => 11],
-    ['talent_id' => 4, 'genre_id' => 4],
-    // Altar Sunda: Heavy Metal, Hardcore
-    ['talent_id' => 5, 'genre_id' => 2],
-    ['talent_id' => 5, 'genre_id' => 5],
-    // Langit Sore: Indie Pop, Acoustic, Alternative Rock
-    ['talent_id' => 6, 'genre_id' => 10],
+    ['talent_id' => 6, 'genre_id' => 4],
     ['talent_id' => 6, 'genre_id' => 12],
-    ['talent_id' => 6, 'genre_id' => 9],
+    ['talent_id' => 6, 'genre_id' => 10],
+    // Siti ND Jazz: Jazz, R&B, Solo Singer
+    ['talent_id' => 7, 'genre_id' => 6],
+    ['talent_id' => 7, 'genre_id' => 11],
+    ['talent_id' => 7, 'genre_id' => 4],
+    // Altar Sunda: Heavy Metal, Hardcore
+    ['talent_id' => 9, 'genre_id' => 2],
+    ['talent_id' => 9, 'genre_id' => 5],
+    // Langit Sore: Indie Pop, Acoustic, Alternative Rock
+    ['talent_id' => 10, 'genre_id' => 10],
+    ['talent_id' => 10, 'genre_id' => 12],
+    ['talent_id' => 10, 'genre_id' => 9],
     // Nandita Visual Art: Seniman Visual, Street Performer
-    ['talent_id' => 7, 'genre_id' => 7],
-    ['talent_id' => 7, 'genre_id' => 8],
+    ['talent_id' => 12, 'genre_id' => 7],
+    ['talent_id' => 12, 'genre_id' => 8],
 ]);
 
 // ============================================================
@@ -336,18 +336,18 @@ DB::table('genre_talent')->insert([
 // ============================================================
 DB::table('media')->truncate();
 DB::table('media')->insert([
-    ['id' => 1,  'talent_id' => 1, 'media_url' => 'https://storage.caritalent.id/media/talent1_live_braga.jpg',       'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 2,  'talent_id' => 1, 'media_url' => 'https://storage.caritalent.id/media/talent1_cover_peach.mp4',       'type' => 'video', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 3,  'talent_id' => 1, 'media_url' => 'https://storage.caritalent.id/media/talent1_promo.jpg',             'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 4,  'talent_id' => 2, 'media_url' => 'https://storage.caritalent.id/media/talent2_djset_dago.mp4',        'type' => 'video', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 5,  'talent_id' => 2, 'media_url' => 'https://storage.caritalent.id/media/talent2_booth_setup.jpg',       'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 6,  'talent_id' => 3, 'media_url' => 'https://storage.caritalent.id/media/talent3_acoustic_kafe.jpg',     'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 7,  'talent_id' => 3, 'media_url' => 'https://storage.caritalent.id/media/talent3_cover_kamu.mp3',        'type' => 'audio', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 8,  'talent_id' => 4, 'media_url' => 'https://storage.caritalent.id/media/talent4_jazz_braga.jpg',        'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 9,  'talent_id' => 4, 'media_url' => 'https://storage.caritalent.id/media/talent4_performance_clip.mp4',  'type' => 'video', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 10, 'talent_id' => 5, 'media_url' => 'https://storage.caritalent.id/media/talent5_metal_rehearsal.jpg',   'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 11, 'talent_id' => 6, 'media_url' => 'https://storage.caritalent.id/media/talent6_indiepop_cover.jpg',    'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 12, 'talent_id' => 7, 'media_url' => 'https://storage.caritalent.id/media/talent7_livepaint_festival.jpg','type' => 'image', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 1,  'talent_id' => 4,  'media_url' => 'https://storage.caritalent.id/media/talent1_live_braga.jpg',       'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 2,  'talent_id' => 4,  'media_url' => 'https://storage.caritalent.id/media/talent1_cover_peach.mp4',       'type' => 'video', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 3,  'talent_id' => 4,  'media_url' => 'https://storage.caritalent.id/media/talent1_promo.jpg',             'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 4,  'talent_id' => 5,  'media_url' => 'https://storage.caritalent.id/media/talent2_djset_dago.mp4',        'type' => 'video', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 5,  'talent_id' => 5,  'media_url' => 'https://storage.caritalent.id/media/talent2_booth_setup.jpg',       'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 6,  'talent_id' => 6,  'media_url' => 'https://storage.caritalent.id/media/talent3_acoustic_kafe.jpg',     'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 7,  'talent_id' => 6,  'media_url' => 'https://storage.caritalent.id/media/talent3_cover_kamu.mp3',        'type' => 'audio', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 8,  'talent_id' => 7,  'media_url' => 'https://storage.caritalent.id/media/talent4_jazz_braga.jpg',        'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 9,  'talent_id' => 7,  'media_url' => 'https://storage.caritalent.id/media/talent4_performance_clip.mp4',  'type' => 'video', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 10, 'talent_id' => 9,  'media_url' => 'https://storage.caritalent.id/media/talent5_metal_rehearsal.jpg',   'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 11, 'talent_id' => 10, 'media_url' => 'https://storage.caritalent.id/media/talent6_indiepop_cover.jpg',    'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
+    ['id' => 12, 'talent_id' => 12, 'media_url' => 'https://storage.caritalent.id/media/talent7_livepaint_festival.jpg','type' => 'image', 'created_at' => now(), 'updated_at' => now()],
 ]);
 
 // ============================================================

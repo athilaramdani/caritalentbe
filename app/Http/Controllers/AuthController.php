@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Talent;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use OpenApi\Attributes as OA;
@@ -23,7 +26,8 @@ class AuthController extends Controller
             new OA\Property(property: "password", type: "string", format: "password", example: "password123"),
             new OA\Property(property: "password_confirmation", type: "string", format: "password", example: "password123"),
             new OA\Property(property: "phone", type: "string", example: "081234567890"),
-            new OA\Property(property: "role", type: "string", example: "talent")
+            new OA\Property(property: "role", type: "string", example: "talent"),
+            new OA\Property(property: "stage_name", type: "string", example: "The Broken Strings", description: "Opsional, hanya digunakan jika role talent")
         ]
     ))]
     #[OA\Response(response: 201, description: "Registrasi berhasil")]
@@ -39,6 +43,7 @@ class AuthController extends Controller
             'confirmed' => 'Konfirmasi password tidak cocok.',
             'max' => ':attribute maksimal :max karakter.',
             'in' => 'Pilihan :attribute tidak valid.',
+            'prohibited_unless' => 'Kolom :attribute hanya boleh diisi untuk role talent.',
         ];
 
         $validator = Validator::make($request->all(), [
@@ -47,26 +52,58 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'phone' => 'required|string|max:20',
             'role' => ['required', Rule::in(['talent', 'eo'])],
+            'stage_name' => 'prohibited_unless:role,talent|nullable|string|max:255',
         ], $messages);
 
         if ($validator->fails()) {
             return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone,
-            'role' => $request->role,
-        ]);
+        $talent = null;
+
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone' => $request->phone,
+                'role' => $request->role,
+            ]);
+
+            if ($user->role === 'talent') {
+                $talent = Talent::create([
+                    'id' => $user->id,
+                    'user_id' => $user->id,
+                    'stage_name' => $request->filled('stage_name') ? $request->stage_name : $user->name,
+                    'city' => $request->input('city', ''),
+                    'verified' => false,
+                ]);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Register failed', ['error' => $e->getMessage()]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem'
+            ], 500);
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return $this->successResponse([
+        $data = [
             'user' => $user,
             'token' => $token
-        ], 'Registrasi berhasil', 201);
+        ];
+
+        if ($talent) {
+            $data['talent'] = $talent;
+        }
+
+        return $this->successResponse($data, 'Registrasi berhasil', 201);
     }
 
     #[OA\Post(path: "/auth/login", summary: "Login user", tags: ["Authentication"])]

@@ -907,15 +907,6 @@ DB::table('reviews')->insert([
         'created_at' => '2026-03-16 20:00:00',
         'updated_at' => '2026-03-16 20:00:00',
     ],
-    // Review untuk Siti ND dari Jazz Maret
-    [
-        'id'         => 2,
-        'booking_id' => 5,
-        'rating'     => 5,
-        'comment'    => 'Siti ND sungguh memukau. Suaranya sangat cocok untuk suasana dinner jazz yang kami inginkan. Tamu-tamu sangat terkesan, beberapa bahkan meminta kartu kontaknya langsung. Profesional dan tepat waktu.',
-        'created_at' => '2026-03-23 21:00:00',
-        'updated_at' => '2026-03-23 21:00:00',
-    ],
     // Review untuk Rizky dari Acoustic Maret
     [
         'id'         => 3,
@@ -959,8 +950,6 @@ DB::table('notifications')->insert([
 
     // Notif untuk Talent 4 (Siti ND)
     ['id' => 10, 'user_id' => 7, 'title' => 'Lamaran Diterima.',            'body' => 'Selamat. Lamaran Anda ke Braga Jazz Evening 24 Mei 2026 diterima oleh Braga Art Space.',                               'type' => 'application', 'reference_id' => 5,  'is_read' => true,  'created_at' => '2026-04-04 09:05:00', 'updated_at' => '2026-04-04 09:20:00'],
-    ['id' => 11, 'user_id' => 7, 'title' => 'Review Baru - Bintang 5.',     'body' => 'Braga Art Space memberikan review bintang 5 untuk penampilan Anda di Jazz Maret. Luar biasa.',                         'type' => 'review',       'reference_id' => 2,  'is_read' => false, 'created_at' => '2026-03-23 21:00:00', 'updated_at' => '2026-03-23 21:00:00'],
-
     // Notif untuk Talent 5 (Altar Sunda)
     ['id' => 12, 'user_id' => 9, 'title' => 'Undangan Ditolak',              'body' => 'Anda menolak undangan dari Pasar Bandoeng untuk Metal Malam.',                                                         'type' => 'invitation',  'reference_id' => 9,  'is_read' => true,  'created_at' => '2026-03-17 09:00:00', 'updated_at' => '2026-03-17 09:30:00'],
 

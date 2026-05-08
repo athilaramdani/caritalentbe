@@ -77,8 +77,13 @@ Route::prefix('v1')->group(function () {
             ->middleware('role:talent');
         Route::put('/invitations/{id}/respond', [InvitationController::class, 'respond'])
             ->middleware('role:talent');
+
+        // ----- REVIEW -----
+        Route::post('/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])
+            ->middleware('role:eo');
     });
 
     // Public detail route HARUS setelah grup protected /events/my
     Route::get('/events/{event}', [EventController::class, 'show']);
+    Route::get('/talents/{talent_id}/reviews', [\App\Http\Controllers\ReviewController::class, 'getTalentReviews']);
 });

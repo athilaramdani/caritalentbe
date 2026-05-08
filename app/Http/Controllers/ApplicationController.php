@@ -222,6 +222,10 @@ class ApplicationController extends Controller
             return $this->errorResponse('Lamaran tidak ditemukan', 404);
         }
 
+        if ($application->status !== 'pending') {
+            return $this->errorResponse('Lamaran sudah direspons sebelumnya', 422);
+        }
+
         $application->update([
             'status' => $request->status,
         ]);

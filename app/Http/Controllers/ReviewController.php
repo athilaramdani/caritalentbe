@@ -156,17 +156,21 @@ class ReviewController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function getTalentReviews($talent_id)
     {
-        // Check if $talent_id is the ID of the Talent profile
-        $talentProfile = Talent::find($talent_id);
+        // Prioritize assuming $talent_id is the user_id directly
+        $user = \App\Models\User::where('id', $talent_id)->where('role', 'talent')->first();
         
-        if ($talentProfile) {
-            $userId = $talentProfile->user_id;
-            $user = \App\Models\User::find($userId);
-        } else {
-            // Fallback: assume $talent_id is the user_id directly
-            $userId = $talent_id;
+        if ($user) {
+            $userId = $user->id;
             $talentProfile = Talent::where('user_id', $userId)->first();
-            $user = \App\Models\User::find($userId);
+        } else {
+            // Fallback: assume $talent_id is the ID of the Talent profile
+            $talentProfile = Talent::find($talent_id);
+            if ($talentProfile) {
+                $userId = $talentProfile->user_id;
+                $user = \App\Models\User::find($userId);
+            } else {
+                $user = null;
+            }
         }
 
         if (!$user || $user->role !== 'talent') {

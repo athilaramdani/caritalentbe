@@ -77,6 +77,22 @@ class TalentController extends Controller
         return $this->successResponse('OK', $talent);
     }
 
+    #[OA\Get(path: "/talents/my", summary: "Get my talent profile", security: [["bearerAuth" => []]], tags: ["Talent Profile"])]
+    #[OA\Response(response: 200, description: "Returns current user's talent profile")]
+    #[OA\Response(response: 404, description: "Profil talent tidak ditemukan")]
+    public function myTalent(Request $request)
+    {
+        $talent = Talent::with(['genres', 'media'])
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$talent) {
+            return $this->errorResponse('Profil talent tidak ditemukan', 404);
+        }
+
+        return $this->successResponse($talent, 'OK');
+    }
+
     #[OA\Post(path: "/talents", summary: "Create talent profile", security: [["bearerAuth" => []]], tags: ["Talent Profile"])]
     #[OA\RequestBody(required: true, content: new OA\JsonContent(
         required: ["stage_name", "city"],
@@ -119,6 +135,7 @@ class TalentController extends Controller
         }
 
         $talent = Talent::create([
+            'id' => $request->user()->id,
             'user_id' => $request->user()->id,
             'stage_name' => $request->stage_name,
             'price_min' => $request->price_min,

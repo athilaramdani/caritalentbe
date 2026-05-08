@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Unauthenticated.'
+                    'message' => 'Sesi telah habis, silakan login kembali.'
                 ], 401);
             }
         });
@@ -40,17 +40,23 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Resource not found.'
+                    'message' => 'Data tidak ditemukan.'
                 ], 404);
             }
         });
         
         $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
             if ($request->is('api/*')) {
-                return response()->json([
+                $response = [
                     'success' => false,
-                    'message' => $e->getMessage() ?: 'Internal Server Error'
-                ], $e instanceof \Symfony\Component\HttpKernel\Exception\HttpException ? $e->getStatusCode() : 500);
+                    'message' => 'Terjadi kesalahan pada server.'
+                ];
+                
+                if (config('app.debug')) {
+                    $response['debug'] = $e->getMessage();
+                }
+                
+                return response()->json($response, $e instanceof \Symfony\Component\HttpKernel\Exception\HttpException ? $e->getStatusCode() : 500);
             }
         });
     })->create();

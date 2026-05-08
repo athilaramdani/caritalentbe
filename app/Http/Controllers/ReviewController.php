@@ -9,10 +9,12 @@ use App\Models\Talent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\ApiResponse;
 use OpenApi\Attributes as OA;
 
 class ReviewController extends Controller
 {
+    use ApiResponse;
     #[OA\Post(path: "/reviews", summary: "Create Review (EO)", security: [["bearerAuth" => []]], tags: ["Review"])]
     #[OA\RequestBody(
         required: true,
@@ -30,18 +32,23 @@ class ReviewController extends Controller
     #[OA\Response(response: 422, description: "Unprocessable Entity")]
     public function store(Request $request)
     {
+        $messages = [
+            'required' => 'Kolom :attribute wajib diisi.',
+            'integer' => 'Kolom :attribute harus berupa angka.',
+            'min' => ':attribute minimal bernilai :min.',
+            'max' => ':attribute maksimal bernilai :max.',
+            'exists' => ':attribute tidak ditemukan.',
+            'string' => 'Kolom :attribute harus berupa teks.',
+        ];
+
         $validator = Validator::make($request->all(), [
             'booking_id' => 'required|exists:bookings,id',
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string'
-        ]);
+        ], $messages);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
         if (Auth::user()->role !== 'eo') {
@@ -53,7 +60,7 @@ class ReviewController extends Controller
 
         $booking = Booking::with('application.event')->find($request->booking_id);
 
-        if ($booking->application->event->organizer_id != Auth::id()) {
+        if ($booking->application?->event?->organizer_id != Auth::id()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Akses ditolak'
@@ -83,7 +90,7 @@ class ReviewController extends Controller
                 'comment' => $request->comment
             ]);
 
-            $talentId = $booking->application->talent_id;
+            $talentId = $booking->application?->talent_id;
             $talentProfile = Talent::where('user_id', $talentId)->first();
 
             if ($talentProfile) {
@@ -102,13 +109,15 @@ class ReviewController extends Controller
             }
 
             // Create notification for talent
-            \App\Models\Notification::create([
-                'user_id' => $booking->application->talent_id,
-                'title' => 'Review Baru',
-                'body' => 'EO '. Auth::user()->name .' telah memberikan ulasan untuk performa kamu.',
-                'type' => 'review',
-                'reference_id' => $review->id
-            ]);
+            if ($talentId) {
+                \App\Models\Notification::create([
+                    'user_id' => $talentId,
+                    'title' => 'Review Baru',
+                    'body' => 'EO '. Auth::user()->name .' telah memberikan ulasan untuk performa kamu.',
+                    'type' => 'review',
+                    'reference_id' => $review->id
+                ]);
+            }
 
             DB::commit();
 
@@ -120,11 +129,11 @@ class ReviewController extends Controller
                     'booking_id' => $review->booking_id,
                     'talent' => [
                         'id' => $talentId,
-                        'stage_name' => $talentProfile ? $talentProfile->stage_name : $booking->application->talent->name
+                        'stage_name' => $talentProfile ? $talentProfile->stage_name : ($booking->application?->talent?->name ?? null)
                     ],
                     'event' => [
-                        'id' => $booking->application->event_id,
-                        'title' => $booking->application->event->title
+                        'id' => $booking->application?->event_id,
+                        'title' => $booking->application?->event?->title
                     ],
                     'rating' => $review->rating,
                     'comment' => $review->comment,
@@ -147,8 +156,22 @@ class ReviewController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function getTalentReviews($talent_id)
     {
-        $talentProfile = Talent::where('user_id', $talent_id)->first();
-        $user = \App\Models\User::find($talent_id);
+        // Prioritize assuming $talent_id is the user_id directly
+        $user = \App\Models\User::where('id', $talent_id)->where('role', 'talent')->first();
+        
+        if ($user) {
+            $userId = $user->id;
+            $talentProfile = Talent::where('user_id', $userId)->first();
+        } else {
+            // Fallback: assume $talent_id is the ID of the Talent profile
+            $talentProfile = Talent::find($talent_id);
+            if ($talentProfile) {
+                $userId = $talentProfile->user_id;
+                $user = \App\Models\User::find($userId);
+            } else {
+                $user = null;
+            }
+        }
 
         if (!$user || $user->role !== 'talent') {
             return response()->json([
@@ -157,9 +180,9 @@ class ReviewController extends Controller
             ], 404);
         }
 
-        $reviews = Review::with('booking.application.event')
-            ->whereHas('booking.application', function($q) use ($talent_id) {
-                $q->where('talent_id', $talent_id);
+        $reviews = Review::with('booking.application.event.organizer')
+            ->whereHas('booking.application', function($q) use ($userId) {
+                $q->where('talent_id', $userId);
             })
             ->latest()
             ->paginate(15);
@@ -167,8 +190,8 @@ class ReviewController extends Controller
         $mappedReviews = $reviews->map(function($review) {
             return [
                 'id' => $review->id,
-                'organizer_name' => $review->booking->application->event->organizer->name ?? null,
-                'event_title' => $review->booking->application->event->title ?? null,
+                'organizer_name' => $review->booking?->application?->event?->organizer?->name ?? null,
+                'event_title' => $review->booking?->application?->event?->title ?? null,
                 'rating' => $review->rating,
                 'comment' => $review->comment,
                 'created_at' => $review->created_at

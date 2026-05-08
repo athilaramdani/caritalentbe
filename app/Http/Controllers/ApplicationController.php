@@ -222,6 +222,10 @@ class ApplicationController extends Controller
             return $this->errorResponse('Lamaran tidak ditemukan', 404);
         }
 
+        if ($application->status !== 'pending') {
+            return $this->errorResponse('Lamaran sudah direspons sebelumnya', 422);
+        }
+
         $application->update([
             'status' => $request->status,
         ]);
@@ -229,10 +233,17 @@ class ApplicationController extends Controller
         $data = ['application' => ['id' => $application->id, 'status' => $application->status]];
 
         if ($request->status === 'accepted') {
-            $data['booking'] = [
+            $booking = \App\Models\Booking::create([
                 'application_id' => $application->id,
                 'agreed_price' => $request->agreed_price,
                 'status' => 'confirmed'
+            ]);
+
+            $data['booking'] = [
+                'id' => $booking->id,
+                'application_id' => $booking->application_id,
+                'agreed_price' => $booking->agreed_price,
+                'status' => $booking->status
             ];
             return $this->successResponse($data, 'Lamaran diterima dan booking telah dibuat');
         }

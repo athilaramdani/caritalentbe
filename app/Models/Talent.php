@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Talent extends Model
 {
+    protected $table = 'talents';
+
     protected $fillable = [
         'user_id', 'stage_name', 'price_min', 'price_max', 'city',
         'bio', 'portfolio_link', 'verified', 'average_rating', 'total_reviews'

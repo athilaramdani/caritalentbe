@@ -16,7 +16,9 @@ class DummyDataSeeder extends Seeder
 // Semua data berbasis konteks Bandung
 // ============================================================
 
-DB::statement("SET session_replication_role = 'replica';") ;
+if (DB::connection()->getDriverName() === 'pgsql') {
+    DB::statement("SET session_replication_role = 'replica';") ;
+}
 
 // ============================================================
 // GENRES
@@ -976,15 +978,17 @@ DB::table('notifications')->insert([
     ['id' => 17, 'user_id' => 8, 'title' => 'Siti ND Terima Booking.',       'body' => 'Siti ND Jazz menerima booking untuk Braga Jazz Evening 24 Mei. Event Anda siap.',                                      'type' => 'booking',     'reference_id' => 2,  'is_read' => false, 'created_at' => '2026-04-04 09:10:00', 'updated_at' => '2026-04-04 09:10:00'],
 ]);
 
-DB::statement("SET session_replication_role = 'origin';");
+if (DB::connection()->getDriverName() === 'pgsql') {
+    DB::statement("SET session_replication_role = 'origin';");
 
-// Fix PostgreSQL sequences for tables where we hardcoded IDs
-$tables = ['users', 'genres', 'talents', 'media', 'events', 'applications', 'bookings', 'reviews', 'notifications'];
-foreach ($tables as $table) {
-    try {
-        DB::statement("SELECT setval('{$table}_id_seq', (SELECT COALESCE(MAX(id), 1) FROM {$table}))");
-    } catch (\Exception $e) {
-        // Abaikan jika sequence tidak ada
+    // Fix PostgreSQL sequences for tables where we hardcoded IDs
+    $tables = ['users', 'genres', 'talents', 'media', 'events', 'applications', 'bookings', 'reviews', 'notifications'];
+    foreach ($tables as $table) {
+        try {
+            DB::statement("SELECT setval('{$table}_id_seq', (SELECT COALESCE(MAX(id), 1) FROM {$table}))");
+        } catch (\Exception $e) {
+            // Abaikan jika sequence tidak ada
+        }
     }
 }
 

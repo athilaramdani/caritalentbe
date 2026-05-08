@@ -60,7 +60,7 @@ class ReviewController extends Controller
 
         $booking = Booking::with('application.event')->find($request->booking_id);
 
-        if ($booking->application->event->organizer_id != Auth::id()) {
+        if ($booking->application?->event?->organizer_id != Auth::id()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Akses ditolak'
@@ -90,7 +90,7 @@ class ReviewController extends Controller
                 'comment' => $request->comment
             ]);
 
-            $talentId = $booking->application->talent_id;
+            $talentId = $booking->application?->talent_id;
             $talentProfile = Talent::where('user_id', $talentId)->first();
 
             if ($talentProfile) {
@@ -109,13 +109,15 @@ class ReviewController extends Controller
             }
 
             // Create notification for talent
-            \App\Models\Notification::create([
-                'user_id' => $booking->application->talent_id,
-                'title' => 'Review Baru',
-                'body' => 'EO '. Auth::user()->name .' telah memberikan ulasan untuk performa kamu.',
-                'type' => 'review',
-                'reference_id' => $review->id
-            ]);
+            if ($talentId) {
+                \App\Models\Notification::create([
+                    'user_id' => $talentId,
+                    'title' => 'Review Baru',
+                    'body' => 'EO '. Auth::user()->name .' telah memberikan ulasan untuk performa kamu.',
+                    'type' => 'review',
+                    'reference_id' => $review->id
+                ]);
+            }
 
             DB::commit();
 
@@ -127,11 +129,11 @@ class ReviewController extends Controller
                     'booking_id' => $review->booking_id,
                     'talent' => [
                         'id' => $talentId,
-                        'stage_name' => $talentProfile ? $talentProfile->stage_name : $booking->application->talent->name
+                        'stage_name' => $talentProfile ? $talentProfile->stage_name : ($booking->application?->talent?->name ?? null)
                     ],
                     'event' => [
-                        'id' => $booking->application->event_id,
-                        'title' => $booking->application->event->title
+                        'id' => $booking->application?->event_id,
+                        'title' => $booking->application?->event?->title
                     ],
                     'rating' => $review->rating,
                     'comment' => $review->comment,
@@ -164,7 +166,7 @@ class ReviewController extends Controller
             ], 404);
         }
 
-        $reviews = Review::with('booking.application.event')
+        $reviews = Review::with('booking.application.event.organizer')
             ->whereHas('booking.application', function($q) use ($talent_id) {
                 $q->where('talent_id', $talent_id);
             })
@@ -174,8 +176,8 @@ class ReviewController extends Controller
         $mappedReviews = $reviews->map(function($review) {
             return [
                 'id' => $review->id,
-                'organizer_name' => $review->booking->application->event->organizer->name ?? null,
-                'event_title' => $review->booking->application->event->title ?? null,
+                'organizer_name' => $review->booking?->application?->event?->organizer?->name ?? null,
+                'event_title' => $review->booking?->application?->event?->title ?? null,
                 'rating' => $review->rating,
                 'comment' => $review->comment,
                 'created_at' => $review->created_at

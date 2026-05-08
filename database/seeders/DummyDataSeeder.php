@@ -967,6 +967,26 @@ DB::table('notifications')->insert([
     ['id' => 17, 'user_id' => 8, 'title' => 'Siti ND Terima Booking.',       'body' => 'Siti ND Jazz menerima booking untuk Braga Jazz Evening 24 Mei. Event Anda siap.',                                      'type' => 'booking',     'reference_id' => 2,  'is_read' => false, 'created_at' => '2026-04-04 09:10:00', 'updated_at' => '2026-04-04 09:10:00'],
 ]);
 
+// ============================================================
+// FIX AVERAGE RATING & TOTAL REVIEWS
+// Mengkalkulasi ulang data di tabel talents agar sesuai dengan
+// list reviews yang benar-benar ada di database.
+// ============================================================
+$talents = \App\Models\Talent::all();
+foreach ($talents as $talent) {
+    $allReviews = \App\Models\Review::whereHas('booking.application', function($q) use ($talent) {
+        $q->where('talent_id', $talent->user_id);
+    })->get();
+    
+    $totalReviews = $allReviews->count();
+    $averageRating = $totalReviews > 0 ? $allReviews->avg('rating') : 0;
+    
+    $talent->update([
+        'total_reviews' => $totalReviews,
+        'average_rating' => round($averageRating, 1)
+    ]);
+}
+
 if (DB::connection()->getDriverName() === 'pgsql') {
     DB::statement("SET session_replication_role = 'origin';");
 

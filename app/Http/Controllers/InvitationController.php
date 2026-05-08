@@ -166,6 +166,10 @@ class InvitationController extends Controller
             return $this->errorResponse('Undangan tidak ditemukan', 404);
         }
 
+        if ($invitation->status !== 'pending') {
+            return $this->errorResponse('Undangan sudah direspons sebelumnya', 422);
+        }
+
         $invitation->update([
             'status' => $request->status,
         ]);

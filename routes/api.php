@@ -98,6 +98,7 @@ Route::prefix('v1')->group(function () {
 
         // ----- ADMIN -----
         Route::prefix('admin')->middleware('role:admin')->group(function () {
+            Route::get('/dashboard', [AdminController::class, 'dashboard']);
             Route::get('/users', [AdminController::class, 'getUsers']);
             Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
             Route::put('/talents/{id}/verify', [AdminController::class, 'verifyTalent']);

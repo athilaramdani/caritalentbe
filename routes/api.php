@@ -32,7 +32,6 @@ Route::prefix('v1')->group(function () {
     // PUBLIC ROUTES (tidak perlu login)
     // =====================================================
     Route::get('/events', [EventController::class, 'index']);
-    Route::get('/events/{event}', [EventController::class, 'show']);
     Route::get('/talents', [TalentController::class, 'index']);
     Route::get('/talents/my', [TalentController::class, 'myTalent'])->middleware(['auth:sanctum', 'role:talent']);
     Route::get('/talents/{id}', [TalentController::class, 'show']);
@@ -99,10 +98,14 @@ Route::prefix('v1')->group(function () {
 
         // ----- ADMIN -----
         Route::prefix('admin')->middleware('role:admin')->group(function () {
+            Route::get('/dashboard', [AdminController::class, 'dashboard']);
             Route::get('/users', [AdminController::class, 'getUsers']);
             Route::delete('/users/{id}', [AdminController::class, 'deleteUser']);
             Route::put('/talents/{id}/verify', [AdminController::class, 'verifyTalent']);
             Route::put('/events/{id}/moderate', [AdminController::class, 'moderateEvent']);
         });
     });
+
+    // Public detail route HARUS paling bawah agar tidak menimpa /events/my
+    Route::get('/events/{event}', [EventController::class, 'show']);
 });

@@ -1,0 +1,140 @@
+Laporan Proposal Tugas Besar
+Aplikasi CariTalent
+CAK3HAB4 - APLIKASI BERBASIS PLATFORM
+
+
+
+Disusun oleh:
+Kelompok 5
+APRILIANZA MUHAMMAD YUSUP
+103012300025
+ATHILA RAMDANI SAPUTRA
+103012300132
+MUHAMMAD IRGIANSYAH
+103012300039
+BILL STEPHEN SEMBIRING
+103012330197
+JEANY FERLIZA NAYLA
+103012300357
+ARFIAN GHIFARI MAHYA
+103012300337
+
+
+
+PROGRAM STUDI INFORMATIKA
+FAKULTAS INFORMATIKA
+UNIVERSITAS TELKOM
+BANDUNG
+2026
+Daftar Isi
+Daftar Isi	2
+Latar Belakang	3
+Deskripsi Aplikasi	4
+A. Nama Aplikasi	4
+B. Deskripsi	4
+C. Manfaat Aplikasi	4
+D. Sasaran Pengguna	5
+Arsitektur Sistem	6
+A. Mobile	6
+B. Website	6
+Fitur-Fitur yang Dikembangkan	6
+A. Mobile	6
+B. Website	8
+Pembagian Tugas	12
+Penutup	13
+
+Latar Belakang
+Industri musik merupakan salah satu subsektor penting dalam ekonomi kreatif Indonesia yang terus berkembang seiring dengan meningkatnya konsumsi konten digital dan pertumbuhan komunitas kreatif di berbagai daerah. Musik tidak hanya berfungsi sebagai sarana hiburan, tetapi juga memiliki nilai ekonomi melalui berbagai aktivitas seperti produksi karya musik, pertunjukan langsung, hingga kolaborasi dengan berbagai sektor industri kreatif lainnya. Berdasarkan data Badan Pusat Statistik (BPS), sektor ekonomi kreatif di Indonesia mampu menyerap sekitar 27,4 juta tenaga kerja pada tahun 2025 atau sekitar 18,7% dari total tenaga kerja nasional, serta memberikan kontribusi lebih dari 7% terhadap Produk Domestik Bruto (PDB) nasional. Hal ini menunjukkan bahwa ekonomi kreatif, termasuk subsektor musik, memiliki potensi besar dalam mendukung pertumbuhan ekonomi dan membuka peluang kerja bagi masyarakat.
+Perkembangan teknologi digital juga mendorong munculnya banyak musisi independen yang memproduksi dan mempublikasikan karya mereka secara mandiri tanpa bergantung pada label musik besar. Platform digital seperti layanan streaming dan media sosial memungkinkan musisi untuk membagikan karya mereka secara lebih luas. Namun demikian, banyak musisi independen yang masih berada pada tahap awal karier dan belum memiliki nama besar menghadapi kesulitan dalam mendapatkan kesempatan tampil secara langsung. Padahal, bagi musisi independen, kesempatan tampil secara langsung merupakan salah satu cara penting untuk memperluas jaringan, membangun basis penggemar, serta mengembangkan pengalaman bermusik.
+Di sisi lain, terdapat banyak tempat usaha seperti kafe, restoran, bar, atau ruang komunitas kreatif yang sering menghadirkan pertunjukan musik live sebagai bagian dari daya tarik bagi pengunjung. Tempat-tempat tersebut umumnya tidak selalu membutuhkan artis yang sudah terkenal, melainkan lebih membutuhkan musisi lokal yang mampu menciptakan suasana yang sesuai dengan konsep tempat mereka. Namun, proses menemukan musisi yang sesuai sering kali masih dilakukan secara informal melalui rekomendasi teman, komunitas, atau pencarian di media sosial. Cara ini tidak selalu efektif dan sering menyebabkan banyak musisi independen yang memiliki potensi tidak mendapatkan kesempatan tampil.
+Berdasarkan kondisi tersebut, diperlukan sebuah solusi berbasis teknologi yang dapat mempertemukan musisi independen dengan tempat usaha atau penyelenggara acara skala kecil secara lebih sistematis dan efisien. Oleh karena itu, dikembangkan sebuah aplikasi Direktori dan Booking Talent Musik Independen yang memungkinkan musisi untuk membuat profil, menampilkan portofolio karya, serta menawarkan jasa penampilan mereka. Di sisi lain, pemilik kafe, restoran, atau ruang kreatif dapat mencari dan menemukan musisi yang sesuai dengan kebutuhan mereka berdasarkan genre musik, kisaran biaya penampilan, serta lokasi. Dengan adanya platform ini diharapkan dapat membuka lebih banyak peluang bagi musisi independen untuk mendapatkan panggung serta membantu pelaku usaha dalam menemukan talenta musik lokal yang sesuai dengan konsep acara atau tempat mereka.
+
+
+Deskripsi Aplikasi
+Nama Aplikasi
+Dari gambaran latar belakang yang diberikan, aplikasi yang dikembangkan adalah bernama CariTalent.
+Deskripsi
+Aplikasi CariTalent adalah sebuah platform digital yang dirancang untuk menghubungkan talenta kreatif lokal seperti musisi, band, DJ, dan seniman visual dengan penyelenggara acara (Event Organizer/EO) yang membutuhkan pengisi acara untuk berbagai kegiatan yang dilakukan. Aplikasi ini bertujuan untuk mempermudah proses pencarian, promosi, dan pemesanan talenta secara efisien melalui satu aplikasi.
+Melalui aplikasi ini, talenta kreatif bisa membuat profil profesional yang berisi informasi seperti nama panggung, genre atau jenis seni yang dimiliki, kisaran harga penampilan talenta, portofolio karya, serta lokasi domisili. Profil tersebut akan diverifikasi oleh administrator melalui dashboard web untuk memastikan kualitas dan kredibilitas talenta yang terdaftar dalam platform.
+Sementara itu, penyelenggara acara bisa membuat dan mempublikasikan postingan suatu event yang berisi detail acara, seperti nama acara, tanggal pelaksanaan, lokasi venue, genre talenta yang dibutuhkan, serta anggaran yang disediakan. Talenta yang merasa cocok dengan kriteria tersebut dapat melamar untuk tampil pada acara tersebut melalui aplikasi mobile.
+Dengan adanya aplikasi CariTalent ini, diharapkan ekosistem ekonomi kreatif lokal dapat berkembang lebih baik karena talenta kreatif yang ada bisa memiliki media untuk mempromosikan karya mereka, sementara penyelenggara acara dapat lebih mudah menemukan pengisi acara yang sesuai dengan kebutuhan mereka.
+Manfaat Aplikasi
+Aplikasi CariTalent memberikan berbagai manfaat bagi pihak-pihak yang terlibat dalam industri musik dan ekonomi kreatif. Bagi musisi independen, aplikasi ini dapat menjadi sarana untuk memperluas peluang tampil di berbagai acara. Melalui CariTalent, musisi dapat membuat profil digital yang berisi informasi seperti identitas, genre musik, portofolio karya, serta kisaran biaya penampilan. Profil ini dapat berfungsi sebagai media promosi yang lebih terstruktur sehingga memudahkan musisi dalam memperkenalkan kemampuan mereka kepada penyelenggara acara. Selain itu, musisi juga dapat menemukan berbagai peluang tampil dan mengajukan diri secara langsung melalui platform, sehingga dapat membantu memperluas jaringan serta meningkatkan pengalaman tampil.
+Bagi pemilik usaha seperti kafe, restoran, bar, maupun penyelenggara acara, aplikasi CariTalent membantu mempermudah proses pencarian musisi yang sesuai dengan kebutuhan acara atau konsep tempat usaha. Melalui sistem direktori yang terorganisir, pengguna dapat mencari talent berdasarkan genre musik, lokasi, maupun kisaran biaya penampilan. Informasi yang tersaji secara jelas membuat proses pemilihan musisi menjadi lebih cepat dan efisien dibandingkan dengan metode pencarian secara manual melalui media sosial atau rekomendasi informal.
+Secara lebih luas, aplikasi CariTalent juga dapat memberikan kontribusi terhadap perkembangan ekosistem ekonomi kreatif, khususnya pada subsektor musik. Dengan adanya platform yang menghubungkan musisi independen dengan berbagai peluang pertunjukan, diharapkan lebih banyak talenta lokal yang mendapatkan kesempatan untuk tampil dan berkembang. Selain itu, pengembangan aplikasi ini juga menunjukkan pemanfaatan teknologi informasi melalui integrasi aplikasi web dan mobile yang dilengkapi dengan sistem pengelolaan data serta fitur rekomendasi talent, sehingga proses pencarian dan pemesanan musisi dapat dilakukan secara lebih efektif dan terstruktur.
+Sasaran Pengguna
+Sasaran pengguna dari aplikasi CariTalent adalah pihak-pihak yang terlibat dalam kegiatan pertunjukan musik, baik sebagai talent maupun sebagai pihak yang membutuhkan jasa penampilan musik. Pengguna utama aplikasi ini adalah musisi independen, baik individu maupun kelompok musik, yang ingin memperkenalkan kemampuan mereka dan mendapatkan kesempatan tampil di berbagai acara. Melalui aplikasi CariTalent, musisi dapat membuat profil yang berisi informasi seperti genre musik, portofolio karya, pengalaman tampil, serta kisaran biaya penampilan. Dengan adanya platform ini, musisi memiliki tempat yang lebih terorganisir untuk mempromosikan diri dan menjangkau peluang tampil yang lebih luas.
+Selain musisi, aplikasi ini juga ditujukan bagi pemilik usaha dan penyelenggara acara yang membutuhkan hiburan musik dalam kegiatan yang mereka selenggarakan. Pengguna dalam kategori ini dapat berupa pemilik kafe, restoran, bar, event organizer, maupun komunitas yang sering mengadakan acara dengan penampilan musik. Melalui aplikasi CariTalent, mereka dapat mencari musisi yang sesuai dengan kebutuhan acara berdasarkan genre musik, lokasi, maupun kisaran biaya penampilan. Informasi yang tersedia dalam aplikasi membantu pengguna untuk melihat profil musisi secara lebih jelas sehingga memudahkan dalam memilih talent yang tepat.
+Secara umum, aplikasi CariTalent ditujukan untuk pengguna yang berada dalam ekosistem industri musik dan hiburan, khususnya mereka yang membutuhkan media digital untuk mempertemukan musisi independen dengan penyelenggara acara. Dengan adanya aplikasi ini, proses pencarian talent musik dan promosi musisi dapat dilakukan secara lebih mudah, cepat, dan terorganisir.
+Arsitektur Sistem
+Mobile
+Aplikasi mobile pada sistem CariTalent dikembangkan menggunakan Flutter sebagai platform pengembangan aplikasi lintas perangkat. Aplikasi ini ditujukan terutama bagi pengguna dengan peran Talent untuk mencari peluang tampil pada event yang dibuat oleh Event Organizer.
+Aplikasi mobile akan terhubung dengan web service (REST API) dari backend sehingga dapat melakukan pertukaran data dengan database secara real-time. Melalui aplikasi ini, talent dapat melakukan login, mengelola profil talent, melihat daftar event, melamar ke event, serta menerima undangan dari Event Organizer.
+Selain itu, aplikasi juga mendukung fitur notifikasi untuk memberikan informasi terkait event baru atau perubahan status lamaran, serta geolocation untuk menampilkan lokasi event yang diselenggarakan.
+
+Website
+Aplikasi website pada sistem CariTalent dikembangkan menggunakan arsitektur berbasis web modern dengan pendekatan client–server. Platform web ini digunakan oleh Admin, Event Organizer, dan Talent untuk mengelola berbagai aktivitas yang berkaitan dengan pencarian dan pemesanan talent untuk suatu event.
+Pada sisi frontend, sistem website dikembangkan menggunakan Nuxt.js yang merupakan framework berbasis Vue.js. Penggunaan Nuxt.js memungkinkan pembuatan antarmuka yang responsif, interaktif, dan memiliki performa yang optimal melalui fitur seperti Server Side Rendering (SSR) serta manajemen routing yang terstruktur.
+Sementara itu, pada sisi backend sistem dikembangkan menggunakan Laravel sebagai framework PHP yang berfungsi untuk mengelola logika bisnis aplikasi, autentikasi pengguna, pengolahan data event, serta komunikasi dengan database. Laravel juga menyediakan fitur keamanan seperti authentication, middleware, dan validation yang membantu menjaga keamanan data pengguna.
+Website CariTalent terhubung dengan database PostgreSQL sebagai sistem manajemen basis data yang bertanggung jawab dalam penyimpanan seluruh informasi sistem, termasuk data pengguna, data talent, data event, lamaran event, undangan event, booking, serta notifikasi sistem.
+Melalui integrasi antara Nuxt.js, Laravel, dan PostgreSQL, website CariTalent mampu menyediakan sistem yang terstruktur, aman, dan scalable untuk mendukung proses pencarian talent dan manajemen event secara efisien.
+Fitur-Fitur yang Dikembangkan
+Mobile
+Fitur Autentikasi Pengguna
+Fitur autentikasi digunakan untuk mengelola proses login dan registrasi pengguna pada aplikasi mobile. Pengguna yang baru pertama kali menggunakan aplikasi dapat melakukan registrasi dengan mengisi informasi dasar seperti nama, email, nomor telepon, dan kata sandi. Setelah memiliki akun, pengguna dapat melakukan login untuk mengakses seluruh fitur aplikasi sesuai dengan peran mereka, yaitu sebagai Event Organizer atau Talent. Sistem autentikasi ini bertujuan untuk menjaga keamanan data pengguna serta memastikan bahwa setiap pengguna hanya dapat mengakses fitur yang sesuai dengan perannya.
+Fitur Manajemen Profil Talent
+Fitur ini memungkinkan pengguna yang berperan sebagai Talent untuk membuat dan mengelola profil profesional mereka. Talent dapat menambahkan informasi seperti nama panggung, genre musik, kota asal, kisaran biaya penampilan, deskripsi singkat, serta tautan portofolio seperti video atau media sosial. Profil ini akan ditampilkan kepada Event Organizer sehingga mereka dapat menilai kesesuaian talent dengan kebutuhan acara yang akan diselenggarakan. Talent juga dapat memperbarui informasi profil mereka sewaktu-waktu untuk memastikan data yang ditampilkan selalu relevan.
+Fitur Pembuatan dan Manajemen Event oleh Event Organizer
+Fitur ini memungkinkan pengguna yang berperan sebagai Event Organizer (EO) untuk membuat dan mengelola event atau acara yang membutuhkan penampilan musik. EO dapat memasukkan informasi seperti nama acara, deskripsi acara, genre musik yang dibutuhkan, kisaran anggaran, tanggal acara, serta lokasi venue. Event yang telah dibuat akan ditampilkan pada aplikasi sehingga talent dapat melihat dan melamar untuk tampil pada acara tersebut. EO juga dapat memperbarui atau menghapus event yang telah dibuat jika terdapat perubahan informasi.
+Fitur Lamaran Event oleh Talent
+Fitur ini memungkinkan talent untuk melamar ke event yang tersedia di dalam aplikasi. Talent dapat melihat daftar event yang dipublikasikan oleh EO, kemudian memilih event yang sesuai dengan genre musik dan jadwal mereka. Setelah itu, talent dapat mengirimkan lamaran dengan menyertakan pesan atau penjelasan singkat kepada EO. EO kemudian dapat meninjau lamaran tersebut dan menentukan apakah talent tersebut sesuai untuk acara yang mereka selenggarakan.
+Fitur Undangan Talent oleh Event Organizer
+Selain menerima lamaran dari talent, EO juga memiliki fitur untuk mengundang talent secara langsung ke event yang mereka buat. EO dapat melihat profil talent yang tersedia dalam sistem, kemudian mengirimkan undangan kepada talent yang dianggap sesuai dengan kebutuhan acara. Talent yang menerima undangan dapat memilih untuk menerima atau menolak undangan tersebut melalui aplikasi.
+Fitur Booking dan Konfirmasi Penampilan
+Setelah talent dan EO mencapai kesepakatan, sistem menyediakan fitur booking atau konfirmasi penampilan. Fitur ini berfungsi untuk mencatat bahwa talent telah resmi dipilih untuk tampil pada suatu event. Informasi yang tercatat meliputi event yang dipilih, talent yang akan tampil, serta kesepakatan harga atau detail lainnya. Fitur ini membantu memastikan bahwa proses kerja sama antara EO dan talent tercatat dengan jelas di dalam sistem.
+Fitur Notifikasi
+Aplikasi mobile juga menyediakan fitur notifikasi untuk memberikan informasi secara real-time kepada pengguna. Talent akan menerima notifikasi ketika terdapat event baru yang sesuai dengan profil mereka, undangan tampil dari EO, atau perubahan status lamaran yang mereka kirimkan. Sementara itu, EO akan menerima notifikasi ketika terdapat talent yang melamar ke event yang mereka buat. Fitur ini bertujuan untuk memastikan komunikasi antara EO dan talent dapat berlangsung dengan cepat dan efektif.
+Website
+Fitur Autentikasi Pengguna
+Fitur autentikasi digunakan untuk mengelola proses registrasi dan login pengguna pada website CariTalent. Pengguna yang baru pertama kali menggunakan sistem dapat melakukan registrasi dengan mengisi informasi dasar seperti nama, alamat email, nomor telepon, dan kata sandi. Setelah memiliki akun, pengguna dapat melakukan login untuk mengakses seluruh fitur yang tersedia sesuai dengan perannya, yaitu sebagai Talent atau Event Organizer. Sistem autentikasi ini juga dilengkapi dengan fitur tambahan seperti verifikasi email dan pengaturan ulang kata sandi apabila pengguna lupa password. Fitur ini bertujuan untuk menjaga keamanan data pengguna serta memastikan bahwa setiap pengguna hanya dapat mengakses fitur yang sesuai dengan perannya.
+Manajemen Profil Talent
+Fitur ini memungkinkan pengguna yang berperan sebagai Talent untuk membuat dan mengelola profil profesional mereka di dalam platform. Talent dapat menambahkan berbagai informasi penting seperti nama panggung, genre musik yang dibawakan, kota asal, kisaran biaya penampilan, serta deskripsi singkat mengenai profil mereka. Selain itu, talent juga dapat menambahkan portofolio berupa tautan video penampilan, media sosial, atau dokumentasi karya lainnya. Profil ini akan ditampilkan kepada Event Organizer sebagai bahan pertimbangan dalam memilih talent yang sesuai dengan kebutuhan acara yang akan diselenggarakan. Talent juga dapat memperbarui informasi profil mereka sewaktu-waktu agar data yang ditampilkan tetap relevan.
+Pencarian dan Filter Event
+Website CariTalent menyediakan fitur pencarian dan penyaringan event yang memudahkan talent dalam menemukan acara yang sesuai dengan kemampuan dan preferensi mereka. Melalui fitur ini, talent dapat mencari event berdasarkan beberapa kriteria seperti genre musik yang dibutuhkan, lokasi acara, kisaran anggaran yang ditawarkan, serta tanggal pelaksanaan event. Dengan adanya fitur pencarian dan filter ini, talent dapat lebih mudah menemukan peluang penampilan yang sesuai dengan jadwal dan spesialisasi mereka.
+Lamaran Event oleh Talent
+Fitur ini memungkinkan talent untuk melamar pada event yang telah dipublikasikan oleh Event Organizer. Talent dapat melihat daftar event yang tersedia beserta informasi detail mengenai acara tersebut, kemudian mengirimkan lamaran kepada penyelenggara event yang dipilih. Dalam proses lamaran, talent dapat menyertakan pesan atau penjelasan singkat mengenai minat mereka untuk tampil pada acara tersebut. Setelah lamaran dikirimkan, talent dapat memantau status lamaran yang telah diajukan, seperti menunggu persetujuan, diterima, atau ditolak oleh Event Organizer.
+Manajemen Jadwal Penampilan Talent
+Fitur ini menyediakan sistem pengelolaan jadwal yang membantu talent dalam mengatur aktivitas penampilan mereka. Melalui fitur ini, talent dapat melihat daftar event yang telah mereka lamar, event yang telah dikonfirmasi, serta jadwal penampilan yang akan datang. Dengan adanya fitur manajemen jadwal ini, talent dapat menghindari benturan jadwal antara satu acara dengan acara lainnya sehingga proses kerja sama dengan Event Organizer dapat berjalan dengan lebih terorganisir.
+Pembuatan dan Manajemen Event oleh Event Organizer
+Fitur ini memungkinkan pengguna yang berperan sebagai Event Organizer untuk membuat dan mengelola event atau acara yang membutuhkan penampilan talent musik. Event Organizer dapat memasukkan berbagai informasi penting terkait acara yang akan diselenggarakan, seperti nama event, deskripsi acara, genre musik yang dibutuhkan, kisaran anggaran yang tersedia, tanggal pelaksanaan acara, serta lokasi venue. Event yang telah dibuat akan ditampilkan dalam sistem sehingga dapat dilihat oleh talent yang menggunakan platform. Selain itu, Event Organizer juga dapat melakukan perubahan terhadap informasi event atau menghapus event apabila terjadi perubahan rencana.
+Manajemen Lamaran Talent oleh Event Organizer
+Fitur ini memungkinkan Event Organizer untuk melihat dan mengelola lamaran yang dikirimkan oleh talent pada event yang mereka buat. Event Organizer dapat meninjau profil setiap talent yang melamar, termasuk portofolio dan informasi profesional yang dimiliki. Berdasarkan informasi tersebut, Event Organizer dapat memutuskan untuk menerima atau menolak lamaran yang masuk. Fitur ini membantu Event Organizer dalam memilih talent yang paling sesuai dengan konsep dan kebutuhan acara yang diselenggarakan.
+Undangan Talent oleh Event Organizer
+Selain menerima lamaran dari talent, Event Organizer juga memiliki kemampuan untuk mengundang talent secara langsung melalui sistem. Event Organizer dapat mencari talent berdasarkan genre musik, lokasi, atau kriteria tertentu yang sesuai dengan kebutuhan acara. Setelah menemukan talent yang dianggap sesuai, Event Organizer dapat mengirimkan undangan untuk tampil pada event yang mereka buat. Talent yang menerima undangan tersebut dapat meninjau detail acara sebelum memutuskan untuk menerima atau menolak undangan yang diberikan.
+Booking dan Konfirmasi Penampilan
+Fitur booking digunakan untuk mencatat kesepakatan kerja sama antara talent dan Event Organizer setelah proses seleksi atau negosiasi selesai dilakukan. Melalui fitur ini, sistem akan mencatat informasi terkait event yang dipilih, talent yang akan tampil, serta detail kesepakatan lainnya seperti biaya penampilan atau kebutuhan teknis tertentu. Setelah proses booking dilakukan, status event akan berubah menjadi terkonfirmasi sehingga kedua pihak memiliki catatan resmi mengenai kerja sama yang telah disepakati.
+Sistem Notifikasi
+Website CariTalent dilengkapi dengan sistem notifikasi yang berfungsi untuk memberikan informasi secara real-time kepada pengguna mengenai aktivitas yang terjadi di dalam sistem. Talent akan menerima notifikasi ketika terdapat event baru yang sesuai dengan profil mereka, ketika menerima undangan tampil dari Event Organizer, atau ketika status lamaran yang mereka kirimkan mengalami perubahan. Sementara itu, Event Organizer akan menerima notifikasi ketika terdapat talent yang melamar pada event yang mereka buat. Fitur ini bertujuan untuk memastikan bahwa komunikasi antara talent dan Event Organizer dapat berlangsung dengan cepat dan efektif.
+Manajemen Pengguna oleh Admin
+Fitur ini memungkinkan admin untuk mengelola seluruh pengguna yang terdaftar di dalam sistem CariTalent. Melalui fitur ini, admin dapat melihat daftar pengguna yang terdiri dari Talent dan Event Organizer, memeriksa informasi akun mereka, serta melakukan tindakan pengelolaan seperti mengaktifkan atau menonaktifkan akun pengguna yang melanggar aturan. Selain itu, admin juga dapat menghapus akun pengguna tertentu apabila diperlukan serta melakukan perubahan peran pengguna jika terjadi kesalahan saat proses registrasi. Fitur ini berfungsi untuk menjaga keamanan sistem serta memastikan bahwa seluruh pengguna yang terdaftar menggunakan platform sesuai dengan ketentuan yang berlaku.
+
+Pembagian Tugas 
+Berikut merupakan pembagian tugas dalam pengembangan sistem CariTalent yang terdiri dari tim backend dan frontend.
+Anggota tim backend:
+Athila Ramdani Saputra – 103012300132
+Muhammad Irgiansyah – 103012300039
+Arfian Ghifari Mahya – 103012300337
+Anggota tim frontend:
+Aprilianza Muhammad Yusup – 103012300025
+Jeany Ferliza Nayla – 103012300357
+Bill Stephen Sembiring – 103012330197
+
+
+
+
+
+
+
+
+Penutup
+Pengembangan aplikasi CariTalent adalah salah satu bentuk pemanfaatan teknologi untuk mendukung perkembangan ekosistem ekonomi kreatif, khususnya pada subsektor musik independen. Aplikasi ini dirancang sebagai platform yang dapat menghubungkan talenta kreatif dengan penyelenggara acara atau pemilik tempat usaha yang membutuhkan pengisi acara. Melalui berbagai fitur yang dikembangkan pada aplikasi mobile dan website, maka proses pencarian, promosi, hingga pemesanan talenta dapat dilakukan secara lebih mudah, terstruktur, dan efisien. Dengan adanya platform ini, diharapkan talenta kreatif lokal dapat memperoleh lebih banyak peluang untuk tampil dan mengembangkan karier mereka, sementara penyelenggara acara dapat lebih mudah menemukan talent yang sesuai dengan kebutuhan acara yang diselenggarakan. Selain itu, aplikasi CariTalent diharapkan dapat memberikan kontribusi positif dalam mendukung pertumbuhan industri kreatif serta meningkatkan pemanfaatan teknologi digital dalam pengelolaan event dan pertunjukan musik di Indonesia.

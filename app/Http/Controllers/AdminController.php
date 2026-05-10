@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Talent;
 use App\Models\Event;
+use App\Models\Booking;
+use App\Models\Review;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ApiResponse;
@@ -14,6 +16,42 @@ use OpenApi\Attributes as OA;
 class AdminController extends Controller
 {
     use ApiResponse;
+
+    #[OA\Get(path: "/admin/dashboard", summary: "Get Admin Dashboard Stats", security: [["bearerAuth" => []]], tags: ["Admin"])]
+    #[OA\Response(response: 200, description: "OK")]
+    #[OA\Response(response: 401, description: "Unauthorized")]
+    #[OA\Response(response: 403, description: "Forbidden")]
+    public function dashboard()
+    {
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Akses ditolak'], 403);
+        }
+
+        $totalUsers       = User::count();
+        $totalTalents     = User::where('role', 'talent')->count();
+        $totalEO          = User::where('role', 'eo')->count();
+        $totalEvents      = Event::count();
+        $activeEvents     = Event::where('status', 'open')->count();
+        $totalBookings    = Booking::count();
+        $completedBookings = Booking::where('status', 'completed')->count();
+        $totalReviews     = Review::count();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dashboard stats',
+            'data' => [
+                'total_users'        => $totalUsers,
+                'total_talents'      => $totalTalents,
+                'total_eo'           => $totalEO,
+                'total_events'       => $totalEvents,
+                'active_events'      => $activeEvents,
+                'total_bookings'     => $totalBookings,
+                'completed_bookings' => $completedBookings,
+                'total_reviews'      => $totalReviews,
+            ]
+        ], 200);
+    }
+
     #[OA\Get(path: "/admin/users", summary: "Get All Users", security: [["bearerAuth" => []]], tags: ["Admin"])]
     #[OA\Parameter(name: "role", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["eo", "talent"]))]
     #[OA\Parameter(name: "search", in: "query", required: false, schema: new OA\Schema(type: "string"))]

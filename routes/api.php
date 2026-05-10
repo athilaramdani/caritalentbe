@@ -68,6 +68,7 @@ Route::prefix('v1')->group(function () {
 
         // ----- INVITATION -----
         Route::post('/invitations', [InvitationController::class, 'store'])->middleware('role:eo');
+        Route::get('/invitations/sent', [InvitationController::class, 'sentInvitations'])->middleware('role:eo');
         Route::get('/invitations/my', [InvitationController::class, 'myInvitations'])->middleware('role:talent');
         Route::put('/invitations/{id}/respond', [InvitationController::class, 'respond'])->middleware('role:talent');
 

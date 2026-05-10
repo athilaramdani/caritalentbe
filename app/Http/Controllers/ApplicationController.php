@@ -130,7 +130,27 @@ class ApplicationController extends Controller
             $query->where('source', $request->source);
         }
 
-        $applications = $query->with('talent')->get();
+        $applications = $query->latest()->get()->map(function ($app) {
+            $talentProfile = \App\Models\Talent::with('genres')->where('user_id', $app->talent_id)->first();
+            $user = \App\Models\User::find($app->talent_id);
+            
+            return [
+                'id' => $app->id,
+                'source' => $app->source,
+                'message' => $app->message,
+                'proposed_price' => $app->proposed_price,
+                'status' => $app->status,
+                'created_at' => $app->created_at,
+                'talent' => [
+                    'id' => $app->talent_id,
+                    'stage_name' => $talentProfile ? $talentProfile->stage_name : ($user ? $user->name : 'Unknown'),
+                    'genre' => $talentProfile ? $talentProfile->genres->pluck('name')->toArray() : [],
+                    'city' => $talentProfile ? $talentProfile->city : 'Unknown',
+                    'verified' => $talentProfile ? (bool)$talentProfile->verified : false,
+                    'average_rating' => $talentProfile ? (float)$talentProfile->average_rating : 0.0,
+                ]
+            ];
+        });
 
         return $this->successResponse(['applications' => $applications]);
     }

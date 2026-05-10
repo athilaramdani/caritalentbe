@@ -299,10 +299,16 @@ class EventController extends Controller
     )]
     public function myEvents()
     {
-        $events = Event::where('organizer_id', auth()->id() ?? 1)->paginate(15);
+        $events = Event::withCount('applications')->where('organizer_id', auth()->id() ?? 1)->latest()->paginate(15);
+
+        $mappedEvents = collect($events->items())->map(function ($event) {
+            $eventArray = $event->toArray();
+            $eventArray['total_applicants'] = $event->applications_count;
+            return $eventArray;
+        });
 
         return $this->successResponse([
-            'events' => $events->items(),
+            'events' => $mappedEvents,
             'pagination' => [
                 'current_page' => $events->currentPage(),
                 'per_page' => $events->perPage(),

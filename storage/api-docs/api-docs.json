@@ -1705,6 +1705,31 @@
                 ]
             }
         },
+        "/invitations/sent": {
+            "get": {
+                "tags": [
+                    "Invitation"
+                ],
+                "summary": "Get Sent Invitations (EO melihat undangan yang dikirim)",
+                "description": "EO melihat semua undangan yang pernah dikirimkannya ke talent. Akses: EO.",
+                "operationId": "0b17b1ca9b87b9ff59ecfabb38337852",
+                "responses": {
+                    "200": {
+                        "description": "Daftar undangan terkirim berhasil diambil",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/events/{event_id}/recommendations": {
             "get": {
                 "tags": [

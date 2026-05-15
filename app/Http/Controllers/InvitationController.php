@@ -196,4 +196,49 @@ class InvitationController extends Controller
 
         return $this->successResponse($data, $message);
     }
+
+    #[OA\Get(
+        path: "/invitations/sent",
+        summary: "Get Sent Invitations (EO melihat undangan yang dikirim)",
+        description: "EO melihat semua undangan yang pernah dikirimkannya ke talent. Akses: EO.",
+        security: [["bearerAuth" => []]],
+        tags: ["Invitation"]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Daftar undangan terkirim berhasil diambil",
+        content: new OA\JsonContent()
+    )]
+    public function sentInvitations()
+    {
+        $organizerId = auth()->id() ?? 1;
+        $invitations = Application::where('source', 'invitation')
+            ->whereHas('event', function ($query) use ($organizerId) {
+                $query->where('organizer_id', $organizerId);
+            })
+            ->with(['event', 'talent'])
+            ->latest()
+            ->get()->map(function ($app) {
+                $talentProfile = \App\Models\Talent::with('genres')->where('user_id', $app->talent_id)->first();
+                $user = \App\Models\User::find($app->talent_id);
+                return [
+                    'id' => $app->id,
+                    'event' => $app->event,
+                    'talent' => [
+                        'id' => $app->talent_id,
+                        'stage_name' => $talentProfile ? $talentProfile->stage_name : ($user ? $user->name : 'Unknown'),
+                        'city' => $talentProfile ? $talentProfile->city : 'Unknown',
+                        'verified' => $talentProfile ? (bool)$talentProfile->verified : false,
+                        'average_rating' => $talentProfile ? (float)$talentProfile->average_rating : 0.0,
+                        'genre' => $talentProfile ? $talentProfile->genres->pluck('name')->toArray() : [],
+                    ],
+                    'offered_price' => $app->offered_price,
+                    'proposed_price' => $app->proposed_price ?? $app->offered_price,
+                    'status' => $app->status,
+                    'created_at' => $app->created_at,
+                ];
+            });
+
+        return $this->successResponse(['invitations' => $invitations]);
+    }
 }

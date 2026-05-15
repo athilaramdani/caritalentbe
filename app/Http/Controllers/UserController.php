@@ -44,7 +44,7 @@ class UserController extends Controller
         
         $user->save();
 
-        return $this->successResponse('Profil berhasil diperbarui', $user);
+        return $this->successResponse($user, 'Profil berhasil diperbarui');
     }
 
     #[OA\Put(path: "/users/password", summary: "Change User Password", security: [["bearerAuth" => []]], tags: ["User & Profile"])]
@@ -85,6 +85,6 @@ class UserController extends Controller
         $user->password = Hash::make($request->new_password);
         $user->save();
 
-        return $this->successResponse('Password berhasil diubah');
+        return $this->successResponse(null, 'Password berhasil diubah');
     }
 }

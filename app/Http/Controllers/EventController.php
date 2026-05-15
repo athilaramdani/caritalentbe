@@ -133,7 +133,13 @@ class EventController extends Controller
             return $this->errorResponse('Event tidak ditemukan', 404);
         }
 
-        return $this->successResponse($event);
+        $eventArray = $event->toArray();
+        $eventArray['genre_needed'] = $event->genres->pluck('name')->toArray();
+        
+        // Count applications manually or use withCount('applications')
+        $eventArray['total_applicants'] = \App\Models\Application::where('event_id', $id)->count();
+
+        return $this->successResponse($eventArray);
     }
 
     #[OA\Post(
@@ -299,10 +305,17 @@ class EventController extends Controller
     )]
     public function myEvents()
     {
-        $events = Event::where('organizer_id', auth()->id() ?? 1)->paginate(15);
+        $events = Event::with(['genres'])->withCount('applications')->where('organizer_id', auth()->id() ?? 1)->latest()->paginate(15);
+
+        $mappedEvents = collect($events->items())->map(function ($event) {
+            $eventArray = $event->toArray();
+            $eventArray['total_applicants'] = $event->applications_count;
+            $eventArray['genre_needed'] = $event->genres->pluck('name')->toArray();
+            return $eventArray;
+        });
 
         return $this->successResponse([
-            'events' => $events->items(),
+            'events' => $mappedEvents,
             'pagination' => [
                 'current_page' => $events->currentPage(),
                 'per_page' => $events->perPage(),

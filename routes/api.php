@@ -34,7 +34,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/events', [EventController::class, 'index']);
     Route::get('/talents', [TalentController::class, 'index']);
     Route::get('/talents/my', [TalentController::class, 'myTalent'])->middleware(['auth:sanctum', 'role:talent']);
-    Route::get('/talents/{id}', [TalentController::class, 'show']);
+    Route::get('/talents/{id}', [TalentController::class, 'show'])->whereNumber('id');
     Route::get('/genres', [GenreController::class, 'index']);
     Route::get('/talents/{talent_id}/reviews', [ReviewController::class, 'getTalentReviews']);
 
@@ -54,8 +54,8 @@ Route::prefix('v1')->group(function () {
         // ----- EVENT MANAGEMENT (EO only) -----
         Route::get('/events/my', [EventController::class, 'myEvents'])->middleware('role:eo');
         Route::post('/events', [EventController::class, 'store'])->middleware('role:eo');
-        Route::put('/events/{event}', [EventController::class, 'update'])->middleware('role:eo');
-        Route::delete('/events/{event}', [EventController::class, 'destroy'])->middleware('role:eo,admin');
+        Route::put('/events/{event}', [EventController::class, 'update'])->middleware('role:eo')->whereNumber('event');
+        Route::delete('/events/{event}', [EventController::class, 'destroy'])->middleware('role:eo,admin')->whereNumber('event');
 
         // ----- APPLICATION (Talent only) -----
         Route::get('/applications/my', [ApplicationController::class, 'myApplications'])->middleware('role:talent');
@@ -68,6 +68,7 @@ Route::prefix('v1')->group(function () {
 
         // ----- INVITATION -----
         Route::post('/invitations', [InvitationController::class, 'store'])->middleware('role:eo');
+        Route::get('/invitations/sent', [InvitationController::class, 'sentInvitations'])->middleware('role:eo');
         Route::get('/invitations/my', [InvitationController::class, 'myInvitations'])->middleware('role:talent');
         Route::put('/invitations/{id}/respond', [InvitationController::class, 'respond'])->middleware('role:talent');
 
@@ -107,5 +108,5 @@ Route::prefix('v1')->group(function () {
     });
 
     // Public detail route HARUS paling bawah agar tidak menimpa /events/my
-    Route::get('/events/{event}', [EventController::class, 'show']);
+    Route::get('/events/{event}', [EventController::class, 'show'])->whereNumber('event');
 });

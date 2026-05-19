@@ -31,7 +31,7 @@ class AdminController extends Controller
         $totalTalents     = User::where('role', 'talent')->count();
         $totalEO          = User::where('role', 'eo')->count();
         $totalEvents      = Event::count();
-        $activeEvents     = Event::where('status', 'open')->count();
+        $activeEvents     = Event::where('status', 'dibuka')->count();
         $totalBookings    = Booking::count();
         $completedBookings = Booking::where('status', 'completed')->count();
         $totalReviews     = Review::count();
@@ -179,7 +179,7 @@ class AdminController extends Controller
         required: true,
         content: new OA\JsonContent(
             properties: [
-                new OA\Property(property: "status", type: "string", example: "cancelled"),
+                new OA\Property(property: "status", type: "string", enum: ["dibuka", "ditutup", "selesai", "dibatalkan"], example: "dibatalkan"),
                 new OA\Property(property: "reason", type: "string")
             ]
         )
@@ -195,7 +195,7 @@ class AdminController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'status' => 'required|string',
+            'status' => 'required|in:dibuka,ditutup,selesai,dibatalkan',
             'reason' => 'nullable|string'
         ]);
 

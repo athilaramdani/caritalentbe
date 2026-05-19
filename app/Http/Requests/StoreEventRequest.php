@@ -22,7 +22,7 @@ class StoreEventRequest extends FormRequest
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'city' => 'required|string|max:255',
-            'status' => 'nullable|in:draft,open,closed,completed,cancelled',
+            'status' => 'nullable|in:dibuka,ditutup,selesai,dibatalkan',
             'genre_ids' => 'nullable|array',
             'genre_ids.*' => 'integer'
         ];

@@ -11,12 +11,18 @@ class Notification extends Model
         'title',
         'body',
         'type',
+        'action',
+        'reference_type',
         'reference_id',
+        'data',
         'is_read',
+        'read_at',
     ];
 
     protected $casts = [
+        'data' => 'array',
         'is_read' => 'boolean',
+        'read_at' => 'datetime',
     ];
 
     public function user()

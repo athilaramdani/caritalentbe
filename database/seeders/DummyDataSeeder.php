@@ -912,7 +912,7 @@ DB::table('reviews')->insert([
 // NOTIFICATIONS
 // ============================================================
 DB::table('notifications')->truncate();
-DB::table('notifications')->insert([
+$notifications = [
 
     // Notif untuk Talent 1 (Irgi/The Rotten Bandung)
     ['id' => 1,  'user_id' => 4, 'title' => 'Lamaran Diterima.',            'body' => 'Selamat. Lamaran Anda ke Braga Punk Night Vol.4 telah diterima oleh Kafe Braga Permai.',                             'type' => 'application', 'reference_id' => 11, 'is_read' => true,  'created_at' => '2026-02-22 09:05:00', 'updated_at' => '2026-02-22 09:30:00'],
@@ -946,7 +946,33 @@ DB::table('notifications')->insert([
 
     // Notif untuk EO 8 (Jeany - Braga Art Space)
     ['id' => 17, 'user_id' => 8, 'title' => 'Siti ND Terima Booking.',       'body' => 'Siti ND Jazz menerima booking untuk Braga Jazz Evening 24 Mei. Event Anda siap.',                                      'type' => 'booking',     'reference_id' => 2,  'is_read' => false, 'created_at' => '2026-04-04 09:10:00', 'updated_at' => '2026-04-04 09:10:00'],
-]);
+];
+
+foreach ($notifications as &$notification) {
+    $notification['action'] = match ($notification['type']) {
+        'application' => str_contains(strtolower($notification['title']), 'ditolak') ? 'application_rejected' : (str_contains(strtolower($notification['title']), 'baru') ? 'application_created' : 'application_accepted'),
+        'invitation' => str_contains(strtolower($notification['title']), 'ditolak') ? 'invitation_rejected' : 'invitation_received',
+        'booking' => str_contains(strtolower($notification['title']), 'terima') ? 'invitation_accepted' : 'booking_confirmed',
+        'review' => 'review_created',
+        default => $notification['type'] . '_seeded',
+    };
+    $notification['reference_type'] = match ($notification['type']) {
+        'application' => 'application',
+        'invitation' => 'invitation',
+        'booking' => 'booking',
+        'review' => 'review',
+        default => $notification['type'],
+    };
+    $notification['data'] = json_encode([
+        'seeded' => true,
+        'reference_type' => $notification['reference_type'],
+        'reference_id' => $notification['reference_id'],
+    ]);
+    $notification['read_at'] = $notification['is_read'] ? $notification['updated_at'] : null;
+}
+unset($notification);
+
+DB::table('notifications')->insert($notifications);
 
 // ============================================================
 // FIX AVERAGE RATING & TOTAL REVIEWS

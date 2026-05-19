@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Booking;
+use App\Models\Notification;
 use App\Models\Talent;
 use Illuminate\Support\Facades\Auth;
 use OpenApi\Attributes as OA;
@@ -154,12 +155,20 @@ class BookingController extends Controller
         $booking->update(['status' => 'completed']);
 
         // Create notification for talent
-        \App\Models\Notification::create([
+        Notification::create([
             'user_id' => $booking->application->talent_id,
             'title' => 'Event Selesai',
             'body' => 'Event ' . $booking->application->event->title . ' telah ditandai selesai oleh eo.',
             'type' => 'booking',
-            'reference_id' => $booking->id
+            'action' => 'booking_completed',
+            'reference_type' => 'booking',
+            'reference_id' => $booking->id,
+            'data' => [
+                'booking_id' => $booking->id,
+                'application_id' => $booking->application_id,
+                'event_id' => $booking->application->event_id,
+                'event_title' => $booking->application->event->title,
+            ],
         ]);
 
         return response()->json([
@@ -208,6 +217,32 @@ class BookingController extends Controller
         }
 
         $booking->update(['status' => 'cancelled']);
+
+        $notificationPayload = [
+            'title' => 'Booking Dibatalkan',
+            'body' => 'Booking untuk event ' . $booking->application->event->title . ' dibatalkan.',
+            'type' => 'booking',
+            'action' => 'booking_cancelled',
+            'reference_type' => 'booking',
+            'reference_id' => $booking->id,
+            'data' => [
+                'booking_id' => $booking->id,
+                'application_id' => $booking->application_id,
+                'event_id' => $booking->application->event_id,
+                'event_title' => $booking->application->event->title,
+                'cancelled_by' => $user->role,
+            ],
+        ];
+
+        if ($user->role === 'admin') {
+            foreach ([$booking->application->talent_id, $booking->application->event->organizer_id] as $recipientId) {
+                Notification::create(array_merge($notificationPayload, ['user_id' => $recipientId]));
+            }
+        } elseif ($isOrganizer) {
+            Notification::create(array_merge($notificationPayload, ['user_id' => $booking->application->talent_id]));
+        } elseif ($isTalent) {
+            Notification::create(array_merge($notificationPayload, ['user_id' => $booking->application->event->organizer_id]));
+        }
 
         return response()->json([
             'success' => true,

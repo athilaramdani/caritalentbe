@@ -19,7 +19,7 @@ class EventController extends Controller
         description: "Mendapatkan daftar semua event dengan filter opsional. Akses: Public.",
         tags: ["Event"]
     )]
-    #[OA\Parameter(name: "status", in: "query", description: "Filter status event", required: false, schema: new OA\Schema(type: "string", enum: ["draft","open","closed","completed","cancelled"]))]
+    #[OA\Parameter(name: "status", in: "query", description: "Filter status event", required: false, schema: new OA\Schema(type: "string", enum: ["dibuka","ditutup","selesai","dibatalkan"]))]
     #[OA\Parameter(name: "genre", in: "query", description: "Filter genre yang dibutuhkan", required: false, schema: new OA\Schema(type: "string", example: "Pop Punk"))]
     #[OA\Parameter(name: "city", in: "query", description: "Filter kota venue", required: false, schema: new OA\Schema(type: "string", example: "Bandung"))]
     #[OA\Parameter(name: "budget_min", in: "query", description: "Filter budget minimum", required: false, schema: new OA\Schema(type: "integer", example: 1000000))]
@@ -48,7 +48,7 @@ class EventController extends Controller
                     "latitude" => -6.9175,
                     "longitude" => 107.6191,
                     "city" => "Bandung",
-                    "status" => "open",
+                    "status" => "dibuka",
                     "created_at" => "2026-03-01T09:00:00Z"
                 ]],
                 "pagination" => ["current_page" => 1, "per_page" => 15, "total" => 23, "last_page" => 2]
@@ -114,7 +114,7 @@ class EventController extends Controller
                 "latitude" => -6.9175,
                 "longitude" => 107.6191,
                 "city" => "Bandung",
-                "status" => "open",
+                "status" => "dibuka",
                 "total_applicants" => 5,
                 "created_at" => "2026-03-01T09:00:00Z"
             ]
@@ -163,7 +163,7 @@ class EventController extends Controller
                 new OA\Property(property: "latitude", type: "number", format: "float", example: -6.9175),
                 new OA\Property(property: "longitude", type: "number", format: "float", example: 107.6191),
                 new OA\Property(property: "city", type: "string", example: "Bandung"),
-                new OA\Property(property: "status", type: "string", enum: ["draft","open"], example: "draft"),
+                new OA\Property(property: "status", type: "string", enum: ["dibuka","ditutup","selesai","dibatalkan"], example: "dibuka"),
             ]
         )
     )]
@@ -173,7 +173,7 @@ class EventController extends Controller
         content: new OA\JsonContent(example: [
             "success" => true,
             "message" => "Event berhasil dibuat",
-            "data" => ["id" => 1, "title" => "Punk Night Vol. 3", "status" => "draft", "created_at" => "2026-03-08T10:00:00Z"]
+            "data" => ["id" => 1, "title" => "Punk Night Vol. 3", "status" => "dibuka", "created_at" => "2026-03-08T10:00:00Z"]
         ])
     )]
     #[OA\Response(
@@ -209,7 +209,7 @@ class EventController extends Controller
             properties: [
                 new OA\Property(property: "title", type: "string", example: "Punk Night Vol. 3 - Special Edition"),
                 new OA\Property(property: "budget", type: "number", example: 4000000),
-                new OA\Property(property: "status", type: "string", enum: ["draft","open","closed","completed","cancelled"], example: "open"),
+                new OA\Property(property: "status", type: "string", enum: ["dibuka","ditutup","selesai","dibatalkan"], example: "dibuka"),
                 new OA\Property(property: "genre_ids", type: "array", items: new OA\Items(type: "integer"), example: [1, 2, 4]),
             ]
         )
@@ -217,7 +217,7 @@ class EventController extends Controller
     #[OA\Response(
         response: 200,
         description: "Event berhasil diperbarui",
-        content: new OA\JsonContent(example: ["success" => true, "message" => "Event berhasil diperbarui", "data" => ["id" => 1, "title" => "Punk Night Vol. 3 - Special Edition", "status" => "open"]])
+        content: new OA\JsonContent(example: ["success" => true, "message" => "Event berhasil diperbarui", "data" => ["id" => 1, "title" => "Punk Night Vol. 3 - Special Edition", "status" => "dibuka"]])
     )]
     #[OA\Response(
         response: 404,
@@ -244,7 +244,7 @@ class EventController extends Controller
     #[OA\Delete(
         path: "/events/{id}",
         summary: "Cancel Event",
-        description: "Membatalkan event (soft cancel — status berubah menjadi 'cancelled', tidak dihapus permanen). Akses: EO (pemilik), Admin.",
+        description: "Membatalkan event (soft cancel — status berubah menjadi 'dibatalkan', tidak dihapus permanen). Akses: EO (pemilik), Admin.",
         security: [["bearerAuth" => []]],
         tags: ["Event"]
     )]
@@ -267,7 +267,7 @@ class EventController extends Controller
             return $this->errorResponse('Event tidak ditemukan', 404);
         }
 
-        $event->update(['status' => 'cancelled']);
+        $event->update(['status' => 'dibatalkan']);
 
         return $this->successResponse(null, 'Event berhasil dibatalkan');
     }
@@ -289,7 +289,7 @@ class EventController extends Controller
                 "events" => [[
                     "id" => 1,
                     "title" => "Punk Night Vol. 3",
-                    "status" => "open",
+                    "status" => "dibuka",
                     "event_date" => "2026-04-15",
                     "city" => "Bandung",
                     "budget" => 3000000,

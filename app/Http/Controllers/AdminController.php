@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Talent;
 use App\Models\Event;
 use App\Models\Booking;
+use App\Models\Notification;
 use App\Models\Review;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -31,7 +32,7 @@ class AdminController extends Controller
         $totalTalents     = User::where('role', 'talent')->count();
         $totalEO          = User::where('role', 'eo')->count();
         $totalEvents      = Event::count();
-        $activeEvents     = Event::where('status', 'open')->count();
+        $activeEvents     = Event::where('status', 'dibuka')->count();
         $totalBookings    = Booking::count();
         $completedBookings = Booking::where('status', 'completed')->count();
         $totalReviews     = Review::count();
@@ -162,6 +163,23 @@ class AdminController extends Controller
         $isVerified = filter_var($request->verified, FILTER_VALIDATE_BOOLEAN);
         $talent->update(['verified' => $isVerified]);
 
+        Notification::create([
+            'user_id' => $talent->user_id,
+            'title' => $isVerified ? 'Talent Berhasil Diverifikasi' : 'Verifikasi Talent Dicabut',
+            'body' => $isVerified
+                ? 'Profil talent kamu sudah diverifikasi oleh admin.'
+                : 'Verifikasi profil talent kamu dicabut oleh admin.',
+            'type' => 'talent',
+            'action' => $isVerified ? 'talent_verified' : 'talent_unverified',
+            'reference_type' => 'talent',
+            'reference_id' => $talent->user_id,
+            'data' => [
+                'talent_id' => $talent->user_id,
+                'stage_name' => $talent->stage_name,
+                'verified' => $isVerified,
+            ],
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => $isVerified ? 'Talent berhasil diverifikasi' : 'Verifikasi talent dicabut',
@@ -179,7 +197,7 @@ class AdminController extends Controller
         required: true,
         content: new OA\JsonContent(
             properties: [
-                new OA\Property(property: "status", type: "string", example: "cancelled"),
+                new OA\Property(property: "status", type: "string", enum: ["dibuka", "ditutup", "selesai", "dibatalkan"], example: "dibatalkan"),
                 new OA\Property(property: "reason", type: "string")
             ]
         )
@@ -195,7 +213,7 @@ class AdminController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'status' => 'required|string',
+            'status' => 'required|in:dibuka,ditutup,selesai,dibatalkan',
             'reason' => 'nullable|string'
         ]);
 
@@ -213,16 +231,21 @@ class AdminController extends Controller
             'status' => $request->status
         ]);
 
-        if ($request->has('reason')) {
-            // Give notification to EO
-            \App\Models\Notification::create([
-                'user_id' => $event->organizer_id,
-                'title' => 'Event Dimoderasi Admin',
-                'body' => 'Event "' . $event->title . '" telah diubah statusnya menjadi '. $request->status .' oleh Admin. Alasan: ' . $request->reason,
-                'type' => 'application',
-                'reference_id' => $event->id
-            ]);
-        }
+        Notification::create([
+            'user_id' => $event->organizer_id,
+            'title' => 'Event Dimoderasi Admin',
+            'body' => 'Event "' . $event->title . '" telah diubah statusnya menjadi '. $request->status .' oleh Admin.' . ($request->filled('reason') ? ' Alasan: ' . $request->reason : ''),
+            'type' => 'event',
+            'action' => 'event_moderated',
+            'reference_type' => 'event',
+            'reference_id' => $event->id,
+            'data' => [
+                'event_id' => $event->id,
+                'event_title' => $event->title,
+                'status' => $request->status,
+                'reason' => $request->reason,
+            ],
+        ]);
 
         return response()->json([
             'success' => true,

@@ -201,7 +201,13 @@
                                 "properties": {
                                     "status": {
                                         "type": "string",
-                                        "example": "cancelled"
+                                        "example": "dibatalkan",
+                                        "enum": [
+                                            "dibuka",
+                                            "ditutup",
+                                            "selesai",
+                                            "dibatalkan"
+                                        ]
                                     },
                                     "reason": {
                                         "type": "string"
@@ -926,11 +932,10 @@
                         "schema": {
                             "type": "string",
                             "enum": [
-                                "draft",
-                                "open",
-                                "closed",
-                                "completed",
-                                "cancelled"
+                                "dibuka",
+                                "ditutup",
+                                "selesai",
+                                "dibatalkan"
                             ]
                         }
                     },
@@ -1044,7 +1049,7 @@
                                                 "latitude": -6.9175,
                                                 "longitude": 107.6191,
                                                 "city": "Bandung",
-                                                "status": "open",
+                                                "status": "dibuka",
                                                 "created_at": "2026-03-01T09:00:00Z"
                                             }
                                         ],
@@ -1129,10 +1134,12 @@
                                     },
                                     "status": {
                                         "type": "string",
-                                        "example": "draft",
+                                        "example": "dibuka",
                                         "enum": [
-                                            "draft",
-                                            "open"
+                                            "dibuka",
+                                            "ditutup",
+                                            "selesai",
+                                            "dibatalkan"
                                         ]
                                     }
                                 },
@@ -1153,7 +1160,7 @@
                                     "data": {
                                         "id": 1,
                                         "title": "Punk Night Vol. 3",
-                                        "status": "draft",
+                                        "status": "dibuka",
                                         "created_at": "2026-03-08T10:00:00Z"
                                     }
                                 }
@@ -1230,7 +1237,7 @@
                                         "latitude": -6.9175,
                                         "longitude": 107.6191,
                                         "city": "Bandung",
-                                        "status": "open",
+                                        "status": "dibuka",
                                         "total_applicants": 5,
                                         "created_at": "2026-03-01T09:00:00Z"
                                     }
@@ -1287,13 +1294,12 @@
                                     },
                                     "status": {
                                         "type": "string",
-                                        "example": "open",
+                                        "example": "dibuka",
                                         "enum": [
-                                            "draft",
-                                            "open",
-                                            "closed",
-                                            "completed",
-                                            "cancelled"
+                                            "dibuka",
+                                            "ditutup",
+                                            "selesai",
+                                            "dibatalkan"
                                         ]
                                     },
                                     "genre_ids": {
@@ -1325,7 +1331,7 @@
                                     "data": {
                                         "id": 1,
                                         "title": "Punk Night Vol. 3 - Special Edition",
-                                        "status": "open"
+                                        "status": "dibuka"
                                     }
                                 }
                             }
@@ -1355,7 +1361,7 @@
                     "Event"
                 ],
                 "summary": "Cancel Event",
-                "description": "Membatalkan event (soft cancel — status berubah menjadi 'cancelled', tidak dihapus permanen). Akses: EO (pemilik), Admin.",
+                "description": "Membatalkan event (soft cancel — status berubah menjadi 'dibatalkan', tidak dihapus permanen). Akses: EO (pemilik), Admin.",
                 "operationId": "d9e4e6c812ee62b2c751d1d2d3d44b80",
                 "parameters": [
                     {
@@ -1424,7 +1430,7 @@
                                             {
                                                 "id": 1,
                                                 "title": "Punk Night Vol. 3",
-                                                "status": "open",
+                                                "status": "dibuka",
                                                 "event_date": "2026-04-15",
                                                 "city": "Bandung",
                                                 "budget": 3000000
@@ -1794,8 +1800,18 @@
                                 "application",
                                 "booking",
                                 "invitation",
-                                "review"
+                                "review",
+                                "event",
+                                "talent"
                             ]
+                        }
+                    },
+                    {
+                        "name": "action",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 ],
@@ -2192,96 +2208,6 @@
                     },
                     "404": {
                         "description": "Profil talent tidak ditemukan"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/talents/{id}/media": {
-            "post": {
-                "tags": [
-                    "Talent Profile"
-                ],
-                "summary": "Upload media portfolio",
-                "operationId": "c007a33ac846395b97ee40fd553c4bd2",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "multipart/form-data": {
-                            "schema": {
-                                "properties": {
-                                    "file": {
-                                        "type": "string",
-                                        "format": "binary"
-                                    },
-                                    "type": {
-                                        "type": "string",
-                                        "enum": [
-                                            "image",
-                                            "video",
-                                            "audio"
-                                        ]
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Media berhasil diunggah"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/talents/{talent_id}/media/{media_id}": {
-            "delete": {
-                "tags": [
-                    "Talent Profile"
-                ],
-                "summary": "Delete media portfolio",
-                "operationId": "de7055628debdf1357fa82f35786e7c3",
-                "parameters": [
-                    {
-                        "name": "talent_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "media_id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Media berhasil dihapus"
                     }
                 },
                 "security": [

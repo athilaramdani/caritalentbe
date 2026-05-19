@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Media;
 use App\Models\Talent;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -13,13 +12,33 @@ class TalentController extends Controller
 {
     use ApiResponse;
 
+    private function formatTalent(Talent $talent): array
+    {
+        return [
+            'id' => $talent->id,
+            'user_id' => $talent->user_id,
+            'stage_name' => $talent->stage_name,
+            'genre' => $talent->genres->pluck('name')->values()->all(),
+            'price_min' => $talent->price_min,
+            'price_max' => $talent->price_max,
+            'city' => $talent->city,
+            'bio' => $talent->bio,
+            'portfolio_link' => $talent->portfolio_link,
+            'verified' => (bool) $talent->verified,
+            'average_rating' => (float) $talent->average_rating,
+            'total_reviews' => (int) $talent->total_reviews,
+            'created_at' => $talent->created_at,
+            'updated_at' => $talent->updated_at,
+        ];
+    }
+
     #[OA\Get(path: "/talents", summary: "Get list of talents", tags: ["Talent Profile"])]
     #[OA\Parameter(name: "city", in: "query", schema: new OA\Schema(type: "string"))]
     #[OA\Parameter(name: "genre", in: "query", schema: new OA\Schema(type: "string"))]
     #[OA\Response(response: 200, description: "Returns list of talents")]
     public function index(Request $request)
     {
-        $query = Talent::with(['genres', 'media']);
+        $query = Talent::with('genres');
 
         if ($request->has('city')) {
             $query->where('city', $request->city);
@@ -46,12 +65,13 @@ class TalentController extends Controller
 
         $perPage = $request->input('per_page', 15);
         $talents = $query->paginate($perPage);
+        $mappedTalents = collect($talents->items())->map(fn ($talent) => $this->formatTalent($talent))->values();
 
         return response()->json([
             'success' => true,
             'message' => 'OK',
             'data' => [
-                'talents' => $talents->items(),
+                'talents' => $mappedTalents,
                 'pagination' => [
                     'current_page' => $talents->currentPage(),
                     'per_page' => $talents->perPage(),
@@ -68,13 +88,13 @@ class TalentController extends Controller
     #[OA\Response(response: 404, description: "Talent tidak ditemukan")]
     public function show($id)
     {
-        $talent = Talent::with(['genres', 'media'])->find($id);
+        $talent = Talent::with('genres')->find($id);
 
         if (!$talent) {
             return $this->errorResponse('Talent tidak ditemukan', 404);
         }
 
-        return $this->successResponse('OK', $talent);
+        return $this->successResponse($this->formatTalent($talent), 'OK');
     }
 
     #[OA\Get(path: "/talents/my", summary: "Get my talent profile", security: [["bearerAuth" => []]], tags: ["Talent Profile"])]
@@ -82,7 +102,7 @@ class TalentController extends Controller
     #[OA\Response(response: 404, description: "Profil talent tidak ditemukan")]
     public function myTalent(Request $request)
     {
-        $talent = Talent::with(['genres', 'media'])
+        $talent = Talent::with('genres')
             ->where('user_id', $request->user()->id)
             ->first();
 
@@ -90,7 +110,7 @@ class TalentController extends Controller
             return $this->errorResponse('Profil talent tidak ditemukan', 404);
         }
 
-        return $this->successResponse($talent, 'OK');
+        return $this->successResponse($this->formatTalent($talent), 'OK');
     }
 
     #[OA\Post(path: "/talents", summary: "Create talent profile", security: [["bearerAuth" => []]], tags: ["Talent Profile"])]
@@ -152,7 +172,7 @@ class TalentController extends Controller
 
         $talent->load('genres');
 
-        return $this->successResponse('Profil talent berhasil dibuat', $talent, 201);
+        return $this->successResponse($this->formatTalent($talent), 'Profil talent berhasil dibuat', 201);
     }
 
     #[OA\Put(path: "/talents/{id}", summary: "Update talent profile", security: [["bearerAuth" => []]], tags: ["Talent Profile"])]
@@ -205,7 +225,7 @@ class TalentController extends Controller
 
         $talent->load('genres');
 
-        return $this->successResponse('Profil talent berhasil diperbarui', $talent);
+        return $this->successResponse($this->formatTalent($talent), 'Profil talent berhasil diperbarui');
     }
 
     #[OA\Delete(path: "/talents/{id}", summary: "Delete talent profile", security: [["bearerAuth" => []]], tags: ["Talent Profile"])]
@@ -226,82 +246,5 @@ class TalentController extends Controller
         $talent->delete();
 
         return $this->successResponse('Profil talent berhasil dihapus');
-    }
-
-    #[OA\Post(path: "/talents/{id}/media", summary: "Upload media portfolio", security: [["bearerAuth" => []]], tags: ["Talent Profile"])]
-    #[OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
-    #[OA\RequestBody(required: true, content: new OA\MediaType(
-        mediaType: "multipart/form-data",
-        schema: new OA\Schema(
-            properties: [
-                new OA\Property(property: "file", type: "string", format: "binary"),
-                new OA\Property(property: "type", type: "string", enum: ["image", "video", "audio"])
-            ]
-        )
-    ))]
-    #[OA\Response(response: 201, description: "Media berhasil diunggah")]
-    public function uploadMedia(Request $request, $id)
-    {
-        $talent = Talent::find($id);
-
-        if (!$talent) {
-            return $this->errorResponse('Talent tidak ditemukan', 404);
-        }
-
-        if ($request->user()->id !== $talent->user_id) {
-            return $this->errorResponse('Akses ditolak', 403);
-        }
-
-        $validator = Validator::make($request->all(), [
-            'file' => 'required|file', // Could add mimes:jpg,png,mp4,mp3 depending on requirements
-            'type' => 'required|in:image,video,audio',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
-        }
-
-        // Mocking file upload for now, ideally use Storage::put
-        // e.g., $path = $request->file('file')->store('media', 'public');
-        // $url = url('storage/' . $path);
-        
-        $fileName = $request->file('file')->getClientOriginalName();
-        $url = 'https://storage.caritalent.id/media/' . time() . '_' . $fileName;
-
-        $media = Media::create([
-            'talent_id' => $talent->id,
-            'media_url' => $url,
-            'type' => $request->type,
-        ]);
-
-        return $this->successResponse('Media berhasil diunggah', $media, 201);
-    }
-
-    #[OA\Delete(path: "/talents/{talent_id}/media/{media_id}", summary: "Delete media portfolio", security: [["bearerAuth" => []]], tags: ["Talent Profile"])]
-    #[OA\Parameter(name: "talent_id", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
-    #[OA\Parameter(name: "media_id", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
-    #[OA\Response(response: 200, description: "Media berhasil dihapus")]
-    public function deleteMedia(Request $request, $talent_id, $media_id)
-    {
-        $talent = Talent::find($talent_id);
-
-        if (!$talent) {
-            return $this->errorResponse('Talent tidak ditemukan', 404);
-        }
-
-        if ($request->user()->id !== $talent->user_id && $request->user()->role !== 'admin') {
-            return $this->errorResponse('Akses ditolak', 403);
-        }
-
-        $media = Media::where('talent_id', $talent_id)->find($media_id);
-
-        if (!$media) {
-            return $this->errorResponse('Media tidak ditemukan', 404);
-        }
-        
-        // Logic to delete actual file could be placed here
-        $media->delete();
-
-        return $this->successResponse('Media berhasil dihapus');
     }
 }

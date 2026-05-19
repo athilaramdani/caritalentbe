@@ -87,4 +87,30 @@ class UserController extends Controller
 
         return $this->successResponse(null, 'Password berhasil diubah');
     }
+
+    #[OA\Put(path: "/users/fcm-token", summary: "Update FCM Device Token", security: [["bearerAuth" => []]], tags: ["User & Profile"])]
+    #[OA\RequestBody(required: true, content: new OA\JsonContent(
+        required: ["fcm_token"],
+        properties: [
+            new OA\Property(property: "fcm_token", type: "string", description: "Firebase Cloud Messaging Token")
+        ]
+    ))]
+    #[OA\Response(response: 200, description: "FCM Token berhasil diperbarui")]
+    public function updateFcmToken(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'fcm_token' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Validasi gagal', 422, $validator->errors());
+        }
+
+        $user->fcm_token = $request->fcm_token;
+        $user->save();
+
+        return $this->successResponse(['fcm_token' => $user->fcm_token], 'FCM Token berhasil diperbarui');
+    }
 }

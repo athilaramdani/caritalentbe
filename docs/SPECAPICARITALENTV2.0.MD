@@ -1261,6 +1261,31 @@ Response `200`: sama seperti public talent reviews, tetapi talent diambil dari u
 
 ## Notifications
 
+Notification dibuat otomatis oleh backend dari aksi utama. Mobile tidak perlu mengirim request khusus untuk membuat notification. Mobile cukup mengambil daftar notification dan menandai sudah dibaca.
+
+Trigger notification saat ini:
+
+- `POST /applications`: EO mendapat `application_created`
+- `PUT /applications/{id}/status`: Talent mendapat `application_accepted` atau `application_rejected`
+- `DELETE /applications/{id}`: EO mendapat `application_cancelled`
+- `POST /invitations`: Talent mendapat `invitation_received`
+- `PUT /invitations/{id}/respond`: EO mendapat `invitation_accepted` atau `invitation_rejected`
+- `PUT /bookings/{id}/complete`: Talent mendapat `booking_completed`
+- `PUT /bookings/{id}/cancel`: pihak lawan mendapat `booking_cancelled`; jika admin yang membatalkan, EO dan talent sama-sama mendapat notification
+- `POST /reviews`: Talent mendapat `review_created`
+- `PUT /admin/talents/{id}/verify`: Talent mendapat `talent_verified` atau `talent_unverified`
+- `PUT /admin/events/{id}/moderate`: EO mendapat `event_moderated`
+
+Atribut notification:
+
+- `type`: kategori besar, salah satu `application|booking|invitation|review|event|talent`
+- `action`: kejadian spesifik, contoh `application_accepted`
+- `reference_type`: target detail screen, contoh `booking`
+- `reference_id`: id data target
+- `data`: payload ringan untuk deep-link mobile
+- `is_read`: status sudah dibaca
+- `read_at`: waktu notification dibaca
+
 ### List Notifications
 
 `GET /notifications`
@@ -1270,7 +1295,8 @@ Akses: login
 Query:
 
 - `is_read`: boolean
-- `type`: `application|booking|invitation|review`
+- `type`: `application|booking|invitation|review|event|talent`
+- `action`: string, contoh `application_accepted`
 
 Response `200`:
 
@@ -1286,8 +1312,18 @@ Response `200`:
         "title": "Review Baru",
         "body": "EO ... telah memberikan ulasan untuk performa kamu.",
         "type": "review",
+        "action": "review_created",
+        "reference_type": "review",
         "reference_id": 1,
+        "data": {
+          "review_id": 1,
+          "booking_id": 4,
+          "event_id": 7,
+          "event_title": "Braga Punk Night Vol.4",
+          "rating": 5
+        },
         "is_read": false,
+        "read_at": null,
         "created_at": "2026-05-19T00:00:00.000000Z"
       }
     ],
@@ -1308,6 +1344,11 @@ Response `200`:
 
 Akses: login, owner notification
 
+Efek:
+
+- `is_read` menjadi `true`
+- `read_at` diisi waktu saat endpoint dipanggil
+
 Response `200`:
 
 ```json
@@ -1322,6 +1363,11 @@ Response `200`:
 `PUT /notifications/read-all`
 
 Akses: login
+
+Efek:
+
+- semua notification user login dengan `is_read = false` menjadi `true`
+- `read_at` diisi waktu saat endpoint dipanggil
 
 Response `200`:
 
@@ -1623,8 +1669,18 @@ Response `200`:
   "title": "Review Baru",
   "body": "EO ... telah memberikan ulasan untuk performa kamu.",
   "type": "review",
+  "action": "review_created",
+  "reference_type": "review",
   "reference_id": 1,
+  "data": {
+    "review_id": 1,
+    "booking_id": 4,
+    "event_id": 7,
+    "event_title": "Braga Punk Night Vol.4",
+    "rating": 5
+  },
   "is_read": false,
+  "read_at": null,
   "created_at": "2026-05-19T00:00:00.000000Z",
   "updated_at": "2026-05-19T00:00:00.000000Z"
 }

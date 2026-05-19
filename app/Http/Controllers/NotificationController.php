@@ -11,7 +11,8 @@ class NotificationController extends Controller
 {
     #[OA\Get(path: "/notifications", summary: "Get My Notifications", security: [["bearerAuth" => []]], tags: ["Notification"])]
     #[OA\Parameter(name: "is_read", in: "query", required: false, schema: new OA\Schema(type: "boolean"))]
-    #[OA\Parameter(name: "type", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["application", "booking", "invitation", "review"]))]
+    #[OA\Parameter(name: "type", in: "query", required: false, schema: new OA\Schema(type: "string", enum: ["application", "booking", "invitation", "review", "event", "talent"]))]
+    #[OA\Parameter(name: "action", in: "query", required: false, schema: new OA\Schema(type: "string"))]
     #[OA\Response(response: 200, description: "OK")]
     #[OA\Response(response: 401, description: "Unauthorized")]
     public function index(Request $request)
@@ -25,6 +26,10 @@ class NotificationController extends Controller
 
         if ($request->has('type')) {
             $query->where('type', $request->type);
+        }
+
+        if ($request->has('action')) {
+            $query->where('action', $request->action);
         }
 
         $notifications = $query->latest()->paginate(15);
@@ -62,7 +67,10 @@ class NotificationController extends Controller
             ], 404);
         }
 
-        $notification->update(['is_read' => true]);
+        $notification->update([
+            'is_read' => true,
+            'read_at' => now(),
+        ]);
 
         return response()->json([
             'success' => true,
@@ -77,7 +85,10 @@ class NotificationController extends Controller
     {
         Notification::where('user_id', Auth::id())
             ->where('is_read', false)
-            ->update(['is_read' => true]);
+            ->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
 
         return response()->json([
             'success' => true,

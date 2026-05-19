@@ -22,9 +22,4 @@ class Talent extends Model
     {
         return $this->belongsToMany(Genre::class, 'genre_talent');
     }
-
-    public function media()
-    {
-        return $this->hasMany(Media::class);
-    }
 }

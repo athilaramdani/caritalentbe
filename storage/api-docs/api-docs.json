@@ -2304,6 +2304,44 @@
                     }
                 ]
             }
+        },
+        "/users/fcm-token": {
+            "put": {
+                "tags": [
+                    "User & Profile"
+                ],
+                "summary": "Update FCM Device Token",
+                "operationId": "896a5d3d0813d5712308c7df873ff77c",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "fcm_token"
+                                ],
+                                "properties": {
+                                    "fcm_token": {
+                                        "description": "Firebase Cloud Messaging Token",
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "FCM Token berhasil diperbarui"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {

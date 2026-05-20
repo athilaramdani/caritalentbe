@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('talent_id')->constrained('talents')->onDelete('cascade');
-            $table->string('media_url');
-            $table->enum('type', ['image', 'video', 'audio']);
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('fcm_token')->nullable()->after('remember_token');
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('media');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('fcm_token');
+        });
     }
 };

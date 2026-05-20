@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Review;
 use App\Models\Booking;
+use App\Models\Notification;
 use App\Models\Talent;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -110,12 +111,21 @@ class ReviewController extends Controller
 
             // Create notification for talent
             if ($talentId) {
-                \App\Models\Notification::create([
+                Notification::create([
                     'user_id' => $talentId,
                     'title' => 'Review Baru',
                     'body' => 'EO '. Auth::user()->name .' telah memberikan ulasan untuk performa kamu.',
                     'type' => 'review',
-                    'reference_id' => $review->id
+                    'action' => 'review_created',
+                    'reference_type' => 'review',
+                    'reference_id' => $review->id,
+                    'data' => [
+                        'review_id' => $review->id,
+                        'booking_id' => $booking->id,
+                        'event_id' => $booking->application?->event_id,
+                        'event_title' => $booking->application?->event?->title,
+                        'rating' => $review->rating,
+                    ],
                 ]);
             }
 

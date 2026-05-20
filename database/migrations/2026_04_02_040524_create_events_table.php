@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('latitude', 10, 8)->nullable();
             $table->decimal('longitude', 11, 8)->nullable();
             $table->string('city');
-            $table->enum('status', ['draft', 'open', 'closed', 'completed', 'cancelled'])->default('draft');
+            $table->enum('status', ['dibuka', 'ditutup', 'selesai', 'dibatalkan'])->default('dibuka');
             $table->timestamps();
         });
         

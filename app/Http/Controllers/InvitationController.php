@@ -55,6 +55,8 @@ class InvitationController extends Controller
     )]
     public function store(StoreInvitationRequest $request)
     {
+        $event = Event::find($request->event_id);
+
         $existing = Application::where('event_id', $request->event_id)
             ->where('talent_id', $request->talent_id)
             ->exists();
@@ -68,6 +70,23 @@ class InvitationController extends Controller
         $data['status'] = 'pending';
 
         $invitation = Application::create($data);
+
+        \App\Models\Notification::create([
+            'user_id' => $invitation->talent_id,
+            'title' => 'Undangan Manggung Baru',
+            'body' => 'Kamu diundang untuk tampil di event ' . $event->title . '.',
+            'type' => 'invitation',
+            'action' => 'invitation_received',
+            'reference_type' => 'invitation',
+            'reference_id' => $invitation->id,
+            'data' => [
+                'invitation_id' => $invitation->id,
+                'event_id' => $event->id,
+                'event_title' => $event->title,
+                'organizer_id' => $event->organizer_id,
+                'offered_price' => $invitation->offered_price,
+            ],
+        ]);
 
         return $this->successResponse($invitation, 'Undangan berhasil dikirim', 201);
     }
@@ -160,6 +179,7 @@ class InvitationController extends Controller
     {
         $invitation = Application::where('id', $id)
             ->where('source', 'invitation')
+            ->with('event')
             ->first();
 
         if (!$invitation) {
@@ -190,8 +210,42 @@ class InvitationController extends Controller
                 'status' => $booking->status
             ];
             $message = 'Undangan diterima dan booking telah dibuat';
+
+            \App\Models\Notification::create([
+                'user_id' => $invitation->event->organizer_id,
+                'title' => 'Undangan Diterima',
+                'body' => 'Talent menerima undangan untuk event ' . $invitation->event->title . '.',
+                'type' => 'invitation',
+                'action' => 'invitation_accepted',
+                'reference_type' => 'booking',
+                'reference_id' => $booking->id,
+                'data' => [
+                    'invitation_id' => $invitation->id,
+                    'booking_id' => $booking->id,
+                    'event_id' => $invitation->event_id,
+                    'event_title' => $invitation->event->title,
+                    'talent_id' => $invitation->talent_id,
+                    'agreed_price' => $booking->agreed_price,
+                ],
+            ]);
         } else {
             $message = 'Undangan berhasil ditolak';
+
+            \App\Models\Notification::create([
+                'user_id' => $invitation->event->organizer_id,
+                'title' => 'Undangan Ditolak',
+                'body' => 'Talent menolak undangan untuk event ' . $invitation->event->title . '.',
+                'type' => 'invitation',
+                'action' => 'invitation_rejected',
+                'reference_type' => 'invitation',
+                'reference_id' => $invitation->id,
+                'data' => [
+                    'invitation_id' => $invitation->id,
+                    'event_id' => $invitation->event_id,
+                    'event_title' => $invitation->event->title,
+                    'talent_id' => $invitation->talent_id,
+                ],
+            ]);
         }
 
         return $this->successResponse($data, $message);

@@ -16,9 +16,13 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('title');
             $table->text('body');
-            $table->enum('type', ['application', 'booking', 'invitation', 'review']);
+            $table->enum('type', ['application', 'booking', 'invitation', 'review', 'event', 'talent']);
+            $table->string('action')->nullable();
+            $table->string('reference_type')->nullable();
             $table->unsignedBigInteger('reference_id')->nullable();
+            $table->json('data')->nullable();
             $table->boolean('is_read')->default(false);
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }

@@ -50,6 +50,7 @@ Route::prefix('v1')->group(function () {
         // ----- USER & PROFILE -----
         Route::put('/users/profile', [UserController::class, 'updateProfile']);
         Route::put('/users/password', [UserController::class, 'updatePassword']);
+        Route::put('/users/fcm-token', [UserController::class, 'updateFcmToken']);
 
         // ----- EVENT MANAGEMENT (EO only) -----
         Route::get('/events/my', [EventController::class, 'myEvents'])->middleware('role:eo');
@@ -80,8 +81,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/talents', [TalentController::class, 'store'])->middleware('role:talent');
         Route::put('/talents/{id}', [TalentController::class, 'update'])->middleware('role:talent');
         Route::delete('/talents/{id}', [TalentController::class, 'destroy'])->middleware('role:talent');
-        Route::post('/talents/{id}/media', [TalentController::class, 'uploadMedia'])->middleware('role:talent');
-        Route::delete('/talents/{talent_id}/media/{media_id}', [TalentController::class, 'deleteMedia'])->middleware('role:talent');
 
         // ----- BOOKING -----
         Route::get('/bookings/my', [BookingController::class, 'getMyBookings']);

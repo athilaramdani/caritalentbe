@@ -80,6 +80,23 @@ class ApplicationController extends Controller
 
         $application = Application::create($data);
 
+        \App\Models\Notification::create([
+            'user_id' => $event->organizer_id,
+            'title' => 'Lamaran Baru Masuk',
+            'body' => auth()->user()->name . ' melamar untuk event ' . $event->title . '.',
+            'type' => 'application',
+            'action' => 'application_created',
+            'reference_type' => 'application',
+            'reference_id' => $application->id,
+            'data' => [
+                'application_id' => $application->id,
+                'event_id' => $event->id,
+                'event_title' => $event->title,
+                'talent_id' => $talentId,
+                'talent_name' => auth()->user()->name,
+            ],
+        ]);
+
         return $this->successResponse($application, 'Lamaran berhasil dikirim', 201);
     }
 
@@ -236,7 +253,7 @@ class ApplicationController extends Controller
     )]
     public function updateStatus(UpdateApplicationStatusRequest $request, $id)
     {
-        $application = Application::find($id);
+        $application = Application::with('event')->find($id);
 
         if (!$application) {
             return $this->errorResponse('Lamaran tidak ditemukan', 404);
@@ -265,8 +282,41 @@ class ApplicationController extends Controller
                 'agreed_price' => $booking->agreed_price,
                 'status' => $booking->status
             ];
+
+            \App\Models\Notification::create([
+                'user_id' => $application->talent_id,
+                'title' => 'Lamaran Diterima',
+                'body' => 'Lamaran kamu untuk event ' . $application->event->title . ' diterima.',
+                'type' => 'application',
+                'action' => 'application_accepted',
+                'reference_type' => 'booking',
+                'reference_id' => $booking->id,
+                'data' => [
+                    'application_id' => $application->id,
+                    'booking_id' => $booking->id,
+                    'event_id' => $application->event_id,
+                    'event_title' => $application->event->title,
+                    'agreed_price' => $booking->agreed_price,
+                ],
+            ]);
+
             return $this->successResponse($data, 'Lamaran diterima dan booking telah dibuat');
         }
+
+        \App\Models\Notification::create([
+            'user_id' => $application->talent_id,
+            'title' => 'Lamaran Ditolak',
+            'body' => 'Lamaran kamu untuk event ' . $application->event->title . ' ditolak.',
+            'type' => 'application',
+            'action' => 'application_rejected',
+            'reference_type' => 'application',
+            'reference_id' => $application->id,
+            'data' => [
+                'application_id' => $application->id,
+                'event_id' => $application->event_id,
+                'event_title' => $application->event->title,
+            ],
+        ]);
 
         return $this->successResponse($data, 'Lamaran ditolak');
     }
@@ -296,7 +346,7 @@ class ApplicationController extends Controller
     )]
     public function destroy($id)
     {
-        $application = Application::find($id);
+        $application = Application::with('event')->find($id);
 
         if (!$application) {
             return $this->errorResponse('Lamaran tidak ditemukan', 404);
@@ -305,6 +355,22 @@ class ApplicationController extends Controller
         if ($application->status !== 'pending') {
             return $this->errorResponse('Hanya lamaran pending yang bisa dibatalkan', 422);
         }
+
+        \App\Models\Notification::create([
+            'user_id' => $application->event->organizer_id,
+            'title' => 'Lamaran Dibatalkan',
+            'body' => 'Talent membatalkan lamaran untuk event ' . $application->event->title . '.',
+            'type' => 'application',
+            'action' => 'application_cancelled',
+            'reference_type' => 'event',
+            'reference_id' => $application->event_id,
+            'data' => [
+                'application_id' => $application->id,
+                'event_id' => $application->event_id,
+                'event_title' => $application->event->title,
+                'talent_id' => $application->talent_id,
+            ],
+        ]);
 
         $application->delete();
 

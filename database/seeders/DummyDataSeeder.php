@@ -332,32 +332,13 @@ DB::table('genre_talent')->insert([
 ]);
 
 // ============================================================
-// PORTFOLIO MEDIA
-// ============================================================
-DB::table('media')->truncate();
-DB::table('media')->insert([
-    ['id' => 1,  'talent_id' => 4,  'media_url' => 'https://storage.caritalent.id/media/talent1_live_braga.jpg',       'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 2,  'talent_id' => 4,  'media_url' => 'https://storage.caritalent.id/media/talent1_cover_peach.mp4',       'type' => 'video', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 3,  'talent_id' => 4,  'media_url' => 'https://storage.caritalent.id/media/talent1_promo.jpg',             'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 4,  'talent_id' => 5,  'media_url' => 'https://storage.caritalent.id/media/talent2_djset_dago.mp4',        'type' => 'video', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 5,  'talent_id' => 5,  'media_url' => 'https://storage.caritalent.id/media/talent2_booth_setup.jpg',       'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 6,  'talent_id' => 6,  'media_url' => 'https://storage.caritalent.id/media/talent3_acoustic_kafe.jpg',     'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 7,  'talent_id' => 6,  'media_url' => 'https://storage.caritalent.id/media/talent3_cover_kamu.mp3',        'type' => 'audio', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 8,  'talent_id' => 7,  'media_url' => 'https://storage.caritalent.id/media/talent4_jazz_braga.jpg',        'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 9,  'talent_id' => 7,  'media_url' => 'https://storage.caritalent.id/media/talent4_performance_clip.mp4',  'type' => 'video', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 10, 'talent_id' => 9,  'media_url' => 'https://storage.caritalent.id/media/talent5_metal_rehearsal.jpg',   'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 11, 'talent_id' => 10, 'media_url' => 'https://storage.caritalent.id/media/talent6_indiepop_cover.jpg',    'type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-    ['id' => 12, 'talent_id' => 12, 'media_url' => 'https://storage.caritalent.id/media/talent7_livepaint_festival.jpg','type' => 'image', 'created_at' => now(), 'updated_at' => now()],
-]);
-
-// ============================================================
 // EVENTS
 // EO 2 = Athila (Kafe Braga Permai), EO 3 = Bill (Pasar Bandoeng), EO 8 = Jeany (Braga Art Space), EO 11 = Hendra (Kopi Selasar)
 // ============================================================
 DB::table('events')->truncate();
 DB::table('events')->insert([
 
-    // --- Event 1: OPEN — cocok untuk apply talent ---
+    // --- Event 1: DIBUKA — cocok untuk apply talent ---
     [
         'id'           => 1,
         'organizer_id'      => 2,
@@ -369,12 +350,12 @@ DB::table('events')->insert([
         'latitude'     => -6.9109,
         'longitude'    => 107.6089,
         'city'         => 'Bandung',
-        'status'       => 'open',
+        'status'       => 'dibuka',
         'created_at'   => '2026-04-01 10:00:00',
         'updated_at'   => '2026-04-01 10:00:00',
     ],
 
-    // --- Event 2: OPEN — mencari DJ ---
+    // --- Event 2: DIBUKA — mencari DJ ---
     [
         'id'           => 2,
         'organizer_id'      => 3,
@@ -386,12 +367,12 @@ DB::table('events')->insert([
         'latitude'     => -6.8380,
         'longitude'    => 107.5361,
         'city'         => 'Bandung',
-        'status'       => 'open',
+        'status'       => 'dibuka',
         'created_at'   => '2026-04-02 11:00:00',
         'updated_at'   => '2026-04-02 11:00:00',
     ],
 
-    // --- Event 3: OPEN — mencari Jazz Singer ---
+    // --- Event 3: DIBUKA — mencari Jazz Singer ---
     [
         'id'           => 3,
         'organizer_id'      => 8,
@@ -403,12 +384,12 @@ DB::table('events')->insert([
         'latitude'     => -6.9116,
         'longitude'    => 107.6095,
         'city'         => 'Bandung',
-        'status'       => 'open',
+        'status'       => 'dibuka',
         'created_at'   => '2026-04-03 09:00:00',
         'updated_at'   => '2026-04-03 09:00:00',
     ],
 
-    // --- Event 4: OPEN — mencari Acoustic / Solo Singer ---
+    // --- Event 4: DIBUKA — mencari Acoustic / Solo Singer ---
     [
         'id'           => 4,
         'organizer_id'      => 11,
@@ -420,12 +401,12 @@ DB::table('events')->insert([
         'latitude'     => -6.8733,
         'longitude'    => 107.6218,
         'city'         => 'Bandung',
-        'status'       => 'open',
+        'status'       => 'dibuka',
         'created_at'   => '2026-04-04 08:00:00',
         'updated_at'   => '2026-04-04 08:00:00',
     ],
 
-    // --- Event 5: DRAFT — belum dipublish EO ---
+    // --- Event 5: DITUTUP — belum dipublish EO ---
     [
         'id'           => 5,
         'organizer_id'      => 2,
@@ -437,12 +418,12 @@ DB::table('events')->insert([
         'latitude'     => -6.9109,
         'longitude'    => 107.6089,
         'city'         => 'Bandung',
-        'status'       => 'draft',
+        'status'       => 'ditutup',
         'created_at'   => '2026-04-05 14:00:00',
         'updated_at'   => '2026-04-05 14:00:00',
     ],
 
-    // --- Event 6: CLOSED — sudah ditutup penerimaannya ---
+    // --- Event 6: DITUTUP — sudah ditutup penerimaannya ---
     [
         'id'           => 6,
         'organizer_id'      => 3,
@@ -454,12 +435,12 @@ DB::table('events')->insert([
         'latitude'     => -6.8380,
         'longitude'    => 107.5361,
         'city'         => 'Bandung',
-        'status'       => 'closed',
+        'status'       => 'ditutup',
         'created_at'   => '2026-03-15 10:00:00',
         'updated_at'   => '2026-03-28 16:00:00',
     ],
 
-    // --- Event 7: COMPLETED — sudah selesai, ada review ---
+    // --- Event 7: SELESAI — sudah selesai, ada review ---
     [
         'id'           => 7,
         'organizer_id'      => 2,
@@ -471,12 +452,12 @@ DB::table('events')->insert([
         'latitude'     => -6.9109,
         'longitude'    => 107.6089,
         'city'         => 'Bandung',
-        'status'       => 'completed',
+        'status'       => 'selesai',
         'created_at'   => '2026-02-20 10:00:00',
         'updated_at'   => '2026-03-16 09:00:00',
     ],
 
-    // --- Event 8: COMPLETED — sudah selesai ---
+    // --- Event 8: SELESAI — sudah selesai ---
     [
         'id'           => 8,
         'organizer_id'      => 8,
@@ -488,12 +469,12 @@ DB::table('events')->insert([
         'latitude'     => -6.9116,
         'longitude'    => 107.6095,
         'city'         => 'Bandung',
-        'status'       => 'completed',
+        'status'       => 'selesai',
         'created_at'   => '2026-02-25 09:00:00',
         'updated_at'   => '2026-03-23 10:00:00',
     ],
 
-    // --- Event 9: COMPLETED — sudah selesai ---
+    // --- Event 9: SELESAI — sudah selesai ---
     [
         'id'           => 9,
         'organizer_id'      => 11,
@@ -505,12 +486,12 @@ DB::table('events')->insert([
         'latitude'     => -6.8733,
         'longitude'    => 107.6218,
         'city'         => 'Bandung',
-        'status'       => 'completed',
+        'status'       => 'selesai',
         'created_at'   => '2026-02-10 08:00:00',
         'updated_at'   => '2026-03-10 08:00:00',
     ],
 
-    // --- Event 10: COMPLETED ---
+    // --- Event 10: SELESAI ---
     [
         'id'           => 10,
         'organizer_id'      => 3,
@@ -522,12 +503,12 @@ DB::table('events')->insert([
         'latitude'     => -6.8380,
         'longitude'    => 107.5361,
         'city'         => 'Bandung',
-        'status'       => 'completed',
+        'status'       => 'selesai',
         'created_at'   => '2026-01-25 10:00:00',
         'updated_at'   => '2026-02-23 09:00:00',
     ],
 
-    // --- Event 11: CANCELLED ---
+    // --- Event 11: DIBATALKAN ---
     [
         'id'           => 11,
         'organizer_id'      => 8,
@@ -539,7 +520,7 @@ DB::table('events')->insert([
         'latitude'     => -6.9116,
         'longitude'    => 107.6095,
         'city'         => 'Bandung',
-        'status'       => 'cancelled',
+        'status'       => 'dibatalkan',
         'created_at'   => '2026-03-01 09:00:00',
         'updated_at'   => '2026-03-20 11:00:00',
     ],
@@ -693,7 +674,7 @@ DB::table('applications')->insert([
     ],
 
     // == KONDISI 5: Invitation pending, belum direspons talent ==
-    // EO Athila invites Langit Sore untuk Event 5 Indie Fest (masih draft, tapi invite duluan)
+    // EO Athila invites Langit Sore untuk Event 5 Indie Fest (event masih ditutup, tapi invite duluan)
     [
         'id'             => 8,
         'event_id'       => 5,
@@ -737,7 +718,7 @@ DB::table('applications')->insert([
         'updated_at'     => '2026-04-03 08:00:00',
     ],
 
-    // == KONDISI COMPLETED: Applications untuk event yang sudah selesai ==
+    // == KONDISI SELESAI: Applications untuk event yang sudah selesai ==
     // Event 7 (Punk Vol.4) - The Rotten Bandung tampil, booking completed
     [
         'id'             => 11,
@@ -803,7 +784,7 @@ DB::table('applications')->insert([
         'created_at'     => '2026-02-21 11:00:00',
         'updated_at'     => '2026-02-22 09:30:00',
     ],
-    // Event 11 (Art Night - CANCELLED) - Nandita Visual Art sudah apply sebelum cancel
+    // Event 11 (Art Night - DIBATALKAN) - Nandita Visual Art sudah apply sebelum cancel
     [
         'id'             => 16,
         'event_id'       => 11,
@@ -931,7 +912,7 @@ DB::table('reviews')->insert([
 // NOTIFICATIONS
 // ============================================================
 DB::table('notifications')->truncate();
-DB::table('notifications')->insert([
+$notifications = [
 
     // Notif untuk Talent 1 (Irgi/The Rotten Bandung)
     ['id' => 1,  'user_id' => 4, 'title' => 'Lamaran Diterima.',            'body' => 'Selamat. Lamaran Anda ke Braga Punk Night Vol.4 telah diterima oleh Kafe Braga Permai.',                             'type' => 'application', 'reference_id' => 11, 'is_read' => true,  'created_at' => '2026-02-22 09:05:00', 'updated_at' => '2026-02-22 09:30:00'],
@@ -965,7 +946,33 @@ DB::table('notifications')->insert([
 
     // Notif untuk EO 8 (Jeany - Braga Art Space)
     ['id' => 17, 'user_id' => 8, 'title' => 'Siti ND Terima Booking.',       'body' => 'Siti ND Jazz menerima booking untuk Braga Jazz Evening 24 Mei. Event Anda siap.',                                      'type' => 'booking',     'reference_id' => 2,  'is_read' => false, 'created_at' => '2026-04-04 09:10:00', 'updated_at' => '2026-04-04 09:10:00'],
-]);
+];
+
+foreach ($notifications as &$notification) {
+    $notification['action'] = match ($notification['type']) {
+        'application' => str_contains(strtolower($notification['title']), 'ditolak') ? 'application_rejected' : (str_contains(strtolower($notification['title']), 'baru') ? 'application_created' : 'application_accepted'),
+        'invitation' => str_contains(strtolower($notification['title']), 'ditolak') ? 'invitation_rejected' : 'invitation_received',
+        'booking' => str_contains(strtolower($notification['title']), 'terima') ? 'invitation_accepted' : 'booking_confirmed',
+        'review' => 'review_created',
+        default => $notification['type'] . '_seeded',
+    };
+    $notification['reference_type'] = match ($notification['type']) {
+        'application' => 'application',
+        'invitation' => 'invitation',
+        'booking' => 'booking',
+        'review' => 'review',
+        default => $notification['type'],
+    };
+    $notification['data'] = json_encode([
+        'seeded' => true,
+        'reference_type' => $notification['reference_type'],
+        'reference_id' => $notification['reference_id'],
+    ]);
+    $notification['read_at'] = $notification['is_read'] ? $notification['updated_at'] : null;
+}
+unset($notification);
+
+DB::table('notifications')->insert($notifications);
 
 // ============================================================
 // FIX AVERAGE RATING & TOTAL REVIEWS
@@ -991,7 +998,7 @@ if (DB::connection()->getDriverName() === 'pgsql') {
     DB::statement("SET session_replication_role = 'origin';");
 
     // Fix PostgreSQL sequences for tables where we hardcoded IDs
-    $tables = ['users', 'genres', 'talents', 'media', 'events', 'applications', 'bookings', 'reviews', 'notifications'];
+    $tables = ['users', 'genres', 'talents', 'events', 'applications', 'bookings', 'reviews', 'notifications'];
     foreach ($tables as $table) {
         try {
             DB::statement("SELECT setval('{$table}_id_seq', (SELECT COALESCE(MAX(id), 1) FROM {$table}))");

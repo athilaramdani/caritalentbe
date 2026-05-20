@@ -269,6 +269,28 @@ class EventController extends Controller
 
         $event->update(['status' => 'dibatalkan']);
 
+        // Ambil semua ID talent yang pernah melamar atau diundang ke event ini
+        $talentIds = \App\Models\Application::where('event_id', $event->id)
+            ->distinct()
+            ->pluck('talent_id');
+
+        // Kirim notifikasi ke masing-masing talent
+        foreach ($talentIds as $talentId) {
+            \App\Models\Notification::create([
+                'user_id' => $talentId,
+                'title' => 'Event Dibatalkan',
+                'body' => 'Mohon maaf, event "' . $event->title . '" telah dibatalkan oleh pihak penyelenggara.',
+                'type' => 'event',
+                'action' => 'event_cancelled',
+                'reference_type' => 'event',
+                'reference_id' => $event->id,
+                'data' => [
+                    'event_id' => $event->id,
+                    'event_title' => $event->title,
+                ],
+            ]);
+        }
+
         return $this->successResponse(null, 'Event berhasil dibatalkan');
     }
 

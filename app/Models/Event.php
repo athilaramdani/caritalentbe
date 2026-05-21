@@ -9,7 +9,7 @@ class Event extends Model
 {
     protected $fillable = [
         'organizer_id', 'title', 'description', 'budget', 'event_date', 
-        'venue_name', 'latitude', 'longitude', 'city', 'status'
+        'venue_name', 'full_address', 'latitude', 'longitude', 'city', 'status'
     ];
 
     public function organizer()

@@ -47,6 +47,7 @@ class EventController extends Controller
                     "venue_name" => "Kafe Kota Bandung",
                     "latitude" => -6.9175,
                     "longitude" => 107.6191,
+                    "full_address" => "Jl. Braga No.10, Braga, Kec. Sumur Bandung, Kota Bandung, Jawa Barat 40111",
                     "city" => "Bandung",
                     "status" => "dibuka",
                     "created_at" => "2026-03-01T09:00:00Z"
@@ -113,6 +114,7 @@ class EventController extends Controller
                 "venue_name" => "Kafe Kota Bandung",
                 "latitude" => -6.9175,
                 "longitude" => 107.6191,
+                "full_address" => "Jl. Braga No.10, Braga, Kec. Sumur Bandung, Kota Bandung, Jawa Barat 40111",
                 "city" => "Bandung",
                 "status" => "dibuka",
                 "total_applicants" => 5,
@@ -162,6 +164,7 @@ class EventController extends Controller
                 new OA\Property(property: "venue_name", type: "string", example: "Kafe Kota Bandung"),
                 new OA\Property(property: "latitude", type: "number", format: "float", example: -6.9175),
                 new OA\Property(property: "longitude", type: "number", format: "float", example: 107.6191),
+                new OA\Property(property: "full_address", type: "string", example: "Jl. Braga No.10, Braga, Kec. Sumur Bandung, Kota Bandung, Jawa Barat 40111"),
                 new OA\Property(property: "city", type: "string", example: "Bandung"),
                 new OA\Property(property: "status", type: "string", enum: ["dibuka","ditutup","selesai","dibatalkan"], example: "dibuka"),
             ]

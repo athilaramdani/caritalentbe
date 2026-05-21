@@ -75,7 +75,8 @@ Body:
   "password": "password123",
   "password_confirmation": "password123",
   "phone": "081234567890",
-  "role": "talent"
+  "role": "talent",
+  "stage_name": "The Broken Strings"
 }
 ```
 
@@ -86,12 +87,13 @@ Validasi:
 - `password`: required, min 6, confirmed
 - `phone`: required, string, max 20
 - `role`: required, enum `talent|eo`
+- `stage_name`: opsional, hanya boleh untuk role `talent`
 
 Jika role `talent`, backend otomatis membuat profil talent awal dengan:
 
 - `id = user.id`
 - `user_id = user.id`
-- `stage_name = nama user`
+- `stage_name = stage_name` atau nama user
 - `city = ""` jika tidak dikirim
 - `verified = false`
 

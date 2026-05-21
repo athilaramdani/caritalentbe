@@ -259,6 +259,14 @@ class ApplicationController extends Controller
             return $this->errorResponse('Lamaran tidak ditemukan', 404);
         }
 
+        if ($application->event->organizer_id != auth()->id()) {
+            return $this->errorResponse('Akses ditolak. Anda bukan penyelenggara event ini', 403);
+        }
+
+        if ($application->source !== 'apply') {
+            return $this->errorResponse('Hanya lamaran dari talent yang dapat diubah statusnya oleh EO', 422);
+        }
+
         if ($application->status !== 'pending') {
             return $this->errorResponse('Lamaran sudah direspons sebelumnya', 422);
         }

@@ -26,8 +26,7 @@ class AuthController extends Controller
             new OA\Property(property: "password", type: "string", format: "password", example: "password123"),
             new OA\Property(property: "password_confirmation", type: "string", format: "password", example: "password123"),
             new OA\Property(property: "phone", type: "string", example: "081234567890"),
-            new OA\Property(property: "role", type: "string", example: "talent"),
-            new OA\Property(property: "stage_name", type: "string", example: "The Broken Strings", description: "Opsional, hanya digunakan jika role talent")
+            new OA\Property(property: "role", type: "string", example: "talent")
         ]
     ))]
     #[OA\Response(response: 201, description: "Registrasi berhasil")]
@@ -52,7 +51,6 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
             'phone' => 'required|string|max:20',
             'role' => ['required', Rule::in(['talent', 'eo'])],
-            'stage_name' => 'prohibited_unless:role,talent|nullable|string|max:255',
         ], $messages);
 
         if ($validator->fails()) {
@@ -75,7 +73,7 @@ class AuthController extends Controller
                 $talent = Talent::create([
                     'id' => $user->id,
                     'user_id' => $user->id,
-                    'stage_name' => $request->filled('stage_name') ? $request->stage_name : $user->name,
+                    'stage_name' => $user->name,
                     'city' => $request->input('city', ''),
                     'verified' => false,
                 ]);

@@ -19,6 +19,7 @@ class StoreEventRequest extends FormRequest
             'budget' => 'required|numeric|min:0',
             'event_date' => 'required|date',
             'venue_name' => 'required|string|max:255',
+            'full_address' => 'nullable|string',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
             'city' => 'required|string|max:255',

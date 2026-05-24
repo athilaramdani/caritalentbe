@@ -57,6 +57,19 @@ class InvitationController extends Controller
     {
         $event = Event::find($request->event_id);
 
+        if (!$event) {
+            return $this->errorResponse('Event tidak ditemukan', 404);
+        }
+
+        if ($event->organizer_id != auth()->id()) {
+            return $this->errorResponse('Akses ditolak. Anda bukan penyelenggara event ini', 403);
+        }
+
+        $talentUser = \App\Models\User::find($request->talent_id);
+        if (!$talentUser || $talentUser->role !== 'talent') {
+            return $this->errorResponse('User yang diundang harus memiliki role talent', 422);
+        }
+
         $existing = Application::where('event_id', $request->event_id)
             ->where('talent_id', $request->talent_id)
             ->exists();
@@ -184,6 +197,10 @@ class InvitationController extends Controller
 
         if (!$invitation) {
             return $this->errorResponse('Undangan tidak ditemukan', 404);
+        }
+
+        if ($invitation->talent_id != auth()->id()) {
+            return $this->errorResponse('Akses ditolak. Undangan ini bukan untuk Anda', 403);
         }
 
         if ($invitation->status !== 'pending') {

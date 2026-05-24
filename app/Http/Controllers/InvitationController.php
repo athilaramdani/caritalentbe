@@ -148,8 +148,19 @@ class InvitationController extends Controller
         $talentId = auth()->id() ?? 1;
         $invitations = Application::where('talent_id', $talentId)
             ->where('source', 'invitation')
-            ->with('event')
-            ->get();
+            ->with(['event.organizer'])
+            ->latest()
+            ->get()->map(function ($app) {
+                return [
+                    'id' => $app->id,
+                    'event' => $app->event,
+                    'organizer_name' => $app->event && $app->event->organizer ? $app->event->organizer->name : 'Unknown',
+                    'offered_price' => $app->offered_price,
+                    'proposed_price' => $app->proposed_price ?? $app->offered_price,
+                    'status' => $app->status,
+                    'created_at' => $app->created_at,
+                ];
+            });
 
         return $this->successResponse(['invitations' => $invitations]);
     }

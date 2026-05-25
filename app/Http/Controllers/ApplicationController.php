@@ -138,6 +138,15 @@ class ApplicationController extends Controller
     )]
     public function indexByEvent(Request $request, $eventId)
     {
+        $event = Event::find($eventId);
+        if (!$event) {
+            return $this->errorResponse('Event tidak ditemukan', 404);
+        }
+
+        if ($event->organizer_id != auth()->id()) {
+            return $this->errorResponse('Akses ditolak. Anda bukan penyelenggara event ini', 403);
+        }
+
         $query = Application::where('event_id', $eventId);
 
         if ($request->has('status')) {
@@ -160,16 +169,26 @@ class ApplicationController extends Controller
                 'created_at' => $app->created_at,
                 'talent' => [
                     'id' => $app->talent_id,
+                    'name' => $user ? $user->name : 'Unknown',
+                    'email' => $user ? $user->email : '',
+                    'phone' => $user ? $user->phone : '',
                     'stage_name' => $talentProfile ? $talentProfile->stage_name : ($user ? $user->name : 'Unknown'),
                     'genre' => $talentProfile ? $talentProfile->genres->pluck('name')->toArray() : [],
                     'city' => $talentProfile ? $talentProfile->city : 'Unknown',
                     'verified' => $talentProfile ? (bool)$talentProfile->verified : false,
                     'average_rating' => $talentProfile ? (float)$talentProfile->average_rating : 0.0,
+                    'bio' => $talentProfile ? $talentProfile->bio : '',
+                    'portfolio_link' => $talentProfile ? $talentProfile->portfolio_link : '',
+                    'price_min' => $talentProfile ? $talentProfile->price_min : null,
+                    'price_max' => $talentProfile ? $talentProfile->price_max : null,
                 ]
             ];
         });
 
-        return $this->successResponse(['applications' => $applications]);
+        return $this->successResponse([
+            'event' => $event,
+            'applications' => $applications
+        ]);
     }
 
     #[OA\Get(
@@ -261,10 +280,6 @@ class ApplicationController extends Controller
 
         if ($application->event->organizer_id != auth()->id()) {
             return $this->errorResponse('Akses ditolak. Anda bukan penyelenggara event ini', 403);
-        }
-
-        if ($application->source !== 'apply') {
-            return $this->errorResponse('Hanya lamaran dari talent yang dapat diubah statusnya oleh EO', 422);
         }
 
         if ($application->status !== 'pending') {

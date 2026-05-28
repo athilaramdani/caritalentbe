@@ -821,6 +821,10 @@ Validasi:
 - `status`: required enum `accepted|rejected`
 - `agreed_price`: required jika `status = accepted`, numeric min 0
 
+Syarat bisnis:
+
+- Event terkait harus memiliki status `dibuka` (jika status event selain `'dibuka'`, mengembalikan error `422` dengan pesan `'Lamaran tidak dapat direspons karena status event bukan buka'`).
+
 Jika accepted, backend otomatis membuat booking dengan status `confirmed`.
 
 Response accepted `200`:
@@ -1415,13 +1419,18 @@ Response `200`:
         },
         "talent": {
           "id": 3,
+          "name": "Budi Santoso",
+          "email": "budi@email.com",
+          "phone": "081234567890",
           "stage_name": "The Broken Strings",
           "genre": ["Pop Punk"],
           "price_min": "1000000.00",
           "price_max": "3000000.00",
           "city": "Bandung",
           "verified": true,
-          "average_rating": 4.5
+          "average_rating": 4.5,
+          "bio": "Band pop punk Bandung",
+          "portfolio_link": "https://example.com"
         }
       }
     ]

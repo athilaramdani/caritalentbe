@@ -55,7 +55,7 @@ DB::table('users')->insert([
         'phone'             => '081234560001',
         'role'              => 'admin',
         'email_verified_at' => '2026-01-01 08:00:00',
-        'fcm_token'         => null,
+        'fcm_token'         => 'fcm_admin_april_dummy_token_000',
         'created_at'        => '2026-01-01 08:00:00',
         'updated_at'        => '2026-01-01 08:00:00',
     ],
@@ -156,7 +156,7 @@ DB::table('users')->insert([
         'phone'             => '081234560009',
         'role'              => 'talent',
         'email_verified_at' => '2026-01-20 09:00:00',
-        'fcm_token'         => null,
+        'fcm_token'         => 'fcm_talent_dendi_dummy_token_009',
         'created_at'        => '2026-01-20 09:00:00',
         'updated_at'        => '2026-01-20 09:00:00',
     ],
@@ -168,7 +168,7 @@ DB::table('users')->insert([
         'phone'             => '081234560010',
         'role'              => 'talent',
         'email_verified_at' => '2026-01-22 10:00:00',
-        'fcm_token'         => null,
+        'fcm_token'         => 'fcm_talent_fauzan_dummy_token_010',
         'created_at'        => '2026-01-22 10:00:00',
         'updated_at'        => '2026-01-22 10:00:00',
     ],
@@ -192,7 +192,7 @@ DB::table('users')->insert([
         'phone'             => '081234560012',
         'role'              => 'talent',
         'email_verified_at' => '2026-01-28 09:30:00',
-        'fcm_token'         => null,
+        'fcm_token'         => 'fcm_talent_nandita_dummy_token_012',
         'created_at'        => '2026-01-28 09:30:00',
         'updated_at'        => '2026-01-28 09:30:00',
     ],
@@ -718,7 +718,7 @@ DB::table('applications')->insert([
         'message'        => 'Halo Langit Sore. Kami sedang mempersiapkan Braga Indie Fest 2026 dan sangat tertarik mengundang kalian sebagai salah satu lineup. Harga yang kami tawarkan 1.2jt.',
         'proposed_price' => 1200000,
         'status'         => 'pending',
-        'offered_price'   => null,
+        'offered_price'   => 1200000,
         'created_at'     => '2026-04-06 09:00:00',
         'updated_at'     => '2026-04-06 09:00:00',
     ],
@@ -733,7 +733,7 @@ DB::table('applications')->insert([
         'message'        => 'Halo Altar Sunda. Kami butuh band metal untuk Pasar Bandoeng Metal Malam. Tertarik?',
         'proposed_price' => 2000000,
         'status'         => 'rejected',
-        'offered_price'   => null,
+        'offered_price'   => 2000000,
         'created_at'     => '2026-03-16 10:00:00',
         'updated_at'     => '2026-03-17 09:00:00',
     ],
@@ -819,7 +819,7 @@ DB::table('applications')->insert([
         'created_at'     => '2026-02-21 11:00:00',
         'updated_at'     => '2026-02-22 09:30:00',
     ],
-    // Event 11 (Art Night - DIBATALKAN) - Nandita Visual Art sudah apply sebelum cancel
+    // Event 11 (Art Night - DIBATALKAN) - Nandita Visual Art sudah apply sebelum cancel (diubah ke accepted & booking cancelled)
     [
         'id'             => 16,
         'event_id'       => 11,
@@ -827,8 +827,8 @@ DB::table('applications')->insert([
         'source'         => 'apply',
         'message'        => 'Nandita Visual Art siap untuk live painting di Braga Art Night.',
         'proposed_price' => 800000,
-        'status'         => 'pending',
-        'offered_price'   => null,
+        'status'         => 'accepted',
+        'offered_price'   => 800000,
         'created_at'     => '2026-03-02 10:00:00',
         'updated_at'     => '2026-03-02 10:00:00',
     ],
@@ -905,6 +905,15 @@ DB::table('bookings')->insert([
         'created_at'     => '2026-01-27 09:05:00',
         'updated_at'     => '2026-02-23 09:00:00',
     ],
+    // Booking 8: Event 11 (Art Night - DIBATALKAN) - Nandita - CANCELLED
+    [
+        'id'             => 8,
+        'application_id' => 16,
+        'agreed_price'   => 800000,
+        'status'         => 'cancelled',
+        'created_at'     => '2026-03-02 10:05:00',
+        'updated_at'     => '2026-03-02 10:05:00',
+    ],
 ]);
 
 // ============================================================
@@ -922,6 +931,15 @@ DB::table('reviews')->insert([
         'comment'    => 'The Rotten Bandung luar biasa. Energi di panggung sangat tinggi, penonton langsung hype dari lagu pertama. Cover Peach dari The Jansen dibawakan dengan sempurna. Pasti kami undang lagi.',
         'created_at' => '2026-03-16 20:00:00',
         'updated_at' => '2026-03-16 20:00:00',
+    ],
+    // Review untuk Siti ND dari Jazz Evening Maret
+    [
+        'id'         => 2,
+        'booking_id' => 5,
+        'rating'     => 5,
+        'comment'    => 'Penampilan Siti ND Jazz di Braga Jazz Evening Maret sangat memukau. Suaranya yang merdu membuat malam itu terasa sangat syahdu. Terima kasih banyak!',
+        'created_at' => '2026-03-23 20:00:00',
+        'updated_at' => '2026-03-23 20:00:00',
     ],
     // Review untuk Rizky dari Acoustic Maret
     [
@@ -950,59 +968,490 @@ DB::table('notifications')->truncate();
 $notifications = [
 
     // Notif untuk Talent 1 (Irgi/The Rotten Bandung)
-    ['id' => 1,  'user_id' => 4, 'title' => 'Lamaran Diterima.',            'body' => 'Selamat. Lamaran Anda ke Braga Punk Night Vol.4 telah diterima oleh Kafe Braga Permai.',                             'type' => 'application', 'reference_id' => 11, 'is_read' => true,  'created_at' => '2026-02-22 09:05:00', 'updated_at' => '2026-02-22 09:30:00'],
-    ['id' => 2,  'user_id' => 4, 'title' => 'Review Baru Masuk',             'body' => 'Kafe Braga Permai memberikan review bintang 5 untuk penampilan Anda di Braga Punk Night Vol.4.',                    'type' => 'review',       'reference_id' => 1,  'is_read' => true,  'created_at' => '2026-03-16 20:00:00', 'updated_at' => '2026-03-17 08:00:00'],
-    ['id' => 3,  'user_id' => 4, 'title' => 'Lamaran Ditolak',               'body' => 'Mohon maaf, lamaran Anda ke Pasar Bandoeng DJ Night ditolak karena genre tidak sesuai.',                             'type' => 'application', 'reference_id' => 3,  'is_read' => false, 'created_at' => '2026-04-03 09:00:00', 'updated_at' => '2026-04-03 09:00:00'],
+    [
+        'id'             => 1,
+        'user_id'        => 4,
+        'title'          => 'Lamaran Diterima.',
+        'body'           => 'Selamat. Lamaran Anda ke Braga Punk Night Vol.4 telah diterima oleh Kafe Braga Permai.',
+        'type'           => 'application',
+        'action'         => 'application_accepted',
+        'reference_type' => 'booking',
+        'reference_id'   => 4,
+        'data'           => [
+            'application_id' => 11,
+            'booking_id'     => 4,
+            'event_id'       => 7,
+            'event_title'    => 'Braga Punk Night Vol.4',
+            'agreed_price'   => 1500000,
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-02-22 09:05:00',
+        'updated_at'     => '2026-02-22 09:30:00'
+    ],
+    [
+        'id'             => 2,
+        'user_id'        => 4,
+        'title'          => 'Review Baru Masuk',
+        'body'           => 'Kafe Braga Permai memberikan review bintang 5 untuk penampilan Anda di Braga Punk Night Vol.4.',
+        'type'           => 'review',
+        'action'         => 'review_created',
+        'reference_type' => 'review',
+        'reference_id'   => 1,
+        'data'           => [
+            'review_id'   => 1,
+            'booking_id'  => 4,
+            'event_id'    => 7,
+            'event_title' => 'Braga Punk Night Vol.4',
+            'rating'      => 5,
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-03-16 20:00:00',
+        'updated_at'     => '2026-03-17 08:00:00'
+    ],
+    [
+        'id'             => 3,
+        'user_id'        => 4,
+        'title'          => 'Lamaran Ditolak',
+        'body'           => 'Mohon maaf, lamaran Anda ke Pasar Bandoeng DJ Night ditolak karena genre tidak sesuai.',
+        'type'           => 'application',
+        'action'         => 'application_rejected',
+        'reference_type' => 'application',
+        'reference_id'   => 3,
+        'data'           => [
+            'application_id' => 3,
+            'event_id'       => 2,
+            'event_title'    => 'Pasar Bandoeng Weekend Vibes',
+        ],
+        'is_read'        => false,
+        'created_at'     => '2026-04-03 09:00:00',
+        'updated_at'     => '2026-04-03 09:00:00'
+    ],
 
     // Notif untuk Talent 2 (Arfian/DJ Arfz)
-    ['id' => 4,  'user_id' => 5, 'title' => 'Lamaran Diterima.',            'body' => 'Selamat. Lamaran Anda ke Pasar Bandoeng Weekend Vibes telah diterima.',                                                'type' => 'application', 'reference_id' => 4,  'is_read' => true,  'created_at' => '2026-04-03 10:05:00', 'updated_at' => '2026-04-03 10:30:00'],
-    ['id' => 5,  'user_id' => 5, 'title' => 'Booking Dikonfirmasi',          'body' => 'Booking Anda untuk Pasar Bandoeng Weekend Vibes tanggal 17 Mei 2026 sudah dikonfirmasi.',                              'type' => 'booking',     'reference_id' => 1,  'is_read' => false, 'created_at' => '2026-04-03 10:05:00', 'updated_at' => '2026-04-03 10:05:00'],
-    ['id' => 6,  'user_id' => 5, 'title' => 'Review Baru Masuk',             'body' => 'Pasar Bandoeng memberikan review bintang 4 untuk penampilan DJ Anda di DJ Night Februari.',                           'type' => 'review',       'reference_id' => 4,  'is_read' => true,  'created_at' => '2026-02-23 22:00:00', 'updated_at' => '2026-02-24 08:00:00'],
+    [
+        'id'             => 4,
+        'user_id'        => 5,
+        'title'          => 'Lamaran Diterima.',
+        'body'           => 'Selamat. Lamaran Anda ke Pasar Bandoeng Weekend Vibes telah diterima.',
+        'type'           => 'application',
+        'action'         => 'application_accepted',
+        'reference_type' => 'booking',
+        'reference_id'   => 1,
+        'data'           => [
+            'application_id' => 4,
+            'booking_id'     => 1,
+            'event_id'       => 2,
+            'event_title'    => 'Pasar Bandoeng Weekend Vibes',
+            'agreed_price'   => 2500000,
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-04-03 10:05:00',
+        'updated_at'     => '2026-04-03 10:30:00'
+    ],
+    [
+        'id'             => 5,
+        'user_id'        => 5,
+        'title'          => 'Booking Dikonfirmasi',
+        'body'           => 'Booking Anda untuk Pasar Bandoeng Weekend Vibes tanggal 17 Mei 2026 sudah dikonfirmasi.',
+        'type'           => 'booking',
+        'action'         => 'booking_confirmed',
+        'reference_type' => 'booking',
+        'reference_id'   => 1,
+        'data'           => [
+            'booking_id'     => 1,
+            'application_id' => 4,
+            'event_id'       => 2,
+            'event_title'    => 'Pasar Bandoeng Weekend Vibes',
+        ],
+        'is_read'        => false,
+        'created_at'     => '2026-04-03 10:05:00',
+        'updated_at'     => '2026-04-03 10:05:00'
+    ],
+    [
+        'id'             => 6,
+        'user_id'        => 5,
+        'title'          => 'Review Baru Masuk',
+        'body'           => 'Pasar Bandoeng memberikan review bintang 4 untuk penampilan DJ Anda di DJ Night Februari.',
+        'type'           => 'review',
+        'action'         => 'review_created',
+        'reference_type' => 'review',
+        'reference_id'   => 4,
+        'data'           => [
+            'review_id'   => 4,
+            'booking_id'  => 7,
+            'event_id'    => 10,
+            'event_title' => 'Pasar Bandoeng DJ Night Februari',
+            'rating'      => 4,
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-02-23 22:00:00',
+        'updated_at'     => '2026-02-24 08:00:00'
+    ],
 
     // Notif untuk Talent 3 (Rizky)
-    ['id' => 7,  'user_id' => 6, 'title' => 'Undangan Manggung Baru.',      'body' => 'Kopi Selasar Sunaryo mengundang Anda untuk tampil di Acoustic Sunday 3 Mei 2026. Cek detailnya.',                      'type' => 'invitation',  'reference_id' => 7,  'is_read' => true,  'created_at' => '2026-04-04 10:00:00', 'updated_at' => '2026-04-04 10:15:00'],
-    ['id' => 8,  'user_id' => 6, 'title' => 'Undangan Diterima - Booking.', 'body' => 'Anda menerima undangan Kopi Selasar. Booking Anda untuk 3 Mei 2026 telah dikonfirmasi.',                               'type' => 'booking',     'reference_id' => 3,  'is_read' => true,  'created_at' => '2026-04-04 14:05:00', 'updated_at' => '2026-04-04 14:20:00'],
-    ['id' => 9,  'user_id' => 6, 'title' => 'Lamaran Ditolak',               'body' => 'Lamaran Anda ke Braga Jazz Evening ditolak. Jangan menyerah, terus cari event lain.',                                  'type' => 'application', 'reference_id' => 6,  'is_read' => false, 'created_at' => '2026-04-04 09:30:00', 'updated_at' => '2026-04-04 09:30:00'],
+    [
+        'id'             => 7,
+        'user_id'        => 6,
+        'title'          => 'Undangan Manggung Baru.',
+        'body'           => 'Kopi Selasar Sunaryo mengundang Anda untuk tampil di Acoustic Sunday 3 Mei 2026. Cek detailnya.',
+        'type'           => 'invitation',
+        'action'         => 'invitation_received',
+        'reference_type' => 'invitation',
+        'reference_id'   => 7,
+        'data'           => [
+            'invitation_id' => 7,
+            'event_id'      => 4,
+            'event_title'   => 'Kopi Selasar Acoustic Sunday',
+            'organizer_id'  => 11,
+            'offered_price' => 700000,
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-04-04 10:00:00',
+        'updated_at'     => '2026-04-04 10:15:00'
+    ],
+    [
+        'id'             => 8,
+        'user_id'        => 11, // organizer of Event 4 (EO Hendra)
+        'title'          => 'Undangan Diterima - Booking.',
+        'body'           => 'Anda menerima undangan Kopi Selasar. Booking Anda untuk 3 Mei 2026 telah dikonfirmasi.',
+        'type'           => 'invitation',
+        'action'         => 'invitation_accepted',
+        'reference_type' => 'booking',
+        'reference_id'   => 3,
+        'data'           => [
+            'invitation_id' => 7,
+            'booking_id'     => 3,
+            'event_id'       => 4,
+            'event_title'    => 'Kopi Selasar Acoustic Sunday',
+            'talent_id'      => 6,
+            'agreed_price'   => 700000,
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-04-04 14:05:00',
+        'updated_at'     => '2026-04-04 14:20:00'
+    ],
+    [
+        'id'             => 9,
+        'user_id'        => 6,
+        'title'          => 'Lamaran Ditolak',
+        'body'           => 'Lamaran Anda ke Braga Jazz Evening ditolak. Jangan menyerah, terus cari event lain.',
+        'type'           => 'application',
+        'action'         => 'application_rejected',
+        'reference_type' => 'application',
+        'reference_id'   => 6,
+        'data'           => [
+            'application_id' => 6,
+            'event_id'       => 3,
+            'event_title'    => 'Braga Jazz Evening',
+        ],
+        'is_read'        => false,
+        'created_at'     => '2026-04-04 09:30:00',
+        'updated_at'     => '2026-04-04 09:30:00'
+    ],
 
     // Notif untuk Talent 4 (Siti ND)
-    ['id' => 10, 'user_id' => 7, 'title' => 'Lamaran Diterima.',            'body' => 'Selamat. Lamaran Anda ke Braga Jazz Evening 24 Mei 2026 diterima oleh Braga Art Space.',                               'type' => 'application', 'reference_id' => 5,  'is_read' => true,  'created_at' => '2026-04-04 09:05:00', 'updated_at' => '2026-04-04 09:20:00'],
+    [
+        'id'             => 10,
+        'user_id'        => 7,
+        'title'          => 'Lamaran Diterima.',
+        'body'           => 'Selamat. Lamaran Anda ke Braga Jazz Evening 24 Mei 2026 diterima oleh Braga Art Space.',
+        'type'           => 'application',
+        'action'         => 'application_accepted',
+        'reference_type' => 'booking',
+        'reference_id'   => 2,
+        'data'           => [
+            'application_id' => 5,
+            'booking_id'     => 2,
+            'event_id'       => 3,
+            'event_title'    => 'Braga Jazz Evening',
+            'agreed_price'   => 2000000,
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-04-04 09:05:00',
+        'updated_at'     => '2026-04-04 09:20:00'
+    ],
+
     // Notif untuk Talent 5 (Altar Sunda)
-    ['id' => 12, 'user_id' => 9, 'title' => 'Undangan Ditolak',              'body' => 'Anda menolak undangan dari Pasar Bandoeng untuk Metal Malam.',                                                         'type' => 'invitation',  'reference_id' => 9,  'is_read' => true,  'created_at' => '2026-03-17 09:00:00', 'updated_at' => '2026-03-17 09:30:00'],
+    [
+        'id'             => 12,
+        'user_id'        => 3, // organizer of Event 6 (EO Bill)
+        'title'          => 'Undangan Ditolak',
+        'body'           => 'Anda menolak undangan dari Pasar Bandoeng untuk Metal Malam.',
+        'type'           => 'invitation',
+        'action'         => 'invitation_rejected',
+        'reference_type' => 'invitation',
+        'reference_id'   => 9,
+        'data'           => [
+            'invitation_id' => 9,
+            'event_id'      => 6,
+            'event_title'   => 'Pasar Bandoeng Metal Malam',
+            'talent_id'     => 9,
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-03-17 09:00:00',
+        'updated_at'     => '2026-03-17 09:30:00'
+    ],
 
     // Notif untuk Talent 6 (Langit Sore)
-    ['id' => 13, 'user_id' => 10, 'title' => 'Undangan Manggung Baru.',     'body' => 'Kafe Braga Permai mengundang Langit Sore untuk tampil di Braga Indie Fest 2026. Cek detailnya.',                        'type' => 'invitation',  'reference_id' => 8,  'is_read' => false, 'created_at' => '2026-04-06 09:00:00', 'updated_at' => '2026-04-06 09:00:00'],
+    [
+        'id'             => 13,
+        'user_id'        => 10,
+        'title'          => 'Undangan Manggung Baru.',
+        'body'           => 'Kafe Braga Permai mengundang Langit Sore untuk tampil di Braga Indie Fest 2026. Cek detailnya.',
+        'type'           => 'invitation',
+        'action'         => 'invitation_received',
+        'reference_type' => 'invitation',
+        'reference_id'   => 8,
+        'data'           => [
+            'invitation_id' => 8,
+            'event_id'      => 5,
+            'event_title'   => 'Braga Indie Fest 2026',
+            'organizer_id'  => 2,
+            'offered_price' => 1200000,
+        ],
+        'is_read'        => false,
+        'created_at'     => '2026-04-06 09:00:00',
+        'updated_at'     => '2026-04-06 09:00:00'
+    ],
 
     // Notif untuk EO 2 (Athila - Kafe Braga Permai)
-    ['id' => 14, 'user_id' => 2, 'title' => 'Lamaran Baru Masuk.',           'body' => 'The Rotten Bandung melamar untuk Braga Punk Night Vol.5. Segera review lamarannya.',                                   'type' => 'application', 'reference_id' => 1,  'is_read' => true,  'created_at' => '2026-04-02 13:00:00', 'updated_at' => '2026-04-02 13:30:00'],
-    ['id' => 15, 'user_id' => 2, 'title' => 'Lamaran Baru Masuk.',           'body' => 'Langit Sore melamar untuk Braga Punk Night Vol.5.',                                                                    'type' => 'application', 'reference_id' => 2,  'is_read' => false, 'created_at' => '2026-04-03 10:00:00', 'updated_at' => '2026-04-03 10:00:00'],
+    [
+        'id'             => 14,
+        'user_id'        => 2,
+        'title'          => 'Lamaran Baru Masuk.',
+        'body'           => 'The Rotten Bandung melamar untuk Braga Punk Night Vol.5. Segera review lamarannya.',
+        'type'           => 'application',
+        'action'         => 'application_created',
+        'reference_type' => 'application',
+        'reference_id'   => 1,
+        'data'           => [
+            'application_id' => 1,
+            'event_id'       => 1,
+            'event_title'    => 'Braga Punk Night Vol.5',
+            'talent_id'      => 4,
+            'talent_name'    => 'Muhammad Irgiansyah',
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-04-02 13:00:00',
+        'updated_at'     => '2026-04-02 13:30:00'
+    ],
+    [
+        'id'             => 15,
+        'user_id'        => 2,
+        'title'          => 'Lamaran Baru Masuk.',
+        'body'           => 'Langit Sore melamar untuk Braga Punk Night Vol.5.',
+        'type'           => 'application',
+        'action'         => 'application_created',
+        'reference_type' => 'application',
+        'reference_id'   => 2,
+        'data'           => [
+            'application_id' => 2,
+            'event_id'       => 1,
+            'event_title'    => 'Braga Punk Night Vol.5',
+            'talent_id'      => 10,
+            'talent_name'    => 'Fauzan Akbar Nugraha',
+        ],
+        'is_read'        => false,
+        'created_at'     => '2026-04-03 10:00:00',
+        'updated_at'     => '2026-04-03 10:00:00'
+    ],
 
     // Notif untuk EO 3 (Bill - Pasar Bandoeng)
-    ['id' => 16, 'user_id' => 3, 'title' => 'DJ Arfz Terima Booking.',       'body' => 'DJ Arfz menerima booking untuk Pasar Bandoeng Weekend Vibes. Event Anda siap.',                                        'type' => 'booking',     'reference_id' => 1,  'is_read' => true,  'created_at' => '2026-04-03 10:10:00', 'updated_at' => '2026-04-03 10:30:00'],
+    [
+        'id'             => 16,
+        'user_id'        => 3,
+        'title'          => 'DJ Arfz Terima Booking.',
+        'body'           => 'DJ Arfz menerima booking untuk Pasar Bandoeng Weekend Vibes. Event Anda siap.',
+        'type'           => 'invitation',
+        'action'         => 'invitation_accepted',
+        'reference_type' => 'booking',
+        'reference_id'   => 1,
+        'data'           => [
+            'invitation_id' => 4,
+            'booking_id'     => 1,
+            'event_id'       => 2,
+            'event_title'    => 'Pasar Bandoeng Weekend Vibes',
+            'talent_id'      => 5,
+            'agreed_price'   => 2500000,
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-04-03 10:10:00',
+        'updated_at'     => '2026-04-03 10:30:00'
+    ],
 
     // Notif untuk EO 8 (Jeany - Braga Art Space)
-    ['id' => 17, 'user_id' => 8, 'title' => 'Siti ND Terima Booking.',       'body' => 'Siti ND Jazz menerima booking untuk Braga Jazz Evening 24 Mei. Event Anda siap.',                                      'type' => 'booking',     'reference_id' => 2,  'is_read' => false, 'created_at' => '2026-04-04 09:10:00', 'updated_at' => '2026-04-04 09:10:00'],
+    [
+        'id'             => 17,
+        'user_id'        => 8,
+        'title'          => 'Siti ND Terima Booking.',
+        'body'           => 'Siti ND Jazz menerima booking untuk Braga Jazz Evening 24 Mei. Event Anda siap.',
+        'type'           => 'invitation',
+        'action'         => 'invitation_accepted',
+        'reference_type' => 'booking',
+        'reference_id'   => 2,
+        'data'           => [
+            'invitation_id' => 5,
+            'booking_id'     => 2,
+            'event_id'       => 3,
+            'event_title'    => 'Braga Jazz Evening',
+            'talent_id'      => 7,
+            'agreed_price'   => 2000000,
+        ],
+        'is_read'        => false,
+        'created_at'     => '2026-04-04 09:10:00',
+        'updated_at'     => '2026-04-04 09:10:00'
+    ],
+
+    // === NEW NOTIFICATION TYPES & ACTIONS FROM LATEST UPDATES ===
+    // booking_completed
+    [
+        'id'             => 18,
+        'user_id'        => 4, // Irgi
+        'title'          => 'Event Selesai',
+        'body'           => 'Event Braga Punk Night Vol.4 telah ditandai selesai oleh eo.',
+        'type'           => 'booking',
+        'action'         => 'booking_completed',
+        'reference_type' => 'booking',
+        'reference_id'   => 4,
+        'data'           => [
+            'booking_id'     => 4,
+            'application_id' => 11,
+            'event_id'       => 7,
+            'event_title'    => 'Braga Punk Night Vol.4',
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-03-16 09:00:00',
+        'updated_at'     => '2026-03-16 09:00:00'
+    ],
+    [
+        'id'             => 19,
+        'user_id'        => 7, // Siti
+        'title'          => 'Event Selesai',
+        'body'           => 'Event Braga Jazz Evening Maret telah ditandai selesai oleh eo.',
+        'type'           => 'booking',
+        'action'         => 'booking_completed',
+        'reference_type' => 'booking',
+        'reference_id'   => 5,
+        'data'           => [
+            'booking_id'     => 5,
+            'application_id' => 12,
+            'event_id'       => 8,
+            'event_title'    => 'Braga Jazz Evening Maret',
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-03-23 10:00:00',
+        'updated_at'     => '2026-03-23 10:00:00'
+    ],
+
+    // booking_cancelled
+    [
+        'id'             => 20,
+        'user_id'        => 12, // Nandita
+        'title'          => 'Booking Dibatalkan',
+        'body'           => 'Booking untuk event Braga Art Night - Dibatalkan dibatalkan.',
+        'type'           => 'booking',
+        'action'         => 'booking_cancelled',
+        'reference_type' => 'booking',
+        'reference_id'   => 8,
+        'data'           => [
+            'booking_id'     => 8,
+            'application_id' => 16,
+            'event_id'       => 11,
+            'event_title'    => 'Braga Art Night - Dibatalkan',
+            'cancelled_by'   => 'eo',
+        ],
+        'is_read'        => false,
+        'created_at'     => '2026-03-02 11:00:00',
+        'updated_at'     => '2026-03-02 11:00:00'
+    ],
+
+    // talent_verified
+    [
+        'id'             => 21,
+        'user_id'        => 4, // Irgi
+        'title'          => 'Talent Berhasil Diverifikasi',
+        'body'           => 'Profil talent kamu sudah diverifikasi oleh admin.',
+        'type'           => 'talent',
+        'action'         => 'talent_verified',
+        'reference_type' => 'talent',
+        'reference_id'   => 4,
+        'data'           => [
+            'talent_id'  => 4,
+            'stage_name' => 'The Rotten Bandung',
+            'verified'   => true,
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-03-20 10:00:00',
+        'updated_at'     => '2026-03-20 10:00:00'
+    ],
+
+    // talent_unverified
+    [
+        'id'             => 22,
+        'user_id'        => 9, // Dendi
+        'title'          => 'Verifikasi Talent Dicabut',
+        'body'           => 'Verifikasi profil talent kamu dicabut oleh admin.',
+        'type'           => 'talent',
+        'action'         => 'talent_unverified',
+        'reference_type' => 'talent',
+        'reference_id'   => 9,
+        'data'           => [
+            'talent_id'  => 9,
+            'stage_name' => 'Altar Sunda',
+            'verified'   => false,
+        ],
+        'is_read'        => false,
+        'created_at'     => '2026-01-20 10:00:00',
+        'updated_at'     => '2026-01-20 10:00:00'
+    ],
+
+    // event_moderated
+    [
+        'id'             => 23,
+        'user_id'        => 8, // Jeany (organizer of Event 11)
+        'title'          => 'Event Dimoderasi Admin',
+        'body'           => 'Event "Braga Art Night - Dibatalkan" telah diubah statusnya menjadi dibatalkan oleh Admin. Alasan: Perubahan jadwal venue.',
+        'type'           => 'event',
+        'action'         => 'event_moderated',
+        'reference_type' => 'event',
+        'reference_id'   => 11,
+        'data'           => [
+            'event_id'    => 11,
+            'event_title' => 'Braga Art Night - Dibatalkan',
+            'status'      => 'dibatalkan',
+            'reason'      => 'Perubahan jadwal venue.',
+        ],
+        'is_read'        => true,
+        'created_at'     => '2026-03-20 11:00:00',
+        'updated_at'     => '2026-03-20 11:00:00'
+    ],
+
+    // application_cancelled
+    [
+        'id'             => 24,
+        'user_id'        => 2, // Athila
+        'title'          => 'Lamaran Dibatalkan',
+        'body'           => 'Talent membatalkan lamaran untuk event Braga Punk Night Vol.5.',
+        'type'           => 'application',
+        'action'         => 'application_cancelled',
+        'reference_type' => 'event',
+        'reference_id'   => 1,
+        'data'           => [
+            'application_id' => 999,
+            'event_id'       => 1,
+            'event_title'    => 'Braga Punk Night Vol.5',
+            'talent_id'      => 5,
+        ],
+        'is_read'        => false,
+        'created_at'     => '2026-04-03 08:00:00',
+        'updated_at'     => '2026-04-03 08:00:00'
+    ]
 ];
 
 foreach ($notifications as &$notification) {
-    $notification['action'] = match ($notification['type']) {
-        'application' => str_contains(strtolower($notification['title']), 'ditolak') ? 'application_rejected' : (str_contains(strtolower($notification['title']), 'baru') ? 'application_created' : 'application_accepted'),
-        'invitation' => str_contains(strtolower($notification['title']), 'ditolak') ? 'invitation_rejected' : 'invitation_received',
-        'booking' => str_contains(strtolower($notification['title']), 'terima') ? 'invitation_accepted' : 'booking_confirmed',
-        'review' => 'review_created',
-        default => $notification['type'] . '_seeded',
-    };
-    $notification['reference_type'] = match ($notification['type']) {
-        'application' => 'application',
-        'invitation' => 'invitation',
-        'booking' => 'booking',
-        'review' => 'review',
-        default => $notification['type'],
-    };
-    $notification['data'] = json_encode([
-        'seeded' => true,
-        'reference_type' => $notification['reference_type'],
-        'reference_id' => $notification['reference_id'],
-    ]);
+    if (is_array($notification['data'])) {
+        $notification['data'] = json_encode($notification['data']);
+    }
     $notification['read_at'] = $notification['is_read'] ? $notification['updated_at'] : null;
 }
 unset($notification);

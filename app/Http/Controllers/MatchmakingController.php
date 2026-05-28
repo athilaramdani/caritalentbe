@@ -81,13 +81,18 @@ class MatchmakingController extends Controller
                     ],
                     'talent' => [
                         'id' => $talent->user_id,
+                        'name' => $talent->user ? $talent->user->name : 'Unknown',
+                        'email' => $talent->user ? $talent->user->email : '',
+                        'phone' => $talent->user ? $talent->user->phone : '',
                         'stage_name' => $talent->stage_name,
                         'genre' => $talent->genres->pluck('name'),
                         'price_min' => $talent->price_min,
                         'price_max' => $talent->price_max,
                         'city' => $talent->city,
                         'verified' => $talent->verified,
-                        'average_rating' => $talent->average_rating
+                        'average_rating' => $talent->average_rating,
+                        'bio' => $talent->bio ?? '',
+                        'portfolio_link' => $talent->portfolio_link ?? ''
                     ]
                 ];
             }

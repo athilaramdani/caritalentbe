@@ -266,6 +266,11 @@ class ApplicationController extends Controller
         ])
     )]
     #[OA\Response(
+        response: 422,
+        description: "Event tidak sedang dibuka / Lamaran sudah direspons sebelumnya",
+        content: new OA\JsonContent(example: ["success" => false, "message" => "Lamaran tidak dapat direspons karena status event bukan buka"])
+    )]
+    #[OA\Response(
         response: 404,
         description: "Lamaran tidak ditemukan",
         content: new OA\JsonContent(example: ["success" => false, "message" => "Lamaran tidak ditemukan"])
@@ -284,6 +289,10 @@ class ApplicationController extends Controller
 
         if ($application->status !== 'pending') {
             return $this->errorResponse('Lamaran sudah direspons sebelumnya', 422);
+        }
+
+        if ($application->event->status !== 'dibuka') {
+            return $this->errorResponse('Lamaran tidak dapat direspons karena status event bukan buka', 422);
         }
 
         $application->update([

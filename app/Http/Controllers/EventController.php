@@ -246,16 +246,16 @@ class EventController extends Controller
 
     #[OA\Delete(
         path: "/events/{id}",
-        summary: "Cancel Event",
-        description: "Membatalkan event (soft cancel — status berubah menjadi 'dibatalkan', tidak dihapus permanen). Akses: EO (pemilik), Admin.",
+        summary: "Delete Event",
+        description: "Menghapus event secara permanen dari database. Akses: EO (pemilik), Admin.",
         security: [["bearerAuth" => []]],
         tags: ["Event"]
     )]
     #[OA\Parameter(name: "id", in: "path", description: "ID event", required: true, schema: new OA\Schema(type: "integer", example: 1))]
     #[OA\Response(
         response: 200,
-        description: "Event berhasil dibatalkan",
-        content: new OA\JsonContent(example: ["success" => true, "message" => "Event berhasil dibatalkan"])
+        description: "Event berhasil dihapus",
+        content: new OA\JsonContent(example: ["success" => true, "message" => "Event berhasil dihapus"])
     )]
     #[OA\Response(
         response: 404,
@@ -270,31 +270,35 @@ class EventController extends Controller
             return $this->errorResponse('Event tidak ditemukan', 404);
         }
 
-        $event->update(['status' => 'dibatalkan']);
-
-        // Ambil semua ID talent yang pernah melamar atau diundang ke event ini
+        // Ambil semua ID talent yang pernah melamar atau diundang ke event ini sebelum event dihapus
         $talentIds = \App\Models\Application::where('event_id', $event->id)
             ->distinct()
             ->pluck('talent_id');
+
+        $eventTitle = $event->title;
+        $eventId = $event->id;
+
+        // Hapus event secara permanen (menghapus secara cascade data terkait seperti lamaran dll di DB)
+        $event->delete();
 
         // Kirim notifikasi ke masing-masing talent
         foreach ($talentIds as $talentId) {
             \App\Models\Notification::create([
                 'user_id' => $talentId,
-                'title' => 'Event Dibatalkan',
-                'body' => 'Mohon maaf, event "' . $event->title . '" telah dibatalkan oleh pihak penyelenggara.',
+                'title' => 'Event Dihapus',
+                'body' => 'Mohon maaf, event "' . $eventTitle . '" telah dihapus oleh pihak penyelenggara.',
                 'type' => 'event',
-                'action' => 'event_cancelled',
-                'reference_type' => 'event',
-                'reference_id' => $event->id,
+                'action' => 'event_deleted',
+                'reference_type' => null,
+                'reference_id' => null,
                 'data' => [
-                    'event_id' => $event->id,
-                    'event_title' => $event->title,
+                    'event_id' => $eventId,
+                    'event_title' => $eventTitle,
                 ],
             ]);
         }
 
-        return $this->successResponse(null, 'Event berhasil dibatalkan');
+        return $this->successResponse(null, 'Event berhasil dihapus');
     }
 
     #[OA\Get(

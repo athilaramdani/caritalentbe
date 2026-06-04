@@ -29,6 +29,11 @@ class TalentController extends Controller
             'total_reviews' => (int) $talent->total_reviews,
             'created_at' => $talent->created_at,
             'updated_at' => $talent->updated_at,
+            'user' => $talent->user ? [
+                'name' => $talent->user->name,
+                'email' => $talent->user->email,
+                'phone' => $talent->user->phone,
+            ] : null,
         ];
     }
 
@@ -38,7 +43,7 @@ class TalentController extends Controller
     #[OA\Response(response: 200, description: "Returns list of talents")]
     public function index(Request $request)
     {
-        $query = Talent::with('genres');
+        $query = Talent::with(['genres', 'user']);
 
         if ($request->has('city')) {
             $query->where('city', $request->city);
@@ -88,7 +93,7 @@ class TalentController extends Controller
     #[OA\Response(response: 404, description: "Talent tidak ditemukan")]
     public function show($id)
     {
-        $talent = Talent::with('genres')->find($id);
+        $talent = Talent::with(['genres', 'user'])->find($id);
 
         if (!$talent) {
             return $this->errorResponse('Talent tidak ditemukan', 404);
@@ -102,7 +107,7 @@ class TalentController extends Controller
     #[OA\Response(response: 404, description: "Profil talent tidak ditemukan")]
     public function myTalent(Request $request)
     {
-        $talent = Talent::with('genres')
+        $talent = Talent::with(['genres', 'user'])
             ->where('user_id', $request->user()->id)
             ->first();
 
@@ -170,7 +175,7 @@ class TalentController extends Controller
             $talent->genres()->attach($request->genre_ids);
         }
 
-        $talent->load('genres');
+        $talent->load(['genres', 'user']);
 
         return $this->successResponse($this->formatTalent($talent), 'Profil talent berhasil dibuat', 201);
     }
@@ -223,7 +228,7 @@ class TalentController extends Controller
             $talent->genres()->sync($request->genre_ids);
         }
 
-        $talent->load('genres');
+        $talent->load(['genres', 'user']);
 
         return $this->successResponse($this->formatTalent($talent), 'Profil talent berhasil diperbarui');
     }

@@ -58,7 +58,7 @@ class EventController extends Controller
     )]
     public function index(Request $request)
     {
-        $query = Event::query();
+        $query = Event::with(['organizer', 'genres']);
 
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -78,8 +78,15 @@ class EventController extends Controller
 
         $events = $query->paginate($request->get('per_page', 15));
 
+        $mappedEvents = collect($events->items())->map(function ($event) {
+            $eventArray = $event->toArray();
+            $eventArray['organizer_name'] = $event->organizer ? $event->organizer->name : null;
+            $eventArray['genre_needed'] = $event->genres->pluck('name')->toArray();
+            return $eventArray;
+        });
+
         return $this->successResponse([
-            'events' => $events->items(),
+            'events' => $mappedEvents,
             'pagination' => [
                 'current_page' => $events->currentPage(),
                 'per_page' => $events->perPage(),

@@ -308,7 +308,12 @@ Response `200`:
         "portfolio_link": "https://youtube.com/thebrokenstrings",
         "verified": true,
         "average_rating": 4.5,
-        "total_reviews": 12
+        "total_reviews": 12,
+        "user": {
+          "name": "Budi Santoso",
+          "email": "budi@email.com",
+          "phone": "081234567890"
+        }
       }
     ],
     "pagination": {
@@ -345,7 +350,12 @@ Response `200` jika ditemukan:
     "portfolio_link": "https://youtube.com/thebrokenstrings",
     "verified": true,
     "average_rating": 4.5,
-    "total_reviews": 12
+    "total_reviews": 12,
+    "user": {
+      "name": "Budi Santoso",
+      "email": "budi@email.com",
+      "phone": "081234567890"
+    }
   }
 }
 ```
@@ -383,7 +393,12 @@ Response `200`:
     "portfolio_link": "https://example.com",
     "verified": false,
     "average_rating": 0,
-    "total_reviews": 0
+    "total_reviews": 0,
+    "user": {
+      "name": "Budi Santoso",
+      "email": "budi@email.com",
+      "phone": "081234567890"
+    }
   }
 }
 ```
@@ -526,11 +541,29 @@ Response `200`:
   "success": true,
   "message": "OK",
   "data": {
-    "events": [],
+    "events": [
+      {
+        "id": 1,
+        "organizer_id": 2,
+        "organizer_name": "Kafe Kota",
+        "title": "Punk Night Vol. 3",
+        "description": "Malam punk rock terbaik di Bandung.",
+        "genre_needed": ["Pop Punk", "Hardcore"],
+        "budget": 3000000,
+        "event_date": "2026-04-15",
+        "venue_name": "Kafe Kota Bandung",
+        "latitude": -6.9175,
+        "longitude": 107.6191,
+        "full_address": "Jl. Braga No.10",
+        "city": "Bandung",
+        "status": "dibuka",
+        "created_at": "2026-03-01T09:00:00Z"
+      }
+    ],
     "pagination": {
       "current_page": 1,
       "per_page": 15,
-      "total": 0,
+      "total": 1,
       "last_page": 1
     }
   }

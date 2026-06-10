@@ -65,7 +65,7 @@ class AdminController extends Controller
             return response()->json(['success' => false, 'message' => 'Akses ditolak'], 403);
         }
 
-        $query = User::query();
+        $query = User::query()->where('role', '!=', 'admin');
 
         if ($request->has('role')) {
             $query->where('role', $request->role);

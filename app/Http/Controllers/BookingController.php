@@ -19,8 +19,10 @@ class BookingController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function show($id)
     {
+        // Cari booking beserta relasi event dan talent-nya
         $booking = Booking::with(['application.event', 'application.talent'])->find($id);
 
+        // Pastikan booking tersebut ada
         if (!$booking) {
             return response()->json([
                 'success' => false,
@@ -28,10 +30,12 @@ class BookingController extends Controller
             ], 404);
         }
 
+        // Cek apakah user yang mengakses adalah EO, talent, atau admin
         $user = Auth::user();
         $isOrganizer = $booking->application->event->organizer_id == $user->id;
         $isTalent = $booking->application->talent_id == $user->id;
 
+        // Hanya pihak yang terlibat atau admin yang boleh melihat detail booking
         if (!$isOrganizer && !$isTalent && $user->role !== 'admin') {
             return response()->json([
                 'success' => false,
@@ -39,6 +43,7 @@ class BookingController extends Controller
             ], 403);
         }
 
+        // Ambil profil talent untuk menampilkan stage name
         $talentProfile = Talent::where('user_id', $booking->application->talent_id)->first();
 
         return response()->json([
@@ -73,19 +78,23 @@ class BookingController extends Controller
     #[OA\Response(response: 401, description: "Unauthorized")]
     public function getMyBookings(Request $request)
     {
+        // Ambil data user yang sedang login
         $user = Auth::user();
         $query = Booking::with(['application.event', 'application.talent']);
 
+        // Filter booking berdasarkan role: EO hanya lihat booking event miliknya
         if ($user->role === 'eo') {
             $query->whereHas('application.event', function($q) use ($user) {
                 $q->where('organizer_id', $user->id);
             });
         } elseif ($user->role === 'talent') {
+            // Talent hanya lihat booking yang berkaitan dengan dirinya
             $query->whereHas('application', function($q) use ($user) {
                 $q->where('talent_id', $user->id);
             });
         }
 
+        // Filter tambahan berdasarkan status booking jika ada
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
@@ -129,8 +138,10 @@ class BookingController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function complete($id)
     {
+        // Cari booking beserta data event-nya
         $booking = Booking::with('application.event')->find($id);
 
+        // Pastikan booking tersebut ada
         if (!$booking) {
             return response()->json([
                 'success' => false,
@@ -138,6 +149,7 @@ class BookingController extends Controller
             ], 404);
         }
 
+        // Hanya EO pemilik event yang boleh menandai booking sebagai selesai
         if (Auth::user()->role !== 'eo' || $booking->application->event->organizer_id != Auth::id()) {
             return response()->json([
                 'success' => false,
@@ -145,6 +157,7 @@ class BookingController extends Controller
             ], 403);
         }
 
+        // Hanya booking yang masih confirmed yang bisa diselesaikan
         if ($booking->status !== 'confirmed') {
             return response()->json([
                 'success' => false,
@@ -152,6 +165,7 @@ class BookingController extends Controller
             ], 400);
         }
 
+        // Tandai booking sebagai selesai
         $booking->update(['status' => 'completed']);
 
         // Create notification for talent
@@ -189,8 +203,10 @@ class BookingController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function cancel($id)
     {
+        // Cari booking beserta data event-nya
         $booking = Booking::with('application.event')->find($id);
 
+        // Pastikan booking tersebut ada
         if (!$booking) {
             return response()->json([
                 'success' => false,
@@ -198,10 +214,12 @@ class BookingController extends Controller
             ], 404);
         }
 
+        // Tentukan siapa yang sedang mengakses endpoint ini
         $user = Auth::user();
         $isOrganizer = $user->role === 'eo' && $booking->application->event->organizer_id == $user->id;
         $isTalent = $user->role === 'talent' && $booking->application->talent_id == $user->id;
 
+        // Hanya EO, talent yang terlibat, atau admin yang boleh membatalkan
         if ($user->role !== 'admin' && !$isOrganizer && !$isTalent) {
             return response()->json([
                 'success' => false,
@@ -209,6 +227,7 @@ class BookingController extends Controller
             ], 403);
         }
 
+        // Hanya booking yang masih confirmed yang bisa dibatalkan
         if ($booking->status !== 'confirmed') {
             return response()->json([
                 'success' => false,
@@ -216,6 +235,7 @@ class BookingController extends Controller
             ], 400);
         }
 
+        // Tandai booking sebagai dibatalkan
         $booking->update(['status' => 'cancelled']);
 
         $notificationPayload = [
@@ -234,6 +254,7 @@ class BookingController extends Controller
             ],
         ];
 
+        // Kirim notifikasi ke pihak yang tidak membatalkan
         if ($user->role === 'admin') {
             foreach ([$booking->application->talent_id, $booking->application->event->organizer_id] as $recipientId) {
                 Notification::create(array_merge($notificationPayload, ['user_id' => $recipientId]));

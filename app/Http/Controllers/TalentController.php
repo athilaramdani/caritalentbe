@@ -88,8 +88,10 @@ class TalentController extends Controller
     #[OA\Response(response: 404, description: "Talent tidak ditemukan")]
     public function show($id)
     {
+        // Cari profil talent beserta genre-nya
         $talent = Talent::with('genres')->find($id);
 
+        // Pastikan profil talent tersebut ada
         if (!$talent) {
             return $this->errorResponse('Talent tidak ditemukan', 404);
         }
@@ -102,10 +104,12 @@ class TalentController extends Controller
     #[OA\Response(response: 404, description: "Profil talent tidak ditemukan")]
     public function myTalent(Request $request)
     {
+        // Cari profil talent milik user yang sedang login
         $talent = Talent::with('genres')
             ->where('user_id', $request->user()->id)
             ->first();
 
+        // Kembalikan error jika profil belum dibuat
         if (!$talent) {
             return $this->errorResponse('Profil talent tidak ditemukan', 404);
         }
@@ -129,10 +133,12 @@ class TalentController extends Controller
     #[OA\Response(response: 201, description: "Profil talent berhasil dibuat")]
     public function store(Request $request)
     {
+        // Hanya user dengan role talent yang boleh membuat profil ini
         if ($request->user()->role !== 'talent') {
             return $this->errorResponse('Hanya talent yang bisa membuat profil', 403);
         }
 
+        // Validasi data profil yang dikirim
         $validator = Validator::make($request->all(), [
             'stage_name' => 'required|string|max:255',
             'genre_ids' => 'sometimes|array',
@@ -150,10 +156,12 @@ class TalentController extends Controller
 
         // Talent should only have one profile per user
         $existingTalent = Talent::where('user_id', $request->user()->id)->first();
+        // Tolak jika profil sudah pernah dibuat sebelumnya
         if ($existingTalent) {
             return $this->errorResponse('Profil talent sudah ada', 422);
         }
 
+        // Buat profil talent baru
         $talent = Talent::create([
             'id' => $request->user()->id,
             'user_id' => $request->user()->id,
@@ -166,6 +174,7 @@ class TalentController extends Controller
             'verified' => false,
         ]);
 
+        // Attach genre yang dipilih ke profil talent
         if ($request->has('genre_ids')) {
             $talent->genres()->attach($request->genre_ids);
         }
@@ -189,8 +198,10 @@ class TalentController extends Controller
     #[OA\Response(response: 200, description: "Profil talent berhasil diperbarui")]
     public function update(Request $request, $id)
     {
+        // Cari profil talent yang akan diupdate
         $talent = Talent::find($id);
 
+        // Pastikan profil talent tersebut ada
         if (!$talent) {
             return $this->errorResponse('Talent tidak ditemukan', 404);
         }
@@ -200,6 +211,7 @@ class TalentController extends Controller
             return $this->errorResponse('Akses ditolak', 403);
         }
 
+        // Validasi data yang akan diperbarui
         $validator = Validator::make($request->all(), [
             'stage_name' => 'sometimes|string|max:255',
             'genre_ids' => 'sometimes|array',
@@ -215,10 +227,12 @@ class TalentController extends Controller
             return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
+        // Update field yang dikirim saja
         $talent->update($request->only([
             'stage_name', 'price_min', 'price_max', 'city', 'bio', 'portfolio_link'
         ]));
 
+        // Sync ulang genre jika ada perubahan
         if ($request->has('genre_ids')) {
             $talent->genres()->sync($request->genre_ids);
         }
@@ -233,16 +247,20 @@ class TalentController extends Controller
     #[OA\Response(response: 200, description: "Profil talent berhasil dihapus")]
     public function destroy(Request $request, $id)
     {
+        // Cari profil talent yang akan dihapus
         $talent = Talent::find($id);
 
+        // Pastikan profil talent tersebut ada
         if (!$talent) {
             return $this->errorResponse('Talent tidak ditemukan', 404);
         }
 
+        // Hanya admin yang berhak menghapus profil talent
         if ($request->user()->role !== 'admin') {
             return $this->errorResponse('Akses ditolak. Hanya admin yang dapat menghapus data ini.', 403);
         }
 
+        // Hapus profil talent dari database
         $talent->delete();
 
         return $this->successResponse('Profil talent berhasil dihapus');

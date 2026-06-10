@@ -60,22 +60,28 @@ class EventController extends Controller
     {
         $query = Event::query();
 
+        // Filter berdasarkan status event jika ada
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
+        // Filter berdasarkan kota
         if ($request->has('city')) {
             $query->where('city', $request->city);
         }
+        // Filter budget minimum
         if ($request->has('budget_min')) {
             $query->where('budget', '>=', $request->budget_min);
         }
+        // Filter budget maksimum
         if ($request->has('budget_max')) {
             $query->where('budget', '<=', $request->budget_max);
         }
+        // Cari berdasarkan judul event
         if ($request->has('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
+        // Ambil hasil dengan paginasi
         $events = $query->paginate($request->get('per_page', 15));
 
         return $this->successResponse([
@@ -129,8 +135,10 @@ class EventController extends Controller
     )]
     public function show($id)
     {
+        // Cari event beserta genre-nya
         $event = Event::with('genres')->find($id);
 
+        // Pastikan event tersebut ada
         if (!$event) {
             return $this->errorResponse('Event tidak ditemukan', 404);
         }
@@ -186,11 +194,14 @@ class EventController extends Controller
     )]
     public function store(StoreEventRequest $request)
     {
+        // Ambil data yang sudah divalidasi, lalu set organizer_id ke user yang login
         $data = $request->validated();
         $data['organizer_id'] = auth()->id() ?? 1;
 
+        // Simpan event baru ke database
         $event = Event::create($data);
 
+        // Sync genre yang dipilih ke pivot table
         if ($request->has('genre_ids')) {
             $event->genres()->sync($request->genre_ids);
         }
@@ -229,14 +240,18 @@ class EventController extends Controller
     )]
     public function update(UpdateEventRequest $request, $id)
     {
+        // Cari event yang akan diupdate
         $event = Event::find($id);
 
+        // Pastikan event tersebut ada
         if (!$event) {
             return $this->errorResponse('Event tidak ditemukan', 404);
         }
 
+        // Update data event dengan data yang sudah divalidasi
         $event->update($request->validated());
 
+        // Sync ulang genre jika ada perubahan
         if ($request->has('genre_ids')) {
             $event->genres()->sync($request->genre_ids);
         }
@@ -264,12 +279,15 @@ class EventController extends Controller
     )]
     public function destroy($id)
     {
+        // Cari event yang akan dibatalkan
         $event = Event::find($id);
 
+        // Pastikan event tersebut ada
         if (!$event) {
             return $this->errorResponse('Event tidak ditemukan', 404);
         }
 
+        // Ubah status event menjadi dibatalkan, tidak dihapus dari database
         $event->update(['status' => 'dibatalkan']);
 
         // Ambil semua ID talent yang pernah melamar atau diundang ke event ini

@@ -22,14 +22,17 @@ class UserController extends Controller
     #[OA\Response(response: 200, description: "Profil berhasil diperbarui")]
     public function updateProfile(Request $request)
     {
+        // Ambil data user yang sedang login
         $user = $request->user();
         
+        // Pesan error kustom untuk validasi
         $messages = [
             'required' => 'Kolom :attribute wajib diisi jika ingin diubah.',
             'string' => 'Kolom :attribute harus berupa teks.',
             'max' => ':attribute maksimal :max karakter.',
         ];
 
+        // Validasi field yang dikirim, keduanya bersifat opsional
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
             'phone' => 'sometimes|required|string|max:20',
@@ -39,6 +42,7 @@ class UserController extends Controller
             return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
+        // Update hanya field yang dikirim dalam request
         if ($request->has('name')) $user->name = $request->name;
         if ($request->has('phone')) $user->phone = $request->phone;
         
@@ -60,8 +64,10 @@ class UserController extends Controller
     #[OA\Response(response: 422, description: "Password lama tidak sesuai")]
     public function updatePassword(Request $request)
     {
+        // Ambil data user yang sedang login
         $user = $request->user();
         
+        // Pesan error kustom untuk validasi
         $messages = [
             'required' => 'Kolom :attribute wajib diisi.',
             'min' => ':attribute minimal harus :min karakter.',
@@ -69,6 +75,7 @@ class UserController extends Controller
             'string' => 'Kolom :attribute harus berupa teks.',
         ];
 
+        // Validasi password lama dan password baru
         $validator = Validator::make($request->all(), [
             'current_password' => 'required|string',
             'new_password' => 'required|string|min:6|confirmed',
@@ -78,10 +85,12 @@ class UserController extends Controller
             return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
+        // Verifikasi password lama sebelum melakukan perubahan
         if (!Hash::check($request->current_password, $user->password)) {
             return $this->errorResponse('Password lama tidak sesuai', 422);
         }
 
+        // Hash dan simpan password baru
         $user->password = Hash::make($request->new_password);
         $user->save();
 
@@ -98,8 +107,10 @@ class UserController extends Controller
     #[OA\Response(response: 200, description: "FCM Token berhasil diperbarui")]
     public function updateFcmToken(Request $request)
     {
+        // Ambil data user yang sedang login
         $user = $request->user();
 
+        // Validasi token FCM wajib dikirim
         $validator = Validator::make($request->all(), [
             'fcm_token' => 'required|string'
         ]);
@@ -108,6 +119,7 @@ class UserController extends Controller
             return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
+        // Simpan token FCM terbaru untuk keperluan push notification
         $user->fcm_token = $request->fcm_token;
         $user->save();
 

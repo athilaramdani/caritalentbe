@@ -18,8 +18,10 @@ class MatchmakingController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function getRecommendations($event_id)
     {
+        // Cari event beserta genre yang dibutuhkan
         $event = Event::with('genres')->find($event_id);
 
+        // Pastikan event tersebut ada
         if (!$event) {
             return response()->json([
                 'success' => false,
@@ -27,6 +29,7 @@ class MatchmakingController extends Controller
             ], 404);
         }
 
+        // Hanya EO pemilik event yang bisa melihat rekomendasi ini
         if (Auth::user()->role !== 'eo' || $event->organizer_id != Auth::id()) {
             return response()->json([
                 'success' => false,
@@ -34,10 +37,12 @@ class MatchmakingController extends Controller
             ], 403);
         }
 
+        // Siapkan data event untuk dijadikan acuan scoring
         $eventGenreIds = $event->genres->pluck('id')->toArray();
         $eventBudget = $event->budget;
         $eventCity = strtolower(trim($event->city)); // Simplified location matching by city
 
+        // Ambil semua talent yang sudah terverifikasi
         $talents = Talent::with(['user', 'genres'])->where('verified', true)->get();
 
         $recommendations = [];
@@ -70,6 +75,7 @@ class MatchmakingController extends Controller
 
             $score = $genreScore + $budgetScore + $locationScore;
 
+            // Hanya masukkan talent yang memiliki skor lebih dari 0
             if ($score > 0) {
                 $recommendations[] = [
                     'rank' => 0, // will be sorted later
@@ -103,7 +109,7 @@ class MatchmakingController extends Controller
             return $b['score'] <=> $a['score'];
         });
 
-        // Limit to top 5 and assign rank
+        // Ambil top 5 dan assign nomor ranking
         $topRecommendations = array_slice($recommendations, 0, 5);
         foreach ($topRecommendations as $index => &$rec) {
             $rec['rank'] = $index + 1;

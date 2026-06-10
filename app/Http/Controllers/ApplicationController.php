@@ -57,29 +57,37 @@ class ApplicationController extends Controller
     )]
     public function store(StoreApplicationRequest $request)
     {
+        // Cari event berdasarkan ID yang dikirim
         $event = Event::find($request->event_id);
 
+        // Pastikan event tersebut ada
         if (!$event) {
             return $this->errorResponse('Event tidak ditemukan', 404);
         }
 
+        // Ambil ID talent yang sedang login
         $talentId = auth()->id() ?? 1;
 
+        // Cek apakah talent ini sudah pernah melamar ke event yang sama
         $existing = Application::where('event_id', $request->event_id)
             ->where('talent_id', $talentId)
             ->exists();
 
+        // Tolak jika sudah ada lamaran sebelumnya
         if ($existing) {
             return $this->errorResponse('Kamu sudah pernah melamar ke event ini', 422);
         }
 
+        // Siapkan data lamaran dengan source dan status default
         $data = $request->validated();
         $data['talent_id'] = $talentId;
         $data['source'] = 'apply';
         $data['status'] = 'pending';
 
+        // Simpan lamaran ke database
         $application = Application::create($data);
 
+        // Kirim notifikasi ke EO bahwa ada lamaran baru masuk
         \App\Models\Notification::create([
             'user_id' => $event->organizer_id,
             'title' => 'Lamaran Baru Masuk',
@@ -138,20 +146,25 @@ class ApplicationController extends Controller
     )]
     public function indexByEvent(Request $request, $eventId)
     {
+        // Cari event berdasarkan ID dari URL
         $event = Event::find($eventId);
         if (!$event) {
             return $this->errorResponse('Event tidak ditemukan', 404);
         }
 
+        // Pastikan hanya pemilik event yang bisa melihat daftar pelamar
         if ($event->organizer_id != auth()->id()) {
             return $this->errorResponse('Akses ditolak. Anda bukan penyelenggara event ini', 403);
         }
 
+        // Query semua lamaran yang masuk ke event ini
         $query = Application::where('event_id', $eventId);
 
+        // Filter berdasarkan status jika ada parameter yang dikirim
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
+        // Filter berdasarkan sumber lamaran jika ada
         if ($request->has('source')) {
             $query->where('source', $request->source);
         }
@@ -226,6 +239,7 @@ class ApplicationController extends Controller
     )]
     public function myApplications()
     {
+        // Ambil semua lamaran milik talent yang sedang login, hanya yang sumber-nya apply
         $talentId = auth()->id() ?? 1;
         $applications = Application::where('talent_id', $talentId)
             ->where('source', 'apply')
@@ -277,30 +291,37 @@ class ApplicationController extends Controller
     )]
     public function updateStatus(UpdateApplicationStatusRequest $request, $id)
     {
+        // Cari lamaran beserta data event-nya sekaligus
         $application = Application::with('event')->find($id);
 
+        // Pastikan lamaran tersebut ada
         if (!$application) {
             return $this->errorResponse('Lamaran tidak ditemukan', 404);
         }
 
+        // Pastikan yang mengubah status adalah EO pemilik event
         if ($application->event->organizer_id != auth()->id()) {
             return $this->errorResponse('Akses ditolak. Anda bukan penyelenggara event ini', 403);
         }
 
+        // Lamaran yang sudah direspons tidak bisa diubah lagi
         if ($application->status !== 'pending') {
             return $this->errorResponse('Lamaran sudah direspons sebelumnya', 422);
         }
 
+        // Hanya event yang masih berstatus dibuka yang bisa menerima respons
         if ($application->event->status !== 'dibuka') {
             return $this->errorResponse('Lamaran tidak dapat direspons karena status event bukan buka', 422);
         }
 
+        // Update status lamaran sesuai keputusan EO
         $application->update([
             'status' => $request->status,
         ]);
 
         $data = ['application' => ['id' => $application->id, 'status' => $application->status]];
 
+        // Jika diterima, buat booking baru secara otomatis
         if ($request->status === 'accepted') {
             $booking = \App\Models\Booking::create([
                 'application_id' => $application->id,
@@ -315,6 +336,7 @@ class ApplicationController extends Controller
                 'status' => $booking->status
             ];
 
+            // Beritahu talent bahwa lamarannya diterima
             \App\Models\Notification::create([
                 'user_id' => $application->talent_id,
                 'title' => 'Lamaran Diterima',
@@ -335,6 +357,7 @@ class ApplicationController extends Controller
             return $this->successResponse($data, 'Lamaran diterima dan booking telah dibuat');
         }
 
+        // Jika ditolak, kirim notifikasi penolakan ke talent
         \App\Models\Notification::create([
             'user_id' => $application->talent_id,
             'title' => 'Lamaran Ditolak',
@@ -378,16 +401,20 @@ class ApplicationController extends Controller
     )]
     public function destroy($id)
     {
+        // Cari lamaran milik talent yang ingin dibatalkan
         $application = Application::with('event')->find($id);
 
+        // Pastikan lamaran tersebut ada
         if (!$application) {
             return $this->errorResponse('Lamaran tidak ditemukan', 404);
         }
 
+        // Lamaran yang sudah direspons tidak bisa dibatalkan
         if ($application->status !== 'pending') {
             return $this->errorResponse('Hanya lamaran pending yang bisa dibatalkan', 422);
         }
 
+        // Beritahu EO bahwa talent membatalkan lamarannya
         \App\Models\Notification::create([
             'user_id' => $application->event->organizer_id,
             'title' => 'Lamaran Dibatalkan',
@@ -404,6 +431,7 @@ class ApplicationController extends Controller
             ],
         ]);
 
+        // Hapus data lamaran dari database
         $application->delete();
 
         return $this->successResponse(null, 'Lamaran berhasil dibatalkan');

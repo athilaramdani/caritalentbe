@@ -55,35 +55,44 @@ class InvitationController extends Controller
     )]
     public function store(StoreInvitationRequest $request)
     {
+        // Cari event yang ingin diisi talent
         $event = Event::find($request->event_id);
 
+        // Pastikan event tersebut ada
         if (!$event) {
             return $this->errorResponse('Event tidak ditemukan', 404);
         }
 
+        // Hanya EO pemilik event yang boleh mengirim undangan
         if ($event->organizer_id != auth()->id()) {
             return $this->errorResponse('Akses ditolak. Anda bukan penyelenggara event ini', 403);
         }
 
+        // Validasi bahwa user yang diundang benar-benar memiliki role talent
         $talentUser = \App\Models\User::find($request->talent_id);
         if (!$talentUser || $talentUser->role !== 'talent') {
             return $this->errorResponse('User yang diundang harus memiliki role talent', 422);
         }
 
+        // Cek apakah talent sudah pernah melamar atau diundang ke event ini
         $existing = Application::where('event_id', $request->event_id)
             ->where('talent_id', $request->talent_id)
             ->exists();
 
+        // Tolak jika sudah ada record sebelumnya untuk kombinasi event-talent ini
         if ($existing) {
             return $this->errorResponse('Talent ini sudah memiliki lamaran aktif untuk event tersebut', 422);
         }
 
+        // Siapkan data undangan dengan source dan status default
         $data = $request->validated();
         $data['source'] = 'invitation';
         $data['status'] = 'pending';
 
+        // Simpan undangan ke database
         $invitation = Application::create($data);
 
+        // Kirim notifikasi ke talent bahwa ada undangan masuk
         \App\Models\Notification::create([
             'user_id' => $invitation->talent_id,
             'title' => 'Undangan Manggung Baru',
@@ -145,6 +154,7 @@ class InvitationController extends Controller
     )]
     public function myInvitations()
     {
+        // Ambil semua undangan yang diterima talent yang sedang login
         $talentId = auth()->id() ?? 1;
         $invitations = Application::where('talent_id', $talentId)
             ->where('source', 'invitation')
@@ -201,29 +211,35 @@ class InvitationController extends Controller
     )]
     public function respond(RespondInvitationRequest $request, $id)
     {
+        // Cari undangan berdasarkan ID, pastikan source-nya memang invitation
         $invitation = Application::where('id', $id)
             ->where('source', 'invitation')
             ->with('event')
             ->first();
 
+        // Pastikan undangan tersebut ada
         if (!$invitation) {
             return $this->errorResponse('Undangan tidak ditemukan', 404);
         }
 
+        // Pastikan yang merespons adalah talent yang menerima undangan ini
         if ($invitation->talent_id != auth()->id()) {
             return $this->errorResponse('Akses ditolak. Undangan ini bukan untuk Anda', 403);
         }
 
+        // Undangan yang sudah direspons tidak bisa diubah lagi
         if ($invitation->status !== 'pending') {
             return $this->errorResponse('Undangan sudah direspons sebelumnya', 422);
         }
 
+        // Simpan keputusan talent ke database
         $invitation->update([
             'status' => $request->status,
         ]);
 
         $data = ['invitation' => ['id' => $invitation->id, 'status' => $invitation->status]];
 
+        // Jika diterima, buat booking otomatis dengan harga yang sudah ditawarkan
         if ($request->status === 'accepted') {
             $booking = \App\Models\Booking::create([
                 'application_id' => $invitation->id,
@@ -239,6 +255,7 @@ class InvitationController extends Controller
             ];
             $message = 'Undangan diterima dan booking telah dibuat';
 
+            // Beritahu EO bahwa undangannya diterima
             \App\Models\Notification::create([
                 'user_id' => $invitation->event->organizer_id,
                 'title' => 'Undangan Diterima',
@@ -259,6 +276,7 @@ class InvitationController extends Controller
         } else {
             $message = 'Undangan berhasil ditolak';
 
+            // Beritahu EO bahwa undangannya ditolak
             \App\Models\Notification::create([
                 'user_id' => $invitation->event->organizer_id,
                 'title' => 'Undangan Ditolak',
@@ -293,6 +311,7 @@ class InvitationController extends Controller
     )]
     public function sentInvitations()
     {
+        // Ambil semua undangan yang pernah dikirim EO yang sedang login
         $organizerId = auth()->id() ?? 1;
         $invitations = Application::where('source', 'invitation')
             ->whereHas('event', function ($query) use ($organizerId) {

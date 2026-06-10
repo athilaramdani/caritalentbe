@@ -308,7 +308,12 @@ Response `200`:
         "portfolio_link": "https://youtube.com/thebrokenstrings",
         "verified": true,
         "average_rating": 4.5,
-        "total_reviews": 12
+        "total_reviews": 12,
+        "user": {
+          "name": "Budi Santoso",
+          "email": "budi@email.com",
+          "phone": "081234567890"
+        }
       }
     ],
     "pagination": {
@@ -345,7 +350,12 @@ Response `200` jika ditemukan:
     "portfolio_link": "https://youtube.com/thebrokenstrings",
     "verified": true,
     "average_rating": 4.5,
-    "total_reviews": 12
+    "total_reviews": 12,
+    "user": {
+      "name": "Budi Santoso",
+      "email": "budi@email.com",
+      "phone": "081234567890"
+    }
   }
 }
 ```
@@ -383,7 +393,12 @@ Response `200`:
     "portfolio_link": "https://example.com",
     "verified": false,
     "average_rating": 0,
-    "total_reviews": 0
+    "total_reviews": 0,
+    "user": {
+      "name": "Budi Santoso",
+      "email": "budi@email.com",
+      "phone": "081234567890"
+    }
   }
 }
 ```
@@ -526,11 +541,29 @@ Response `200`:
   "success": true,
   "message": "OK",
   "data": {
-    "events": [],
+    "events": [
+      {
+        "id": 1,
+        "organizer_id": 2,
+        "organizer_name": "Kafe Kota",
+        "title": "Punk Night Vol. 3",
+        "description": "Malam punk rock terbaik di Bandung.",
+        "genre_needed": ["Pop Punk", "Hardcore"],
+        "budget": 3000000,
+        "event_date": "2026-04-15",
+        "venue_name": "Kafe Kota Bandung",
+        "latitude": -6.9175,
+        "longitude": 107.6191,
+        "full_address": "Jl. Braga No.10",
+        "city": "Bandung",
+        "status": "dibuka",
+        "created_at": "2026-03-01T09:00:00Z"
+      }
+    ],
     "pagination": {
       "current_page": 1,
       "per_page": 15,
-      "total": 0,
+      "total": 1,
       "last_page": 1
     }
   }
@@ -659,20 +692,20 @@ Response `200`:
 
 Catatan: backend saat ini belum mengecek owner event di controller update, hanya role `eo`.
 
-### Cancel Event
+### Delete Event (Hapus Event)
 
 `DELETE /events/{event}`
 
 Akses: login, role `eo` atau `admin`
 
-Efek: tidak hard delete, hanya update `status = dibatalkan`.
+Efek: hard delete (menghapus secara permanen data event dan data terkait dengan relasi cascade).
 
 Response `200`:
 
 ```json
 {
   "success": true,
-  "message": "Event berhasil dibatalkan"
+  "message": "Event berhasil dihapus"
 }
 ```
 
@@ -1063,8 +1096,17 @@ Response `200`:
         "event": {
           "id": 1,
           "title": "Punk Night Vol. 3",
+          "description": "Acara musik punk tahunan terbesar di Bandung.",
+          "budget": 2000000,
           "event_date": "2026-04-15",
-          "venue_name": "Kafe Kota Bandung"
+          "venue_name": "Kafe Kota Bandung",
+          "full_address": "Jl. Braga No. 12, Bandung",
+          "city": "Bandung",
+          "latitude": "-6.91750000",
+          "longitude": "107.61910000",
+          "status": "dibuka",
+          "organizer_name": "Braga EO",
+          "genre_needed": ["Pop Punk", "Rock"]
         },
         "talent": {
           "id": 3,
@@ -1098,10 +1140,17 @@ Response `200`:
     "event": {
       "id": 1,
       "title": "Punk Night Vol. 3",
+      "description": "Acara musik punk tahunan terbesar di Bandung.",
+      "budget": 2000000,
       "event_date": "2026-04-15",
       "venue_name": "Kafe Kota Bandung",
+      "full_address": "Jl. Braga No. 12, Bandung",
+      "city": "Bandung",
       "latitude": "-6.91750000",
-      "longitude": "107.61910000"
+      "longitude": "107.61910000",
+      "status": "dibuka",
+      "organizer_name": "Braga EO",
+      "genre_needed": ["Pop Punk", "Rock"]
     },
     "talent": {
       "id": 3,
@@ -1749,7 +1798,7 @@ Response `200`:
 - Simpan token dari `login/register`, lalu kirim lewat `Authorization: Bearer`.
 - Untuk talent baru, profil talent sudah otomatis dibuat saat register role `talent`; gunakan `GET /talents/my` untuk mengambil profilnya.
 - Gunakan user id talent sebagai `talent_id` untuk application, invitation, review, dan recommendation output.
-- `DELETE /events/{event}` adalah cancel event, bukan hapus permanen.
+- `DELETE /events/{event}` adalah menghapus event secara permanen (hard delete).
 - `DELETE /applications/{id}` adalah cancel application dan hanya bisa jika status masih `pending`.
 - Booking tidak dibuat lewat endpoint manual; booking dibuat otomatis dari accepted application/invitation.
 - Review hanya bisa setelah booking `completed`.

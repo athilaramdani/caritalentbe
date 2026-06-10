@@ -20,7 +20,7 @@ class BookingController extends Controller
     public function show($id)
     {
         // Cari booking beserta relasi event dan talent-nya
-        $booking = Booking::with(['application.event', 'application.talent'])->find($id);
+        $booking = Booking::with(['application.event.organizer', 'application.event.genres', 'application.talent'])->find($id);
 
         // Pastikan booking tersebut ada
         if (!$booking) {
@@ -56,10 +56,17 @@ class BookingController extends Controller
                 'event' => [
                     'id' => $booking->application->event->id,
                     'title' => $booking->application->event->title,
+                    'description' => $booking->application->event->description,
+                    'budget' => $booking->application->event->budget,
                     'event_date' => $booking->application->event->event_date,
                     'venue_name' => $booking->application->event->venue_name,
+                    'full_address' => $booking->application->event->full_address,
+                    'city' => $booking->application->event->city,
                     'latitude' => $booking->application->event->latitude,
-                    'longitude' => $booking->application->event->longitude
+                    'longitude' => $booking->application->event->longitude,
+                    'status' => $booking->application->event->status,
+                    'organizer_name' => $booking->application->event->organizer ? $booking->application->event->organizer->name : 'Unknown',
+                    'genre_needed' => $booking->application->event->genres ? $booking->application->event->genres->pluck('name')->toArray() : []
                 ],
                 'talent' => [
                     'id' => $booking->application->talent_id,
@@ -80,7 +87,7 @@ class BookingController extends Controller
     {
         // Ambil data user yang sedang login
         $user = Auth::user();
-        $query = Booking::with(['application.event', 'application.talent']);
+        $query = Booking::with(['application.event.organizer', 'application.event.genres', 'application.talent']);
 
         // Filter booking berdasarkan role: EO hanya lihat booking event miliknya
         if ($user->role === 'eo') {
@@ -108,8 +115,17 @@ class BookingController extends Controller
                 'event' => [
                     'id' => $booking->application->event->id ?? null,
                     'title' => $booking->application->event->title ?? null,
+                    'description' => $booking->application->event->description ?? null,
+                    'budget' => $booking->application->event->budget ?? null,
                     'event_date' => $booking->application->event->event_date ?? null,
                     'venue_name' => $booking->application->event->venue_name ?? null,
+                    'full_address' => $booking->application->event->full_address ?? null,
+                    'city' => $booking->application->event->city ?? null,
+                    'latitude' => $booking->application->event->latitude ?? null,
+                    'longitude' => $booking->application->event->longitude ?? null,
+                    'status' => $booking->application->event->status ?? null,
+                    'organizer_name' => ($booking->application->event && $booking->application->event->organizer) ? $booking->application->event->organizer->name : 'Unknown',
+                    'genre_needed' => ($booking->application->event && $booking->application->event->genres) ? $booking->application->event->genres->pluck('name')->toArray() : []
                 ],
                 'talent' => [
                     'id' => $booking->application->talent_id,

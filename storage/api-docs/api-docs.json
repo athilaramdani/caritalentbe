@@ -534,6 +534,18 @@
                             }
                         }
                     },
+                    "422": {
+                        "description": "Event tidak sedang dibuka / Lamaran sudah direspons sebelumnya",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "success": false,
+                                    "message": "Lamaran tidak dapat direspons karena status event bukan buka"
+                                }
+                            }
+                        }
+                    },
                     "404": {
                         "description": "Lamaran tidak ditemukan",
                         "content": {
@@ -1048,6 +1060,7 @@
                                                 "venue_name": "Kafe Kota Bandung",
                                                 "latitude": -6.9175,
                                                 "longitude": 107.6191,
+                                                "full_address": "Jl. Braga No.10, Braga, Kec. Sumur Bandung, Kota Bandung, Jawa Barat 40111",
                                                 "city": "Bandung",
                                                 "status": "dibuka",
                                                 "created_at": "2026-03-01T09:00:00Z"
@@ -1127,6 +1140,10 @@
                                         "type": "number",
                                         "format": "float",
                                         "example": 107.6191
+                                    },
+                                    "full_address": {
+                                        "type": "string",
+                                        "example": "Jl. Braga No.10, Braga, Kec. Sumur Bandung, Kota Bandung, Jawa Barat 40111"
                                     },
                                     "city": {
                                         "type": "string",
@@ -1236,6 +1253,7 @@
                                         "venue_name": "Kafe Kota Bandung",
                                         "latitude": -6.9175,
                                         "longitude": 107.6191,
+                                        "full_address": "Jl. Braga No.10, Braga, Kec. Sumur Bandung, Kota Bandung, Jawa Barat 40111",
                                         "city": "Bandung",
                                         "status": "dibuka",
                                         "total_applicants": 5,
@@ -1360,8 +1378,8 @@
                 "tags": [
                     "Event"
                 ],
-                "summary": "Cancel Event",
-                "description": "Membatalkan event (soft cancel — status berubah menjadi 'dibatalkan', tidak dihapus permanen). Akses: EO (pemilik), Admin.",
+                "summary": "Delete Event",
+                "description": "Menghapus event secara permanen dari database. Akses: EO (pemilik), Admin.",
                 "operationId": "d9e4e6c812ee62b2c751d1d2d3d44b80",
                 "parameters": [
                     {
@@ -1377,13 +1395,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Event berhasil dibatalkan",
+                        "description": "Event berhasil dihapus",
                         "content": {
                             "application/json": {
                                 "schema": {},
                                 "example": {
                                     "success": true,
-                                    "message": "Event berhasil dibatalkan"
+                                    "message": "Event berhasil dihapus"
                                 }
                             }
                         }

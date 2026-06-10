@@ -17,21 +17,26 @@ class NotificationController extends Controller
     #[OA\Response(response: 401, description: "Unauthorized")]
     public function index(Request $request)
     {
+        // Ambil semua notifikasi milik user yang sedang login
         $query = Notification::where('user_id', Auth::id());
 
+        // Filter berdasarkan status sudah dibaca atau belum
         if ($request->has('is_read')) {
             $isRead = filter_var($request->is_read, FILTER_VALIDATE_BOOLEAN);
             $query->where('is_read', $isRead);
         }
 
+        // Filter berdasarkan tipe notifikasi
         if ($request->has('type')) {
             $query->where('type', $request->type);
         }
 
+        // Filter berdasarkan action notifikasi
         if ($request->has('action')) {
             $query->where('action', $request->action);
         }
 
+        // Ambil notifikasi terbaru dengan paginasi, plus hitung yang belum dibaca
         $notifications = $query->latest()->paginate(15);
         $unreadCount = Notification::where('user_id', Auth::id())->where('is_read', false)->count();
 
@@ -58,8 +63,10 @@ class NotificationController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function markAsRead($id)
     {
+        // Cari notifikasi milik user yang sedang login berdasarkan ID
         $notification = Notification::where('user_id', Auth::id())->find($id);
 
+        // Pastikan notifikasi tersebut ada
         if (!$notification) {
             return response()->json([
                 'success' => false,
@@ -67,6 +74,7 @@ class NotificationController extends Controller
             ], 404);
         }
 
+        // Tandai notifikasi sebagai sudah dibaca
         $notification->update([
             'is_read' => true,
             'read_at' => now(),
@@ -83,6 +91,7 @@ class NotificationController extends Controller
     #[OA\Response(response: 401, description: "Unauthorized")]
     public function markAllAsRead()
     {
+        // Tandai semua notifikasi yang belum dibaca sebagai sudah dibaca sekaligus
         Notification::where('user_id', Auth::id())
             ->where('is_read', false)
             ->update([

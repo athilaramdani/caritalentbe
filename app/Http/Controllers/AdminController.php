@@ -24,10 +24,12 @@ class AdminController extends Controller
     #[OA\Response(response: 403, description: "Forbidden")]
     public function dashboard()
     {
+        // Pastikan hanya admin yang bisa mengakses dashboard ini
         if (Auth::user()->role !== 'admin') {
             return response()->json(['success' => false, 'message' => 'Akses ditolak'], 403);
         }
 
+        // Hitung statistik keseluruhan dari masing-masing tabel
         $totalUsers       = User::count();
         $totalTalents     = User::where('role', 'talent')->count();
         $totalEO          = User::where('role', 'eo')->count();
@@ -61,16 +63,19 @@ class AdminController extends Controller
     #[OA\Response(response: 403, description: "Forbidden")]
     public function getUsers(Request $request)
     {
+        // Pastikan hanya admin yang bisa mengakses daftar user
         if (Auth::user()->role !== 'admin') {
             return response()->json(['success' => false, 'message' => 'Akses ditolak'], 403);
         }
 
         $query = User::query()->where('role', '!=', 'admin');
 
+        // Filter berdasarkan role jika ada query param yang dikirim
         if ($request->has('role')) {
             $query->where('role', $request->role);
         }
 
+        // Filter pencarian berdasarkan nama atau email
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -79,6 +84,7 @@ class AdminController extends Controller
             });
         }
 
+        // Ambil hasilnya dengan paginasi 15 per halaman
         $users = $query->paginate(15);
 
         return response()->json([
@@ -104,20 +110,25 @@ class AdminController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function deleteUser($id)
     {
+        // Pastikan hanya admin yang bisa menghapus user
         if (Auth::user()->role !== 'admin') {
             return response()->json(['success' => false, 'message' => 'Akses ditolak'], 403);
         }
 
+        // Cari user yang akan dihapus
         $user = User::find($id);
 
+        // Pastikan user tersebut ada
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'User tidak ditemukan'], 404);
         }
 
+        // Cegah admin menghapus sesama admin
         if ($user->role === 'admin') {
             return response()->json(['success' => false, 'message' => 'Tidak dapat menghapus sesama admin'], 400);
         }
 
+        // Hapus akun user dari database
         $user->delete();
 
         return response()->json([
@@ -142,10 +153,12 @@ class AdminController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function verifyTalent(Request $request, $id)
     {
+        // Pastikan hanya admin yang bisa memverifikasi talent
         if (Auth::user()->role !== 'admin') {
             return response()->json(['success' => false, 'message' => 'Akses ditolak'], 403);
         }
 
+        // Validasi input, field verified wajib berupa boolean
         $validator = Validator::make($request->all(), [
             'verified' => 'required|boolean'
         ]);
@@ -154,15 +167,19 @@ class AdminController extends Controller
             return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
+        // Cari profil talent berdasarkan user ID
         $talent = Talent::where('user_id', $id)->first();
 
+        // Pastikan profil talent tersebut ada
         if (!$talent) {
             return response()->json(['success' => false, 'message' => 'Talent profile tidak ditemukan'], 404);
         }
 
+        // Update status verifikasi talent
         $isVerified = filter_var($request->verified, FILTER_VALIDATE_BOOLEAN);
         $talent->update(['verified' => $isVerified]);
 
+        // Kirim notifikasi ke talent mengenai perubahan status verifikasi
         Notification::create([
             'user_id' => $talent->user_id,
             'title' => $isVerified ? 'Talent Berhasil Diverifikasi' : 'Verifikasi Talent Dicabut',
@@ -208,10 +225,12 @@ class AdminController extends Controller
     #[OA\Response(response: 404, description: "Not Found")]
     public function moderateEvent(Request $request, $id)
     {
+        // Pastikan hanya admin yang bisa melakukan moderasi event
         if (Auth::user()->role !== 'admin') {
             return response()->json(['success' => false, 'message' => 'Akses ditolak'], 403);
         }
 
+        // Validasi status dan alasan moderasi
         $validator = Validator::make($request->all(), [
             'status' => 'required|in:dibuka,ditutup,selesai,dibatalkan',
             'reason' => 'nullable|string'
@@ -221,16 +240,20 @@ class AdminController extends Controller
             return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
+        // Cari event yang akan dimoderasi
         $event = Event::find($id);
 
+        // Pastikan event tersebut ada
         if (!$event) {
             return response()->json(['success' => false, 'message' => 'Event tidak ditemukan'], 404);
         }
 
+        // Update status event sesuai keputusan admin
         $event->update([
             'status' => $request->status
         ]);
 
+        // Beritahu EO pemilik event bahwa eventnya telah dimoderasi
         Notification::create([
             'user_id' => $event->organizer_id,
             'title' => 'Event Dimoderasi Admin',

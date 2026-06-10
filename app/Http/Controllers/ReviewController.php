@@ -33,6 +33,7 @@ class ReviewController extends Controller
     #[OA\Response(response: 422, description: "Unprocessable Entity")]
     public function store(Request $request)
     {
+        // Pesan error kustom untuk validasi
         $messages = [
             'required' => 'Kolom :attribute wajib diisi.',
             'integer' => 'Kolom :attribute harus berupa angka.',
@@ -42,6 +43,7 @@ class ReviewController extends Controller
             'string' => 'Kolom :attribute harus berupa teks.',
         ];
 
+        // Validasi input review
         $validator = Validator::make($request->all(), [
             'booking_id' => 'required|exists:bookings,id',
             'rating' => 'required|integer|min:1|max:5',
@@ -52,6 +54,7 @@ class ReviewController extends Controller
             return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
+        // Hanya EO yang boleh memberikan ulasan
         if (Auth::user()->role !== 'eo') {
             return response()->json([
                 'success' => false,
@@ -59,8 +62,10 @@ class ReviewController extends Controller
             ], 403);
         }
 
+        // Ambil booking beserta data event-nya
         $booking = Booking::with('application.event')->find($request->booking_id);
 
+        // Pastikan EO yang me-review adalah pemilik event terkait
         if ($booking->application?->event?->organizer_id != Auth::id()) {
             return response()->json([
                 'success' => false,
@@ -68,6 +73,7 @@ class ReviewController extends Controller
             ], 403);
         }
 
+        // Review hanya bisa diberikan setelah event selesai
         if ($booking->status !== 'completed') {
             return response()->json([
                 'success' => false,
@@ -75,6 +81,7 @@ class ReviewController extends Controller
             ], 422);
         }
 
+        // Cegah EO memberikan review lebih dari sekali untuk booking yang sama
         $existingReview = Review::where('booking_id', $request->booking_id)->first();
         if ($existingReview) {
             return response()->json([
@@ -83,8 +90,10 @@ class ReviewController extends Controller
             ], 422);
         }
 
+        // Gunakan transaksi agar review dan update rating talent konsisten
         DB::beginTransaction();
         try {
+            // Simpan review baru
             $review = Review::create([
                 'booking_id' => $request->booking_id,
                 'rating' => $request->rating,
@@ -103,6 +112,7 @@ class ReviewController extends Controller
                 $totalReviews = $allReviews->count();
                 $averageRating = $allReviews->avg('rating');
                 
+                // Perbarui rata-rata rating dan total review di profil talent
                 $talentProfile->update([
                     'total_reviews' => $totalReviews,
                     'average_rating' => round($averageRating, 1)
@@ -183,6 +193,7 @@ class ReviewController extends Controller
             }
         }
 
+        // Pastikan user yang dicari adalah talent yang valid
         if (!$user || $user->role !== 'talent') {
             return response()->json([
                 'success' => false,
@@ -190,6 +201,7 @@ class ReviewController extends Controller
             ], 404);
         }
 
+        // Ambil semua review untuk talent ini dengan paginasi
         $reviews = Review::with('booking.application.event.organizer')
             ->whereHas('booking.application', function($q) use ($userId) {
                 $q->where('talent_id', $userId);
@@ -232,9 +244,11 @@ class ReviewController extends Controller
     #[OA\Response(response: 404, description: "Talent tidak ditemukan")]
     public function myReviews(Request $request)
     {
+        // Ambil data user dan profil talent yang sedang login
         $user = $request->user();
         $talentProfile = Talent::where('user_id', $user->id)->first();
 
+        // Pastikan user ini memang memiliki profil talent
         if (!$talentProfile) {
             return response()->json([
                 'success' => false,
@@ -242,6 +256,7 @@ class ReviewController extends Controller
             ], 404);
         }
 
+        // Ambil semua review yang diterima talent ini
         $reviews = Review::with('booking.application.event.organizer')
             ->whereHas('booking.application', function($q) use ($user) {
                 $q->where('talent_id', $user->id);

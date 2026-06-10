@@ -34,6 +34,7 @@ class AuthController extends Controller
     #[OA\Response(response: 422, description: "Validasi gagal")]
     public function register(Request $request)
     {
+        // Pesan error kustom agar lebih mudah dibaca oleh pengguna
         $messages = [
             'required' => 'Kolom :attribute wajib diisi.',
             'string' => 'Kolom :attribute harus berupa teks.',
@@ -46,6 +47,7 @@ class AuthController extends Controller
             'prohibited_unless' => 'Kolom :attribute hanya boleh diisi untuk role talent.',
         ];
 
+        // Validasi semua field yang dikirim
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -61,8 +63,10 @@ class AuthController extends Controller
 
         $talent = null;
 
+        // Gunakan transaksi agar data user dan talent tersimpan bersamaan atau tidak sama sekali
         DB::beginTransaction();
         try {
+            // Buat akun user baru
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -71,6 +75,7 @@ class AuthController extends Controller
                 'role' => $request->role,
             ]);
 
+            // Jika role talent, buat profil talent sekaligus
             if ($user->role === 'talent') {
                 $talent = Talent::create([
                     'id' => $user->id,
@@ -92,6 +97,7 @@ class AuthController extends Controller
             ], 500);
         }
 
+        // Generate token autentikasi untuk user yang baru terdaftar
         $token = $user->createToken('auth_token')->plainTextToken;
 
         $data = [
@@ -118,11 +124,13 @@ class AuthController extends Controller
     #[OA\Response(response: 401, description: "Email atau password salah")]
     public function login(Request $request)
     {
+        // Pesan error kustom agar lebih mudah dibaca
         $messages = [
             'required' => 'Kolom :attribute wajib diisi.',
             'email' => 'Format email tidak valid.',
         ];
 
+        // Validasi input email dan password
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
@@ -132,8 +140,10 @@ class AuthController extends Controller
             return $this->errorResponse('Validasi gagal', 422, $validator->errors());
         }
 
+        // Cari user berdasarkan email, lalu verifikasi passwordnya
         $user = User::where('email', $request->email)->first();
 
+        // Tolak login jika email tidak ditemukan atau password salah
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
@@ -141,6 +151,7 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // Generate token autentikasi untuk sesi login ini
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return $this->successResponse([
@@ -153,6 +164,7 @@ class AuthController extends Controller
     #[OA\Response(response: 200, description: "Logout berhasil")]
     public function logout(Request $request)
     {
+        // Hapus token yang sedang aktif untuk mengakhiri sesi
         $request->user()->currentAccessToken()->delete();
 
         return $this->successResponse('Logout berhasil');

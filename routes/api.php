@@ -20,6 +20,31 @@ Route::get('/login', function () {
     return response()->json(['success' => false, 'message' => 'Unauthenticated.'], 401);
 })->name('login');
 
+// === TEMPORARY DEBUG: hapus setelah FCM berhasil ===
+Route::get('/debug/fcm-tokens', function () {
+    $users = \App\Models\User::all(['id', 'email', 'role', 'fcm_token']);
+    return response()->json($users);
+});
+Route::post('/debug/send-test-fcm', function (\Illuminate\Http\Request $req) {
+    $user = \App\Models\User::find($req->user_id);
+    if (!$user || !$user->fcm_token) {
+        return response()->json(['error' => 'user not found or no token']);
+    }
+    try {
+        $messaging = app('firebase.messaging');
+        $msg = \Kreait\Firebase\Messaging\CloudMessage::withTarget('token', $user->fcm_token)
+            ->withNotification(\Kreait\Firebase\Messaging\Notification::create('Test Notif', 'Ini test dari debug endpoint'))
+            ->withData(['type' => 'test']);
+        $messaging->send($msg);
+        return response()->json(['success' => true, 'token_used' => substr($user->fcm_token, 0, 30) . '...']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()]);
+    }
+});
+// === END TEMPORARY DEBUG ===
+
+
+
 Route::prefix('v1')->group(function () {
 
     // =====================================================

@@ -20,13 +20,21 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
+# Install dependencies (tanpa dev packages untuk production)
 COPY composer.json composer.lock ./
-RUN composer install --no-interaction --no-progress --prefer-dist
+RUN composer install --no-interaction --no-progress --prefer-dist --no-dev
 
+# Copy seluruh source code
 COPY . .
 
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Set permissions untuk storage dan cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Copy dan set executable entrypoint script
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 9000
 
-CMD ["php-fpm"]
+ENTRYPOINT ["/entrypoint.sh"]
